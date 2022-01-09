@@ -1,0 +1,30 @@
+# Setup
+title: Chicken COOP
+tagline: Automatically generated controller diagrams
+baseurl: ""
+paginate: 1
+locale: "en"
+
+# About/contact
+author:
+  name: Team 1540
+  url: https://team1540.org
+
+# Gems
+gems:
+  - jekyll-paginate
+
+#Others
+markdown: kramdown
+
+defaults:
+  - scope:
+      path: "diagrams"
+    values:
+      pdf: true
+      primary_pdf: false
+  - scope:
+      path: "diagrams/main"
+    values:
+      primary_pdf: true
+

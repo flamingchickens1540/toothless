@@ -1,0 +1,32 @@
+---
+layout: default
+title: {{ site.name }}
+---
+<div id="home">
+    <h1>Diagrams</h1>
+
+    <h2>Main</h2>
+    <ul class="posts" id="main">
+        {% assign branchDiagrams = site.static_files | where: "primary_pdf", true %}
+        {% for pdf in branchDiagrams %}
+        <li><a href="{{ pdf.path | absolute_url }}">{{ pdf.basename | uppercase }}</a></li>
+        {% endfor %}
+    </ul>
+    {% assign diagrams = site.static_files | where: "pdf", true | where: "primary_pdf", false %}
+    {% assign branchArray = '' | split: ',' %}
+    {% for file in diagrams %}
+    {% assign branchName = file.path | remove: file.name %}
+    {% assign branchArray = branchArray | push: branchName %}
+    {% endfor %}
+    {% assign uniqueBranches = branchArray | uniq %}
+    {% for branch in uniqueBranches %}
+    <h3>{{branch | strip | remove_first: "/diagrams/"}}</h3>
+    <ul class="posts" id="{{branch}}">
+        {% assign branchDiagrams = diagrams | where_exp: "pdf", "pdf.path contains branch" %}
+        {% for pdf in branchDiagrams %}
+        <li><a href="{{ pdf.path | absolute_url }}">{{ pdf.basename | uppercase }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+</div>
+<!--<li><span>{{ file.modified_time | date: "%m/%d %H:%M"}}</span> &raquo; <a href="{{ file.path | absolute_url }}">{{ file.basename | uppercase }}</a></li>-->
