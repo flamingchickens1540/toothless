@@ -19,8 +19,10 @@ import edu.wpi.first.wpilibj.XboxController;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public DriveTrain driveTrain = new DriveTrain(NeutralMode.Coast);
 
+  public DriveTrain driveTrain = new DriveTrain(NeutralMode.Brake);
+
+  public XboxController driverXbox = new XboxController(0);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings

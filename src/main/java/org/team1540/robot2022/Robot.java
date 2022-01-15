@@ -4,7 +4,11 @@
 
 package org.team1540.robot2022;
 
+import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
@@ -16,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
 
   private RobotContainer robotContainer;
+  private DriveTrain driveTrain;
+  private XboxController driverXbox;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -25,7 +31,9 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    robotContainer = new RobotContainer();
+    this.robotContainer = new RobotContainer();
+    this.driveTrain = robotContainer.driveTrain;
+    this.driverXbox = robotContainer.driverXbox;
   }
 
   /**
@@ -59,7 +67,9 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    driveTrain.setDefaultCommand(new TankDriveCommand(driveTrain, driverXbox));
+  }
 
   /** This function is called periodically during operator control. */
   @Override
