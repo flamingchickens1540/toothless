@@ -4,6 +4,10 @@
 
 package org.team1540.robot2022;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -15,7 +19,7 @@ import edu.wpi.first.wpilibj.XboxController;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-
+  public DriveTrain driveTrain = new DriveTrain(NeutralMode.Coast);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

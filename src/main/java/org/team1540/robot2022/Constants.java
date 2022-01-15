@@ -13,5 +13,10 @@ package org.team1540.robot2022;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    
+    public final class DriveMotors {
+        public static final int leftFront = 1;
+        public static final int leftRear = 2;
+        public static final int rightFront = 3;
+        public static final int rightRear = 4;
+    }
 }
