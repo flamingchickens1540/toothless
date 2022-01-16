@@ -4,6 +4,8 @@
 
 package org.team1540.robot2022;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 
@@ -54,7 +56,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    driveTrain.setNeutralMode(NeutralMode.Coast);
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -68,6 +72,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    driveTrain.setNeutralMode(NeutralMode.Brake);
     driveTrain.setDefaultCommand(new TankDriveCommand(driveTrain, driverXbox));
   }
 
