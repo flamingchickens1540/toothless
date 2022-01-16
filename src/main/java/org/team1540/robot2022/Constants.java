@@ -26,11 +26,13 @@ public final class Constants {
         }
 
         public final class PathFollowing {
-            public static final double ksVolts = 3.9764;
-            public static final double kvVoltSecondsPerMeter = 1.383;
-            public static final double kaVoltSecondsSquaredPerMeter = 0.212;
+            public static final double volts = 3.9764;
+            public static final double voltSecondsPerMeter = 1.383;
+            public static final double voltSecondsSquaredPerMeter = 0.212;
 
-            public static final double kPDriveVel = 2.6328;
+            public static final double driveVelocity = 2.6328;
+
+            public static final double trackWidth = 0.64;
         }
     }
 }
