@@ -6,12 +6,16 @@ package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.utils.NavX;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -27,12 +31,14 @@ public class RobotContainer {
   public final XboxController driverController = new XboxController(0);
 
   public final NavX navx = new NavX(SPI.Port.kMXP);
+
+  private SendableChooser<Command> autoChooser = new SendableChooser<>();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     driveTrain = new DriveTrain(NeutralMode.Brake, navx);
 
-    
+    pushAutoChooser();
     configureButtonBindings();
   }
 
@@ -48,4 +54,12 @@ public class RobotContainer {
 
   }
 
+  private void pushAutoChooser() {
+    autoChooser.addOption("Test Auto", new AutoTest(driveTrain));
+    SmartDashboard.putData(autoChooser);
+  }
+
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
+  }
 }
