@@ -17,22 +17,14 @@ package org.team1540.robot2022;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public final class DriveTrain {
+    public final class DriveConstants {
         public final class Motors {
             public static final int leftFront = 1;
             public static final int leftRear = 2;
             public static final int rightFront = 3;
             public static final int rightRear = 4;
         }
-
-        public final class PathFollowing {
-            public static final double volts = 3.9764;
-            public static final double voltSecondsPerMeter = 1.383;
-            public static final double voltSecondsSquaredPerMeter = 0.212;
-
-            public static final double driveVelocity = 2.6328;
-
-            public static final double trackWidth = 0.64;
-        }
+        
+        public static final double encoderTicksPerMeter = 49866;
     }
 }
