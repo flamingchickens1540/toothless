@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     this.robotContainer = new RobotContainer();
     this.driveTrain = robotContainer.driveTrain;
-    this.driverXbox = robotContainer.driverXbox;
+    this.driverXbox = robotContainer.driverController;
   }
 
   /**

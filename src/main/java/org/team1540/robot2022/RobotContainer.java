@@ -24,7 +24,7 @@ public class RobotContainer {
 
   public final DriveTrain driveTrain;
 
-  public XboxController driverXbox = new XboxController(0);
+  public final XboxController driverController = new XboxController(0);
 
   public final NavX navx = new NavX(SPI.Port.kMXP);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
