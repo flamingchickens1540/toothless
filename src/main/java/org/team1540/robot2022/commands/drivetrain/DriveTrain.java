@@ -17,7 +17,7 @@ public class DriveTrain extends SubsystemBase {
     private final TalonFX[] driveR = { driveRFront, driveRRear };
     private final TalonFX[] driveMotors = { driveLFront, driveLRear, driveRFront, driveRRear };
 
-    public DriveTrain(NeutralMode brakeType) {
+    public DriveTrain(NeutralMode brakeType, NavX navx) {
         for (TalonFX motor : driveMotors) {
             motor.configFactoryDefault();
             motor.setNeutralMode(brakeType);

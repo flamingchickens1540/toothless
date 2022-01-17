@@ -7,8 +7,10 @@ package org.team1540.robot2022;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.utils.NavX;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 
 /**
@@ -20,14 +22,21 @@ import edu.wpi.first.wpilibj.XboxController;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  public DriveTrain driveTrain = new DriveTrain(NeutralMode.Brake);
+  public final DriveTrain driveTrain;
 
   public XboxController driverXbox = new XboxController(0);
+
+  public final NavX navx = new NavX(SPI.Port.kMXP);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
+    driveTrain = new DriveTrain(NeutralMode.Brake, navx);
+
+    
     configureButtonBindings();
   }
+
+
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
