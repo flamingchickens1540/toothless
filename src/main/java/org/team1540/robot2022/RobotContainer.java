@@ -51,7 +51,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
+    new JoystickButton(driverController, Button.kX.value)
+        .whenPressed(() -> navx.zeroYaw());
   }
 
   private void pushAutoChooser() {
