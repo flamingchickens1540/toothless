@@ -36,12 +36,14 @@ public class ChickenTalonFX extends TalonFX {
     }
 
     public void setVelocityMetersPerSecond(double velocityMetersPerSecond) {
-        if (lastSlot != velocitySlotIdx) selectProfileSlot(velocitySlotIdx, 0);
+        if (lastSlot != velocitySlotIdx)
+            selectProfileSlot(velocitySlotIdx, 0);
         this.set(ControlMode.Velocity, velocityMetersPerSecond * ticksPerMeter / decisecondsPerSecond);
     }
 
     public void setPositionMeters(double positionMeters) {
-        if (lastSlot != positionSlotIdx) selectProfileSlot(positionSlotIdx, 0);
+        if (lastSlot != positionSlotIdx)
+            selectProfileSlot(positionSlotIdx, 0);
         this.set(ControlMode.Position, positionMeters * ticksPerMeter);
     }
 

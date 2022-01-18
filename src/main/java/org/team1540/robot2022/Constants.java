@@ -24,7 +24,7 @@ public final class Constants {
             public static final int rightFront = 3;
             public static final int rightRear = 4;
         }
-        
+
         public static final double encoderTicksPerMeter = 49866;
     }
 }

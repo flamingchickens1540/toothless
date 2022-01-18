@@ -14,6 +14,7 @@ public class TankDriveCommand extends CommandBase {
         this.controller = controller;
         addRequirements(drivetrain);
     }
+
     private double applyDeadzone(double value) {
         if (Math.abs(value) <= deadzone) {
             return 0;
@@ -21,6 +22,7 @@ public class TankDriveCommand extends CommandBase {
             return value;
         }
     }
+
     public void execute() {
         double valueL = speedModifier * applyDeadzone(controller.getLeftY());
         double valueR = speedModifier * applyDeadzone(controller.getRightY());

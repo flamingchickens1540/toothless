@@ -20,49 +20,55 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+    // The robot's subsystems and commands are defined here...
 
-  public final DriveTrain driveTrain;
+    public final DriveTrain driveTrain;
 
-  public final XboxController driverController = new XboxController(0);
+    public final XboxController driverController = new XboxController(0);
 
-  public final NavX navx = new NavX(SPI.Port.kMXP);
+    public final NavX navx = new NavX(SPI.Port.kMXP);
 
-  private SendableChooser<Command> autoChooser = new SendableChooser<>();
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    // Configure the button bindings
-    driveTrain = new DriveTrain(NeutralMode.Brake, navx);
+    private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-    pushAutoChooser();
-    configureButtonBindings();
-  }
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        // Configure the button bindings
+        driveTrain = new DriveTrain(NeutralMode.Brake, navx);
 
+        pushAutoChooser();
+        configureButtonBindings();
+    }
 
+    /**
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by
+     * instantiating a {@link GenericHID} or one of its subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+     * it to a {@link
+     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+     */
+    private void configureButtonBindings() {
+        new JoystickButton(driverController, Button.kX.value)
+                .whenPressed(() -> navx.zeroYaw());
+    }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    new JoystickButton(driverController, Button.kX.value)
-        .whenPressed(() -> navx.zeroYaw());
-  }
+    private void pushAutoChooser() {
+        autoChooser.addOption("Test Auto", new AutoTest(driveTrain));
+        SmartDashboard.putData(autoChooser);
+    }
 
-  private void pushAutoChooser() {
-    autoChooser.addOption("Test Auto", new AutoTest(driveTrain));
-    SmartDashboard.putData(autoChooser);
-  }
-
-  public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
-  }
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
 }
