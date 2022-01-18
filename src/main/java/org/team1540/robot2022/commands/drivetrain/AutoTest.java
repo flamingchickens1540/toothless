@@ -32,7 +32,7 @@ public class AutoTest extends CommandBase {
         }
 
         this.driveTrain = driveTrain;
-        getRamseteCommand(trajectory);
+        command = getRamseteCommand(trajectory);
         addRequirements(driveTrain);
     }
 
