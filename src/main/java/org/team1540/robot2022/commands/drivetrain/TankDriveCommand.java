@@ -24,8 +24,8 @@ public class TankDriveCommand extends CommandBase {
     }
 
     public void execute() {
-        double valueL = speedModifier * applyDeadzone(controller.getLeftY());
-        double valueR = speedModifier * applyDeadzone(controller.getRightY());
+        double valueL = -speedModifier * applyDeadzone(controller.getLeftY());
+        double valueR = -speedModifier * applyDeadzone(controller.getRightY());
         drivetrain.setPercent(valueL, valueR);
     }
 }

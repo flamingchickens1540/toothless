@@ -32,11 +32,11 @@ public class DriveTrain extends SubsystemBase {
         }
         // Set configuration for left motors
         for (ChickenTalonFX motor : driveL) {
-            motor.setInverted(true);
+            motor.setInverted(false);
         }
         // Set configuration for right motors
         for (ChickenTalonFX motor : driveR) {
-            motor.setInverted(false);
+            motor.setInverted(true);
         }
         driveLRear.follow(driveLFront);
         driveRRear.follow(driveRFront);
