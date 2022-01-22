@@ -27,4 +27,6 @@ public final class Constants {
 
         public static final double encoderTicksPerMeter = 49866;
     }
+    public static final int SHOOTER_CAN_1 = 0;
+    public static final int SHOOTER_CAN_2 = 0;
 }
