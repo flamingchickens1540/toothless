@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,7 +48,7 @@ public class RobotContainer {
         // Configure the button bindings
         driveTrain = new DriveTrain(NeutralMode.Brake, navx);
 
-        pushAutoChooser();
+        initSmartDashboard();
         configureButtonBindings();
     }
 
@@ -63,9 +65,15 @@ public class RobotContainer {
                 .whenPressed(() -> navx.zeroYaw());
     }
 
-    private void pushAutoChooser() {
+    private void initSmartDashboard() {
         autoChooser.addOption("Test Auto", new AutoTest(driveTrain));
         SmartDashboard.putData(autoChooser);
+
+        Shuffleboard.getTab("SmartDashboard")
+            .add("NavX", navx)
+            .withWidget(BuiltInWidgets.kGyro);
+
+        SmartDashboard.putNumber("drivePID/kP", SmartDashboard.getNumber("drivePID/kP", 0.5));
     }
 
     public Command getAutonomousCommand() {

@@ -1,6 +1,8 @@
 package org.team1540.robot2022.utils;
 
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI.Port;
 
 public class NavX extends AHRS {
@@ -29,6 +31,11 @@ public class NavX extends AHRS {
 
     public double getRateRadians() {
         return -Math.toRadians(this.getRate());
+    }
+
+    @Override
+    public Rotation2d getRotation2d() {
+        return new Rotation2d(this.getYawRadians());
     }
 
 }
