@@ -10,6 +10,9 @@ import org.team1540.robot2022.utils.NavX;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveTrain extends SubsystemBase {
@@ -48,6 +51,9 @@ public class DriveTrain extends SubsystemBase {
                 navx.getRotation2d(),
                 driveLFront.getDistanceMeters(),
                 driveRFront.getDistanceMeters());
+
+        SmartDashboard.putNumber("leftEncoder", driveLFront.getDistanceMeters());
+        SmartDashboard.putNumber("rightEncoder", driveRFront.getDistanceMeters());
     }
 
     public void resetEncoders() {
@@ -55,6 +61,7 @@ public class DriveTrain extends SubsystemBase {
             motor.setSelectedSensorPosition(0);
         }
     }
+
 
     /**
      * Returns the current wheel speeds of the robot.
@@ -69,18 +76,45 @@ public class DriveTrain extends SubsystemBase {
     }
 
     /**
+     * Resets the odometry to the specified pose.
+     *
+     * @param pose The pose to which to set the odometry.
+     */
+
+
+    public void resetOdometry(Pose2d pose) {
+
+        resetEncoders();
+
+        driveOdometry.resetPosition(pose, navx.getRotation2d());
+
+    }
+
+    /**
      * Returns the currently-estimated pose of the robot.
      *
      * @return The pose.
      */
     public Pose2d getPose() {
         return driveOdometry.getPoseMeters();
+    }
 
+    /** Zeroes the heading of the robot. */
+    public void zeroHeading() {
+        navx.reset();
     }
 
     public void setPercent(double leftPercent, double rightPercent) {
         driveLFront.set(ControlMode.PercentOutput, leftPercent);
         driveRFront.set(ControlMode.PercentOutput, rightPercent);
+    }
+
+    public void stopMotors() {
+        this.setPercent(0, 0);
+    }
+
+    public Command commandStop() {
+        return new InstantCommand(this::stopMotors, this);
     }
 
     public void setNeutralMode(NeutralMode mode) {
@@ -90,6 +124,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public void tankDriveVolts(double leftVolts, double rightVolts) {
+        SmartDashboard.putNumber("leftVolts", leftVolts);
+        SmartDashboard.putNumber("rightVolts", rightVolts);
         driveLFront.setVoltage(leftVolts);
         driveRFront.setVoltage(rightVolts);
 
