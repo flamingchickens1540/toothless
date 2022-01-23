@@ -2,6 +2,8 @@ package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
+
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,7 +15,7 @@ import org.team1540.robot2022.LunaUtils.MotorConfigUtils;
 import org.team1540.robot2022.LunaUtils.Timer;
 
 public class ShooterTesting extends SubsystemBase {
-    private ShooterTesting shooter = new ShooterTesting();
+   //private ShooterTesting shooter = new ShooterTesting();
 
     private double kP = 0.5;
     private double kD = 30;
@@ -108,6 +110,8 @@ public class ShooterTesting extends SubsystemBase {
     public void config_kD(double kD) {
         shooterMotorA.config_kD(0, kD);
     }
+
+
 
     //public Command commandStop() {
         //return new InstantCommand(this::stop, this);

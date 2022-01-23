@@ -3,9 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package org.team1540.robot2022;
-
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.team1540.robot2022.ShooterManualControl;
+import org.team1540.robot2022.PneumaticsTest;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -13,9 +19,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
 
-  private RobotContainer robotContainer;
+public class Robot extends TimedRobot {
+  private XboxController pilot = new XboxController(0);
+  private ShooterTesting shooter = new ShooterTesting();
+  ShooterManualControl shooterManualControl = new ShooterManualControl(shooter, pilot); 
+  Compressor phCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
+  Solenoid PH = new Solenoid(PneumaticsModuleType.REVPH, 0); 
+
+
+  //private RobotContainer robotContainer;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -23,9 +36,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    robotContainer = new RobotContainer();
+    //robotContainer = new RobotContainer();
   }
 
   /**
@@ -63,7 +77,27 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    //shooter
+    if(pilot.getBButton()){
+      shooter.setPercent(0.2);
+    }
+    if(pilot.getAButton()){
+      shooter.setPercent(0);
+    }
+      
+
+      //pneumatics
+      /*if(pilot.getAButton())
+      {
+            PH.set(true);
+       }
+       if(pilot.getBButton())
+       {
+            PH.set(false);
+        }
+        */
+    }
 
   @Override
   public void testInit() {}
