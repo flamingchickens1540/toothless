@@ -2,6 +2,8 @@ package org.team1540.robot2022.utils;
 
 import java.util.HashMap;
 
+import org.team1540.robot2022.Constants.LightConstants;
+
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
@@ -17,16 +19,17 @@ public class RevBlinken extends Spark {
     */
     public RevBlinken(int channel) {
         super(channel);
-        mappings.put(Alliance.Blue+""+GameStage.DISABLE, ColorPattern.FIRE_LARGE);
+        mappings.put(Alliance.Blue+""+GameStage.DISABLE, LightConstants.disable);
+        mappings.put(Alliance.Red+""+GameStage.DISABLE, LightConstants.disable);
 
-        mappings.put(Alliance.Red+""+GameStage.AUTONOMOUS, ColorPattern.CHASE_RED);
-        mappings.put(Alliance.Blue+""+GameStage.AUTONOMOUS, ColorPattern.CHASE_BLUE);
+        mappings.put(Alliance.Red+""+GameStage.AUTONOMOUS, LightConstants.redAuto);
+        mappings.put(Alliance.Blue+""+GameStage.AUTONOMOUS, LightConstants.blueAuto);
 
-        mappings.put(Alliance.Red+""+GameStage.TELEOP, ColorPattern.RAINBOW_LAVA);
-        mappings.put(Alliance.Blue+""+GameStage.TELEOP, ColorPattern.RAINBOW_OCEAN);
+        mappings.put(Alliance.Red+""+GameStage.TELEOP, LightConstants.redTeleop);
+        mappings.put(Alliance.Blue+""+GameStage.TELEOP, LightConstants.blueTeleop);
 
-        mappings.put(Alliance.Red+""+GameStage.ENDGAME, ColorPattern.WAVES_LAVA);
-        mappings.put(Alliance.Blue+""+GameStage.ENDGAME, ColorPattern.WAVES_LAVA);
+        mappings.put(Alliance.Red+""+GameStage.ENDGAME, LightConstants.redEndgame);
+        mappings.put(Alliance.Blue+""+GameStage.ENDGAME, LightConstants.blueEndgame);
     }
     /**
     * Sets the light pattern.
