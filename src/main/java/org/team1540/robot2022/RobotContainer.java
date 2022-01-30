@@ -4,33 +4,79 @@
 
 package org.team1540.robot2022;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import org.team1540.robot2022.commands.drivetrain.AutoTest;
+import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.utils.NavX;
+
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+    // The robot's subsystems and commands are defined here...
 
+    public final DriveTrain driveTrain;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    // Configure the button bindings
-    configureButtonBindings();
-  }
+    public final XboxController driverController = new XboxController(0);
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
+    public final NavX navx = new NavX(SPI.Port.kMXP);
 
-  }
+    private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        // Configure the button bindings
+        driveTrain = new DriveTrain(NeutralMode.Brake, navx);
+
+        initSmartDashboard();
+        configureButtonBindings();
+    }
+
+    /**
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by
+     * instantiating a {@link GenericHID} or one of its subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+     * it to a {@link
+     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+     */
+    private void configureButtonBindings() {
+        new JoystickButton(driverController, Button.kX.value)
+                .whenPressed(() -> navx.zeroYaw());
+    }
+
+    private void initSmartDashboard() {
+        autoChooser.addOption("Test Auto", new AutoTest(driveTrain));
+        SmartDashboard.putData(autoChooser);
+
+        Shuffleboard.getTab("SmartDashboard")
+            .add("NavX", navx)
+            .withWidget(BuiltInWidgets.kGyro);
+
+        SmartDashboard.putNumber("drivePID/kP", SmartDashboard.getNumber("drivePID/kP", 0.5));
+    }
+
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
 }
