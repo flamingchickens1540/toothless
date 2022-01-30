@@ -8,6 +8,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
+import org.team1540.robot2022.commands.shooter.ShooterManualControl;
+import org.team1540.robot2022.commands.shooter.ShooterTesting;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Axis;
@@ -17,12 +19,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-
-//import org.team1540.robot2022.Commands.Intake.Intake;
-import org.team1540.robot2022.commands.Shooter.ShooterManualControl;
-import org.team1540.robot2022.commands.Shooter.ShooterTesting;
-//import org.team1540.robot2022.PneumaticsTest;
 
 /**
 * The VM is configured to automatically run this class, and to call the functions corresponding to

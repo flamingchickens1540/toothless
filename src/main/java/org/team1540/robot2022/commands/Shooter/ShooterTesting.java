@@ -1,4 +1,4 @@
-package org.team1540.robot2022.Commands.Shooter;
+package org.team1540.robot2022.commands.shooter;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
