@@ -9,27 +9,32 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Axis;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import org.team1540.robot2022.ShooterManualControl;
-import org.team1540.robot2022.PneumaticsTest;
+
+
+//import org.team1540.robot2022.Commands.Intake.Intake;
+import org.team1540.robot2022.commands.Shooter.ShooterManualControl;
+import org.team1540.robot2022.commands.Shooter.ShooterTesting;
+//import org.team1540.robot2022.PneumaticsTest;
 
 /**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the
- * name of this class or
- * the package after creating this project, you must also update the
- * build.gradle file in the
- * project.
- */
+* The VM is configured to automatically run this class, and to call the functions corresponding to
+* each mode, as described in the TimedRobot documentation. If you change the name of this class or
+* the package after creating this project, you must also update the build.gradle file in the
+* project.
+*/
 
 public class Robot extends TimedRobot {
   private XboxController pilot = new XboxController(0);
   private ShooterTesting shooter = new ShooterTesting();
+  //ShooterManualControl shooterManualControl = new ShooterManualControl(shooter, pilot); 
   ShooterManualControl shooterManualControl = new ShooterManualControl(shooter, pilot); 
 
     private RobotContainer robotContainer;
@@ -111,6 +116,8 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
+      System.out.println("running periodic"); 
+    shooter.setDefaultCommand(shooterManualControl);
     }
 
 
