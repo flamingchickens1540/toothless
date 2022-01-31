@@ -9,7 +9,10 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.utils.RevBlinken;
+import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
@@ -20,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -41,6 +45,8 @@ public class RobotContainer {
 
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+    public final RevBlinken robotLEDs = new RevBlinken(0);
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -50,6 +56,7 @@ public class RobotContainer {
 
         initSmartDashboard();
         configureButtonBindings();
+        initModeTransitionBindings();
     }
 
     /**
@@ -63,6 +70,24 @@ public class RobotContainer {
     private void configureButtonBindings() {
         new JoystickButton(driverController, Button.kX.value)
                 .whenPressed(() -> navx.zeroYaw());
+    }
+
+    private void initModeTransitionBindings() {
+        var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
+        var teleop = new Trigger(DriverStation::isTeleopEnabled);
+        var disabled = new Trigger(DriverStation::isDisabled);
+
+        teleop.whenActive(() -> {
+            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.ENDGAME);
+        });
+
+        autonomous.whenActive(() -> {
+            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.AUTONOMOUS);
+        });
+
+        disabled.whenActive(() -> {
+            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.DISABLE);
+        });
     }
 
     private void initSmartDashboard() {
