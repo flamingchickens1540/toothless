@@ -7,62 +7,69 @@ import org.team1540.robot2022.Constants.LightConstants;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
-
+/**
+ * Wrapper for Rev Robotics Blinkin LED
+ * Driver.
+ */
 public class RevBlinken extends Spark {
     private HashMap<String, ColorPattern> mappings = new HashMap<String, ColorPattern>();
+
     /**
-    * Constructor.
-    *
-    * @param channel The PWM channel that the Blinken is attached to. 0-9 are on-board, 10-19 are on
-    * the MXP port
-    * @throws IndexOutOfBoundsException If the specified PWM channel does not exist.
-    */
+     * Construct an instance of a RevBlinken
+     *
+     * @param channel The PWM channel that the Blinken is attached to. 0-9 are
+     *                on-board, 10-19 are on
+     *                the MXP port
+     * @throws IndexOutOfBoundsException If the specified PWM channel does not
+     *                                   exist.
+     */
     public RevBlinken(int channel) {
         super(channel);
-        mappings.put(Alliance.Blue+""+GameStage.DISABLE, LightConstants.disable);
-        mappings.put(Alliance.Red+""+GameStage.DISABLE, LightConstants.disable);
 
-        mappings.put(Alliance.Red+""+GameStage.AUTONOMOUS, LightConstants.redAuto);
-        mappings.put(Alliance.Blue+""+GameStage.AUTONOMOUS, LightConstants.blueAuto);
+        mappings.put(Alliance.Blue + "" + GameStage.DISABLE, LightConstants.disable);
+        mappings.put(Alliance.Red + "" + GameStage.DISABLE, LightConstants.disable);
 
-        mappings.put(Alliance.Red+""+GameStage.TELEOP, LightConstants.redTeleop);
-        mappings.put(Alliance.Blue+""+GameStage.TELEOP, LightConstants.blueTeleop);
+        mappings.put(Alliance.Red + "" + GameStage.AUTONOMOUS, LightConstants.redAuto);
+        mappings.put(Alliance.Blue + "" + GameStage.AUTONOMOUS, LightConstants.blueAuto);
 
-        mappings.put(Alliance.Red+""+GameStage.ENDGAME, LightConstants.redEndgame);
-        mappings.put(Alliance.Blue+""+GameStage.ENDGAME, LightConstants.blueEndgame);
+        mappings.put(Alliance.Red + "" + GameStage.TELEOP, LightConstants.redTeleop);
+        mappings.put(Alliance.Blue + "" + GameStage.TELEOP, LightConstants.blueTeleop);
+
+        mappings.put(Alliance.Red + "" + GameStage.ENDGAME, LightConstants.redEndgame);
+        mappings.put(Alliance.Blue + "" + GameStage.ENDGAME, LightConstants.blueEndgame);
     }
+
     /**
-    * Sets the light pattern.
-    *
-    * @param pattern The pattern to use
-    * @throws NullPointerException If pattern is null.
-    */
+     * Sets the light pattern.
+     *
+     * @param pattern The pattern to use
+     * @throws NullPointerException If pattern is null.
+     */
     public void set(ColorPattern pattern) {
         super.set(pattern.setpoint);
     }
-    
+
     /**
-    * Sets the Blinken output manually.
-    *
-    * @param manualSetpoint The manual setpoint to be sent over PWM.
-    */
+     * Sets the Blinken output manually.
+     *
+     * @param manualSetpoint The manual setpoint to be sent over PWM.
+     */
     public void set(double manualSetpoint) {
         super.set(manualSetpoint);
     }
 
     public ColorPattern getPattern(Alliance alliance, GameStage stage) {
-        return mappings.get(alliance+""+stage);
+        return mappings.get(alliance + "" + stage);
     }
-    
+
     public void applyPattern(Alliance alliance, GameStage stage) {
         ColorPattern pattern = this.getPattern(alliance, stage);
         this.set(pattern);
     }
-    /**
-    * Enum for possible color patterns according to the <a href="http://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf">Blinken
-    * user manual.</a>
-    */
 
+    /**
+     * Enum for possible game stages
+     */
     public enum GameStage {
         AUTONOMOUS(1),
         TELEOP(2),
@@ -70,12 +77,17 @@ public class RevBlinken extends Spark {
         DISABLE(4);
 
         final int stage;
-        
+
         GameStage(int stage) {
             this.stage = stage;
         }
     }
 
+    /**
+     * Enum for possible color patterns according to the
+     * <a href="http://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf">Blinken
+     * user manual.</a>
+     */
     public enum ColorPattern {
         RAINBOW(-0.99),
         RAINBOW_PARTY(-0.97),
@@ -175,9 +187,9 @@ public class RevBlinken extends Spark {
         GRAY(0.95),
         DARK_GRAY(0.97),
         BLACK(0.99);
-        
+
         final double setpoint;
-        
+
         ColorPattern(double setpoint) {
             this.setpoint = setpoint;
         }
