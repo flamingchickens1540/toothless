@@ -78,7 +78,7 @@ public class RobotContainer {
         var disabled = new Trigger(DriverStation::isDisabled);
 
         teleop.whenActive(() -> {
-            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.ENDGAME);
+            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP);
         });
 
         autonomous.whenActive(() -> {
