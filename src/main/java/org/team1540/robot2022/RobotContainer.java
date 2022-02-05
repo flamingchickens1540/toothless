@@ -8,6 +8,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.PointToTarget;
+import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
@@ -47,6 +49,8 @@ public class RobotContainer {
 
     public final RevBlinken robotLEDs = new RevBlinken(0);
 
+    public final Limelight limelight = new Limelight("limelight");
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -70,6 +74,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         new JoystickButton(driverController, Button.kX.value)
                 .whenPressed(() -> navx.zeroYaw());
+        new JoystickButton(driverController, Button.kRightBumper.value)
+                .whenHeld(new PointToTarget(driveTrain, limelight));
     }
 
     private void initModeTransitionBindings() {
@@ -99,6 +105,10 @@ public class RobotContainer {
             .withWidget(BuiltInWidgets.kGyro);
 
         SmartDashboard.putNumber("drivePID/kP", SmartDashboard.getNumber("drivePID/kP", 0.5));
+        SmartDashboard.putNumber("pointToTarget/kP", SmartDashboard.getNumber("pointToTarget/kP", 0.5));
+        SmartDashboard.putNumber("pointToTarget/kD", SmartDashboard.getNumber("pointToTarget/kD", 0.5));
+        SmartDashboard.putNumber("pointToTarget/pidOutput", 0);
+        SmartDashboard.putNumber("pointToTarget/distanceToTarget", 0);
     }
 
     public Command getAutonomousCommand() {

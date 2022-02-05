@@ -12,12 +12,13 @@ import java.util.List;
 public class Limelight {
 
     private static final double HORIZONTAL_FOV = Math.toRadians(59.6);
-    private static final double VERTICAL_FOV = Math.toRadians(45.7);
+    private static final double VERTICAL_FOV = Math.toRadians(49.7);
     private static final Vector2d CAM_RESOLUTION = new Vector2d(320, 240);
     private final NetworkTable limelightTable;
-    private double limelightHeight;
-    private double limelightAngle;
-    private double targetHeight;
+    private double limelightHeight = 0.94; // 37in to m
+    private double limelightAngle = Math.toRadians(25.5); // degrees
+    private double targetHeight = 2.64; // 8f8in to m
+    // we want 3.05 distance
 
     /**
      * Constructs a new limelight interface with the default hostname.
@@ -45,14 +46,23 @@ public class Limelight {
         return CAM_RESOLUTION;
     }
 
+    // calculated distance in meters
+    public double getCalculatedDistance() {
+        double d = 0;
+        double theta = Math.toRadians(getTargetAngles().y) + limelightAngle;
+        double actualHeight = targetHeight - limelightHeight;
+        d = actualHeight / Math.tan(theta);
+        return d;
+    }
+
     /**
      * Gets the output of the limelight targeting from the network table.
      *
      * @return a {@link Vector2D} containing the output angles of the limelight targeting in radians
      */
     public Vector2d getTargetAngles() { // TODO: This should be negated appropriately
-        double x = Math.toRadians(limelightTable.getEntry("tx").getDouble(0));
-        double y = Math.toRadians(limelightTable.getEntry("ty").getDouble(0));
+        double x = limelightTable.getEntry("tx").getDouble(0);
+        double y = limelightTable.getEntry("ty").getDouble(0);
         return new Vector2d(x, y);
     }
 

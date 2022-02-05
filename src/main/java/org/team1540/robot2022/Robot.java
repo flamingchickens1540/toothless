@@ -104,6 +104,7 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
+        System.out.println("Distance: " + 39.37007874*robotContainer.limelight.getCalculatedDistance());
     }
 
     @Override
