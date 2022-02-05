@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class PointToTarget extends CommandBase {
     private final double LIMELIGHT_HORIZONTAL_FOV = 29.8;
-    // private final double proportion = 0.2;
-    // private final double maxTurnSpeed = 0.1;
     private final DriveTrain drivetrain;
     private final Limelight limelight;
 
@@ -25,9 +23,9 @@ public class PointToTarget extends CommandBase {
 
     @Override
     public void initialize() {
-        double p = SmartDashboard.getNumber("pointToTarget/kP", 0);
+        double p = SmartDashboard.getNumber("pointToTarget/kP", 0.7);
         double i = SmartDashboard.getNumber("pointToTarget/kI", 0);
-        double d = SmartDashboard.getNumber("pointToTarget/kD", 0);
+        double d = SmartDashboard.getNumber("pointToTarget/kD", 0.4);
         pid.setPID(p, i, d);
         pid.setSetpoint(0);
     }
@@ -42,20 +40,21 @@ public class PointToTarget extends CommandBase {
 
     public void execute() {
         Vector2d lmAngles = limelight.getTargetAngles();
-        if (Math.abs(lmAngles.x) > 2) {
+        if (Math.abs(lmAngles.x) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
             
             double distanceToTarget = getHorizontalDistanceToTarget();
             double pidOutput = pid.getOutput(getError(distanceToTarget));
             double multiplier = lmAngles.x > 0 ? 1 : -1;
             
-            // System.out.println("wants to turn at " + pidOutput + "% with tx: " + distanceToTarget);
             SmartDashboard.putNumber("pointToTarget/pidOutput", pidOutput);
-            SmartDashboard.putNumber("pointToTarget/distanceToTarget", distanceToTarget);
+            SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", distanceToTarget);
 
-            if (pidOutput > .8) {
+            if (pidOutput > SmartDashboard.getNumber("pointToTarget/pidClamp", 0.8)) {
                 pidOutput = 0;
-                System.out.println("Too high a PID value");
+                SmartDashboard.putBoolean("pointToTarget/isClamping", true);
                 this.end(false);
+            } else {
+                SmartDashboard.putBoolean("pointToTarget/isClamping", false);
             }
 
             double valueL = multiplier * -pidOutput;

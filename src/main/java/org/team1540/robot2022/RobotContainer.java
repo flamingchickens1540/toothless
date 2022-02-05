@@ -105,10 +105,15 @@ public class RobotContainer {
             .withWidget(BuiltInWidgets.kGyro);
 
         SmartDashboard.putNumber("drivePID/kP", SmartDashboard.getNumber("drivePID/kP", 0.5));
-        SmartDashboard.putNumber("pointToTarget/kP", SmartDashboard.getNumber("pointToTarget/kP", 0.5));
-        SmartDashboard.putNumber("pointToTarget/kD", SmartDashboard.getNumber("pointToTarget/kD", 0.5));
+
+        // PointToTarget values
+        SmartDashboard.putNumber("pointToTarget/kP", SmartDashboard.getNumber("pointToTarget/kP", 0.7));
+        SmartDashboard.putNumber("pointToTarget/kD", SmartDashboard.getNumber("pointToTarget/kD", 0.4));
         SmartDashboard.putNumber("pointToTarget/pidOutput", 0);
-        SmartDashboard.putNumber("pointToTarget/distanceToTarget", 0);
+        SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", 0);
+        SmartDashboard.putNumber("pointToTarget/pidClamp", SmartDashboard.getNumber("pointToTarget/pidClamp", 0.8));
+        SmartDashboard.putNumber("pointToTarget/targetDeadzoneDegrees", 2);
+        SmartDashboard.putBoolean("pointToTarget/isClamping", false);
     }
 
     public Command getAutonomousCommand() {

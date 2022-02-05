@@ -3,8 +3,7 @@ package org.team1540.robot2022.utils;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.drive.Vector2d;
-
-// import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +15,8 @@ public class Limelight {
     private static final Vector2d CAM_RESOLUTION = new Vector2d(320, 240);
     private final NetworkTable limelightTable;
     private double limelightHeight = 0.94; // 37in to m
-    private double limelightAngle = Math.toRadians(25.5); // degrees
+    private double limelightAngle = Math.toRadians(25.5);
     private double targetHeight = 2.64; // 8f8in to m
-    // we want 3.05 distance
 
     /**
      * Constructs a new limelight interface with the default hostname.
@@ -27,6 +25,7 @@ public class Limelight {
      */
     public Limelight(String name) {
         limelightTable = NetworkTableInstance.getDefault().getTable(name);
+        SmartDashboard.putNumber("limelight/calculatedDistance", 0);
         // setLeds(false);
     }
 
@@ -46,7 +45,11 @@ public class Limelight {
         return CAM_RESOLUTION;
     }
 
-    // calculated distance in meters
+    /**
+     * Gets the current calculated distance of the limelight to the base of the hub.
+     * 
+     * @return the distance in meters
+     */
     public double getCalculatedDistance() {
         double d = 0;
         double theta = Math.toRadians(getTargetAngles().y) + limelightAngle;
@@ -56,11 +59,18 @@ public class Limelight {
     }
 
     /**
+     * Publishes the current calculated distance (in inches) to the SmartDashboard.
+     */
+    public void publishCalculatedDistance() {
+        SmartDashboard.putNumber("limelight/calculatedDistance", 39.37007874 * getCalculatedDistance());
+    }
+
+    /**
      * Gets the output of the limelight targeting from the network table.
      *
-     * @return a {@link Vector2D} containing the output angles of the limelight targeting in radians
+     * @return a {@link Vector2d} containing the output angles of the limelight targeting in degrees
      */
-    public Vector2d getTargetAngles() { // TODO: This should be negated appropriately
+    public Vector2d getTargetAngles() {
         double x = limelightTable.getEntry("tx").getDouble(0);
         double y = limelightTable.getEntry("ty").getDouble(0);
         return new Vector2d(x, y);
@@ -94,16 +104,6 @@ public class Limelight {
             NetworkTableInstance.getDefault().flush();
         }
     }
-
-    /**
-     * Sets limelight to driver cam or vision mode.
-     *
-     * @param driverCam Whether the limelight should be in driver cam mode
-    //  */
-    // public void setDriverCam(boolean driverCam) {
-    //     limelightTable.getEntry("camMode").setNumber(driverCam ? 1 : 0);
-    //     NetworkTableInstance.getDefault().flush();
-    // }
 
     public long getPipeline() {
         return Math.round((double) limelightTable.getEntry("getpipe").getNumber(-1));
