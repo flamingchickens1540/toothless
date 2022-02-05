@@ -1,18 +1,16 @@
 package org.team1540.robot2022.commands.drivetrain;
 
-import org.team1540.robot2022.Constants.DriveConstants;
-
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TankDriveCommand extends CommandBase {
     private final double deadzone = 0.15;
     private final DriveTrain drivetrain;
     private final XboxController controller;
-    private final double speedLimit = DriveConstants.tankDriveSpeedLimit;
-    private final SlewRateLimiter leftRateLimiter = new SlewRateLimiter(DriveConstants.tankDriveAccelerationLimit);
-    private final SlewRateLimiter rightRateLimiter = new SlewRateLimiter(DriveConstants.tankDriveAccelerationLimit);
+    private final SlewRateLimiter leftRateLimiter = new SlewRateLimiter(SmartDashboard.getNumber("tankDrive/maxAcceleration", 0.5));
+    private final SlewRateLimiter rightRateLimiter = new SlewRateLimiter(SmartDashboard.getNumber("tankDrive/maxAcceleration", 0.5));
 
     public TankDriveCommand(DriveTrain drivetrain, XboxController controller) {
         this.drivetrain = drivetrain;
@@ -27,6 +25,7 @@ public class TankDriveCommand extends CommandBase {
      * @return The capped value
      */
     public double applySpeedLimit(double value) {
+        double speedLimit = SmartDashboard.getNumber("tankDrive/maxVelocity", 0.8);
         if (value > speedLimit) {
             return speedLimit;
         } else if (value < -speedLimit) {
