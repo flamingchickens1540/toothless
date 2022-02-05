@@ -20,6 +20,12 @@ public class TankDriveCommand extends CommandBase {
         addRequirements(drivetrain);
     }
 
+
+    /**
+     * Caps the input value at the speed limit
+     * @param value The speed to apply the limit to 
+     * @return The capped value
+     */
     public double applySpeedLimit(double value) {
         if (value > speedLimit) {
             return speedLimit;
@@ -30,6 +36,12 @@ public class TankDriveCommand extends CommandBase {
         }
     }
 
+    /**
+     * Returns 0 if the input is within the deadzone and applies a SlewRateLimiter
+     * @param value The joystick input
+     * @param limiter The SlewRateLimiter to use
+     * @return The value after deadzone is checked and SlewRateLimiter is applied
+     */
     private double applyDeadzone(double value, SlewRateLimiter limiter) {
         if (Math.abs(value) <= deadzone) {
             limiter.reset(0);
@@ -39,6 +51,12 @@ public class TankDriveCommand extends CommandBase {
         }
     }
 
+    /**
+     * Applies the deadzone and speed limits to the input value
+     * @param value The joystick input
+     * @param limiter The SlewRateLimiter to use
+     * @return The value after deadzone is checked, and acceleration and velocity are limited
+     */
     private double applyLimits(double value, SlewRateLimiter limiter) {
         return applySpeedLimit(applyDeadzone(value, limiter));
     }
