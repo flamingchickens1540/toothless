@@ -28,6 +28,19 @@ public final class Constants {
         }
         public static final double encoderTicksPerMeter = 49866;
     }
+    public final class IndexerConstants {
+        public final class IndexerMotors {
+            public static final int bottomMotor = 5;
+            public static final int topMotor = 6;
+        }
+        public final class BeamBreaks {
+            public static final int topIndexerSensor = 1;
+            public static final int bottomIndexerSensor = 2;
+        }
+
+        public static final double topPercent = 0.5;
+        public static final double bottomPercent = 0.5;
+    }
     public static final class LightConstants {
         public static final ColorPattern disable = ColorPattern.FIRE_LARGE;
 
