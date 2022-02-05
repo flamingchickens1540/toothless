@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TankDriveCommand extends CommandBase {
-    private final double deadzone = 0.1;
+    private final double deadzone = 0.15;
     private final DriveTrain drivetrain;
     private final XboxController controller;
     private final double speedModifier = 1;
@@ -20,17 +20,17 @@ public class TankDriveCommand extends CommandBase {
         addRequirements(drivetrain);
     }
 
-    private double applyDeadzone(double value) {
+    private double applyDeadzone(double value, SlewRateLimiter limiter) {
         if (Math.abs(value) <= deadzone) {
             return 0;
         } else {
-            return value;
+            return limiter.calculate(-value);
         }
     }
 
     public void execute() {
-        double valueL = leftRateLimiter.calculate(-speedModifier * applyDeadzone(controller.getLeftY()));
-        double valueR = rightRateLimiter.calculate(-speedModifier * applyDeadzone(controller.getRightY()));
+        double valueL = applyDeadzone(controller.getLeftY(), leftRateLimiter);
+        double valueR = applyDeadzone(controller.getRightY(), rightRateLimiter);
         drivetrain.setPercent(valueL, valueR);
     }
 }

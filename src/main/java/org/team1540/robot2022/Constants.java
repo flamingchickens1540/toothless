@@ -27,7 +27,7 @@ public final class Constants {
             public static final int rightRear = 4;
         }
         public static final double encoderTicksPerMeter = 49866;
-        public static final double tankDriveAccellerationLimit = 1;
+        public static final double tankDriveAccellerationLimit = 0.5;
     }
     public static final class LightConstants {
         public static final ColorPattern disable = ColorPattern.FIRE_LARGE;
