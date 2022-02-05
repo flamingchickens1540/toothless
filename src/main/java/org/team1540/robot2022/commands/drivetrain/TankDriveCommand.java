@@ -11,8 +11,8 @@ public class TankDriveCommand extends CommandBase {
     private final DriveTrain drivetrain;
     private final XboxController controller;
     private final double speedLimit = DriveConstants.tankDriveSpeedLimit;
-    private final SlewRateLimiter leftRateLimiter = new SlewRateLimiter(DriveConstants.tankDriveAccellerationLimit);
-    private final SlewRateLimiter rightRateLimiter = new SlewRateLimiter(DriveConstants.tankDriveAccellerationLimit);
+    private final SlewRateLimiter leftRateLimiter = new SlewRateLimiter(DriveConstants.tankDriveAccelerationLimit);
+    private final SlewRateLimiter rightRateLimiter = new SlewRateLimiter(DriveConstants.tankDriveAccelerationLimit);
 
     public TankDriveCommand(DriveTrain drivetrain, XboxController controller) {
         this.drivetrain = drivetrain;
