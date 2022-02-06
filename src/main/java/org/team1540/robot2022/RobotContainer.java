@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
@@ -78,7 +79,7 @@ public class RobotContainer {
         var disabled = new Trigger(DriverStation::isDisabled);
 
         teleop.whenActive(() -> {
-            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.ENDGAME);
+            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP);
         });
 
         autonomous.whenActive(() -> {
@@ -98,7 +99,9 @@ public class RobotContainer {
             .add("NavX", navx)
             .withWidget(BuiltInWidgets.kGyro);
 
-        SmartDashboard.putNumber("drivePID/kP", SmartDashboard.getNumber("drivePID/kP", 0.5));
+        ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("tankDrive/maxVelocity", 0.8);
+        ChickenSmartDashboard.putDefaultNumber("tankDrive/maxAcceleration", 0.5);
     }
 
     public Command getAutonomousCommand() {
