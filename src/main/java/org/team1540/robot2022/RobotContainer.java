@@ -8,6 +8,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.PointToTarget;
+import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinken;
@@ -48,6 +50,8 @@ public class RobotContainer {
 
     public final RevBlinken robotLEDs = new RevBlinken(0);
 
+    public final Limelight limelight = new Limelight("limelight");
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -71,6 +75,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         new JoystickButton(driverController, Button.kX.value)
                 .whenPressed(() -> navx.zeroYaw());
+        new JoystickButton(driverController, Button.kRightBumper.value)
+                .whenHeld(new PointToTarget(driveTrain, limelight));
     }
 
     private void initModeTransitionBindings() {
@@ -98,6 +104,15 @@ public class RobotContainer {
         Shuffleboard.getTab("SmartDashboard")
             .add("NavX", navx)
             .withWidget(BuiltInWidgets.kGyro);
+
+        // PointToTarget values
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/kD", 0.4);
+        SmartDashboard.putNumber("pointToTarget/pidOutput", 0);
+        SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", 0);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/pidClamp", 0.8);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/targetDeadzoneDegrees", 2);
+        SmartDashboard.putBoolean("pointToTarget/isClamping", false);
 
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("tankDrive/maxVelocity", 0.8);
