@@ -52,6 +52,8 @@ public class RobotContainer {
 
     public final Limelight limelight = new Limelight("limelight");
 
+    public final InterpolationTable interpolationTable = new InterpolationTable();
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
