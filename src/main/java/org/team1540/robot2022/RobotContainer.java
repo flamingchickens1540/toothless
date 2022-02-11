@@ -6,6 +6,7 @@ package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import org.team1540.robot2022.commands.Intake.Intake;
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.utils.NavX;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import main.java.org.team1540.robot2022.commands.shooter.setVelocity;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -32,6 +34,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
+    //public XboxController pilot = new XboxController(0);
+    public XboxController copilot = new XboxController(1); 
+    //private ShooterTesting shooter = new ShooterTesting();
+    public Intake intake = new Intake(copilot);
+
+    public Shooter shooter = new Shooter(copilot); 
 
     public final DriveTrain driveTrain;
 
@@ -63,6 +71,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         new JoystickButton(driverController, Button.kX.value)
                 .whenPressed(() -> navx.zeroYaw());
+        new JoystickButton(copilot, Button.kLeftBumper.value)
+                .whenHeld(new SetVelocity(shooter)); 
     }
 
     private void initSmartDashboard() {

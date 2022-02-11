@@ -1,5 +1,5 @@
-package org.team1540.robot2022.Commands.Hood;
-/*package org.team1540.robot2022;
+/*package org.team1540.robot2022.commands.hood;
+
 
 import com.revrobotics.*;
 import edu.wpi.first.networktables.EntryListenerFlags;
@@ -86,4 +86,4 @@ public class HoodTesting extends SubsystemBase {
         hoodMotor.setIdleMode(mode);
     }
 }
-*/
+*/ 

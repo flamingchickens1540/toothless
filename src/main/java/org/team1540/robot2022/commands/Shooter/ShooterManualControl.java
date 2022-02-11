@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class ShooterManualControl extends CommandBase {
     
-    private ShooterTesting shooter;
-    private XboxController pilot; 
+    private Shooter shooter;
+    private XboxController copilot; 
     
-    public ShooterManualControl(ShooterTesting shooter, XboxController pilot){
+    public ShooterManualControl(Shooter shooter, XboxController copilot){
         this.shooter = shooter;
-        this.pilot = pilot; 
+        this.copilot = copilot; 
         addRequirements(shooter);
         
     }
@@ -20,8 +20,14 @@ public class ShooterManualControl extends CommandBase {
     @Override
     public void execute(){
         System.out.println("deploying correctly"); 
-        SmartDashboard.putNumber("leftY", pilot.getLeftY()); 
-        shooter.setPercent(pilot.getLeftY());//setting speed of motors
+        if(copilot.getLeftBumper()){
+            shooter.setVelocityRPMA(0.3);
+        }
+        if(copilot.getRightBumper()){
+            shooter.setVelocityRPMB(0.3); 
+        }
+        //SmartDashboard.putNumber("leftY", copilot.getLeftY()); 
+        //shooter.setPercent(copilot.getLeftY());//setting speed of motors
     } 
 }
 

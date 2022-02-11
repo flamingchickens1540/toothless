@@ -6,10 +6,11 @@ package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import org.team1540.robot2022.commands.Intake.Intake;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
-import org.team1540.robot2022.commands.shooter.ShooterManualControl;
-import org.team1540.robot2022.commands.shooter.ShooterTesting;
+//import org.team1540.robot2022.commands.shooter.ShooterManualControl;
+//import org.team1540.robot2022.commands.shooter.ShooterTesting;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Axis;
@@ -28,16 +29,18 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 */
 
 public class Robot extends TimedRobot {
-  private XboxController pilot = new XboxController(0);
-  private ShooterTesting shooter = new ShooterTesting();
+ 
+
   //ShooterManualControl shooterManualControl = new ShooterManualControl(shooter, pilot); 
-  ShooterManualControl shooterManualControl = new ShooterManualControl(shooter, pilot); 
+  //ShooterManualControl shooterManualControl = new ShooterManualControl(shooter, copilot); 
 
     private RobotContainer robotContainer;
     private DriveTrain driveTrain;
     private XboxController driverXbox;
 
     private Command autonomousCommand;
+    private Intake intake;
+    private XboxController copilot;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -52,6 +55,8 @@ public class Robot extends TimedRobot {
         this.robotContainer = new RobotContainer();
         this.driveTrain = robotContainer.driveTrain;
         this.driverXbox = robotContainer.driverController;
+        this.intake =  robotContainer.intake; 
+        this.copilot = robotContainer.copilot; 
     }
 
     /**
@@ -112,8 +117,9 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
+        intake.periodic();
       System.out.println("running periodic"); 
-    shooter.setDefaultCommand(shooterManualControl);
+     //shooter.setDefaultCommand(shooterManualControl);
     }
 
 
