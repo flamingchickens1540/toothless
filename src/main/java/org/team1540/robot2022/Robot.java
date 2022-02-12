@@ -8,30 +8,23 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
-import org.team1540.robot2022.commands.intake.Intake;
-import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
-//import org.team1540.robot2022.commands.shooter.ShooterManualControl;
-//import org.team1540.robot2022.commands.shooter.ShooterTesting;
 import org.team1540.robot2022.utils.Limelight;
 
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Axis;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
-* The VM is configured to automatically run this class, and to call the functions corresponding to
-* each mode, as described in the TimedRobot documentation. If you change the name of this class or
-* the package after creating this project, you must also update the build.gradle file in the
-* project.
-*/
-
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the
+ * name of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
+ * project.
+ */
 public class Robot extends TimedRobot {
-
 
     private RobotContainer robotContainer;
     private DriveTrain driveTrain;
@@ -39,8 +32,6 @@ public class Robot extends TimedRobot {
     private Limelight limelight;
 
     private Command autonomousCommand;
-    private Intake intake;
-    private XboxController copilot;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -55,8 +46,6 @@ public class Robot extends TimedRobot {
         this.robotContainer = new RobotContainer();
         this.driveTrain = robotContainer.driveTrain;
         this.driverXbox = robotContainer.driverController;
-        this.intake =  robotContainer.intake;
-        this.copilot = robotContainer.copilot;
         this.limelight = robotContainer.limelight;
     }
 
