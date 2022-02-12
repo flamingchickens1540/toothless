@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
-import org.team1540.robot2022.LunaUtils.Timer;
 
 public class Shooter extends SubsystemBase {
     private final double kP = 0.5;
@@ -23,14 +22,10 @@ public class Shooter extends SubsystemBase {
     public TalonFX shooterMotorFront = new TalonFX(Constants.ShooterConstants.front);
     public TalonFX shooterMotorRear = new TalonFX(Constants.ShooterConstants.rear);
 
-    private final Timer kdTimer = new Timer();
-
     public Shooter() {
         setupFlywheelMotors();
         setupPIDs();
         updatePIDs();
-        kdTimer.reset();
-        kdTimer.start();
     }
 
     private void setupFlywheelMotors() {
