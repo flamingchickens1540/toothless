@@ -6,7 +6,7 @@ public class IntakeTiltCommand extends CommandBase {
     private final boolean state;
     private final Intake intake;
 
-    public IntakeTiltCommand(Intake intake, Boolean state) {
+    public IntakeTiltCommand(Intake intake, boolean state) {
         this.intake = intake;
         this.state = state;
     }

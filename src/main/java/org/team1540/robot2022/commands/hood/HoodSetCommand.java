@@ -6,7 +6,7 @@ public class HoodSetCommand extends CommandBase {
     private final boolean state;
     private final Hood hood;
 
-    public HoodSetCommand(Hood hood, Boolean state) {
+    public HoodSetCommand(Hood hood, boolean state) {
         this.hood = hood;
         this.state = state;
     }

@@ -11,7 +11,7 @@ public class Hood extends SubsystemBase {
     public Hood() {
     }
 
-    public void set(Boolean state) {
+    public void set(boolean state) {
         solenoid.set(state);
     }
 }

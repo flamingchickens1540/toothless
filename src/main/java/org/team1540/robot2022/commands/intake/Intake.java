@@ -20,7 +20,7 @@ public class Intake extends SubsystemBase {
     public void periodic() {
     }
 
-    public void setTilt(Boolean state) {
+    public void setTilt(boolean state) {
         leftSolenoid.set(state);
         rightSolenoid.set(state);
     }
