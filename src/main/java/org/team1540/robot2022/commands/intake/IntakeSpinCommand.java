@@ -18,5 +18,6 @@ public class IntakeSpinCommand extends CommandBase {
 
     @Override
     public void execute() {
+        intake.setPercent(0);
     }
 }
