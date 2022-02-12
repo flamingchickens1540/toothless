@@ -89,7 +89,7 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kX.value)
                 .whenPressed(() -> navx.zeroYaw());
         new JoystickButton(copilot, Button.kLeftBumper.value)
-                .whileHeld(new VelocitySetCommand(shooter, null)); 
+                .whileHeld(new VelocitySetCommand(shooter, null, null, limelight)); 
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(driveTrain, limelight));
     }
