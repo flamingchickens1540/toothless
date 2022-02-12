@@ -62,7 +62,7 @@ public class AutoTest extends SequentialCommandGroup {
     @Override
     public void initialize() {
         driveTrain.zeroHeading();
-        driveTrain.resetOdometry(driveTrain.getPose());
+        driveTrain.resetOdometry(trajectory.getInitialPose());
         super.initialize();
     }
 }
