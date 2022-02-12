@@ -26,12 +26,29 @@ public final class Constants {
             public static final int rightFront = 3;
             public static final int rightRear = 4;
         }
+
         public static final double encoderTicksPerMeter = 49866;
-        
+
     }
 
     public static final class HoodConstants {
         public static final int solenoidChannel = 0;
+    }
+
+    public static final class IntakeConstants {
+        public static final int leftSolenoidChannel = 0;
+        public static final int rightSolenoidChannel = 0;
+        public static final int falcon = 0;
+
+        public static final boolean statorCurrentLimitEnable = true;
+        public static final double statorCurrentLimit = 20;
+        public static final double statorCurrentThreshCurrent = 25;
+        public static final double statorCurrentThreshTime = 1;
+
+        public static final boolean supplyCurrentLimitEnable = true;
+        public static final double supplyCurrentLimit = 10;
+        public static final double supplyCurrentThreshCurrent = 15;
+        public static final double supplyCurrentThreshTime = 0.5;
     }
 
     public static final class LightConstants {
