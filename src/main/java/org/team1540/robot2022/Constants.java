@@ -19,8 +19,8 @@ import org.team1540.robot2022.utils.RevBlinken.ColorPattern;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public final class DriveConstants {
-        public final class Motors {
+    public static final class DriveConstants {
+        public static final class Motors {
             public static final int leftFront = 1;
             public static final int leftRear = 2;
             public static final int rightFront = 3;
