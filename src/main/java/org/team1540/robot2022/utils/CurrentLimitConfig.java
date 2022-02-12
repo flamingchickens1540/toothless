@@ -10,6 +10,16 @@ public class CurrentLimitConfig {
     public final double statorLimit, statorThreshCurrent, statorThreshTime;
     public final double supplyLimit, supplyThreshCurrent, supplyThreshTime;
 
+    /**
+     * CurrentLimitConfig stores stator and supply constants that can be applied to TalonFX controller.
+     *
+     * @param statorLimit         stator current limit amps
+     * @param statorThreshCurrent stator threshold trigger current amps
+     * @param statorThreshTime    stator threshold limit time seconds
+     * @param supplyLimit         supply current limit amps
+     * @param supplyThreshCurrent supply threshold trigger current amps
+     * @param supplyThreshTime    supply threshold limit time seconds
+     */
     public CurrentLimitConfig(double statorLimit, double statorThreshCurrent, double statorThreshTime,
                               double supplyLimit, double supplyThreshCurrent, double supplyThreshTime) {
         this.statorLimit = statorLimit;
@@ -21,6 +31,10 @@ public class CurrentLimitConfig {
         this.supplyThreshTime = supplyThreshTime;
     }
 
+    /**
+     * Reset a TalonFX controller to default settings
+     * @param motor TalonFX controller to reset
+     */
     public void reset(TalonFX motor) {
         TalonFXConfiguration defaultConfig = new TalonFXConfiguration();
         defaultConfig.voltageCompSaturation = 12;
@@ -34,6 +48,10 @@ public class CurrentLimitConfig {
         motor.enableVoltageCompensation(true);
     }
 
+    /**
+     * Apply this current limit to a TalonFX controller
+     * @param motor TalonFX controller to apply the current limit to
+     */
     public void applyTo(TalonFX motor) {
         reset(motor);
         motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, this.statorLimit, this.statorThreshCurrent, this.statorThreshTime));
