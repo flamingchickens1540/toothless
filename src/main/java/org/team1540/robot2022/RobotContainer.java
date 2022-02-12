@@ -13,7 +13,6 @@ import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.hood.HoodSetCommand;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
-import org.team1540.robot2022.utils.InterpolationTable;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
