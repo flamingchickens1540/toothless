@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 //make button controlls commands no control logic in subsystems periodic 
 
@@ -17,26 +17,26 @@ public class Intake extends SubsystemBase {
   XboxController xboxController = new XboxController(0); 
 
   private final XboxController copilot;
-  public TalonSRX shooterMotorA = new TalonSRX(7);
+  public TalonFX intakeMotorA = new TalonFX(7);
 
   public Intake(XboxController copilot) {
     this.copilot = copilot;
-    shooterMotorA.configPeakCurrentLimit(10); 
-    shooterMotorA.configPeakCurrentDuration(500); 
+    //intakeMotorA.configPeakCurrentLimit(10); 
+    //intakeMotorA.configPeakCurrentDuration(500); 
   }
   public void disableMotors() {
-    shooterMotorA.set(ControlMode.PercentOutput, 0);
+    intakeMotorA.set(ControlMode.PercentOutput, 0);
 }
 
   @Override
   public void periodic() {
     if (copilot.getBButton()) {
-      shooterMotorA.set(ControlMode.PercentOutput, 0.5);
+      intakeMotorA.set(ControlMode.PercentOutput, 0.5);
     } else if (copilot.getAButton()) {
-      shooterMotorA.set(ControlMode.PercentOutput, -0.3);
+      intakeMotorA.set(ControlMode.PercentOutput, -0.3);
     }
     if (!copilot.getBButton() && !copilot.getAButton()) {
-      shooterMotorA.set(ControlMode.PercentOutput, 0);
+      intakeMotorA.set(ControlMode.PercentOutput, 0);
     }
 
     if(copilot.getRightStickButton())
@@ -50,14 +50,14 @@ public class Intake extends SubsystemBase {
   }
 
   public void set(double percent) {
-    shooterMotorA.set(ControlMode.PercentOutput, percent);
+    intakeMotorA.set(ControlMode.PercentOutput, percent);
   }
 
   public void intakeMotors(){
-    shooterMotorA.set(ControlMode.PercentOutput, 0.5);
+    intakeMotorA.set(ControlMode.PercentOutput, 0.5);
   }
   public void outtakeMotors(){
-    shooterMotorA.set(ControlMode.PercentOutput, -0.5); 
+    intakeMotorA.set(ControlMode.PercentOutput, -0.5); 
   }
 
   public void intakeUp(){
