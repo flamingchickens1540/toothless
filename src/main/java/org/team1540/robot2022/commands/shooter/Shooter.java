@@ -29,8 +29,7 @@ public class Shooter extends SubsystemBase {
     }
 
     private void setupFlywheelMotors() {
-        Constants.ShooterConstants.currentLimitConfig.applyTo(shooterMotorFront);
-        Constants.ShooterConstants.currentLimitConfig.applyTo(shooterMotorRear);
+        Constants.ShooterConstants.currentLimitConfig.applyTo(new TalonFX[]{shooterMotorFront, shooterMotorRear});
         shooterMotorFront.setNeutralMode(NeutralMode.Coast);
         shooterMotorRear.setNeutralMode(NeutralMode.Coast);
         shooterMotorRear.setInverted(TalonFXInvertType.OpposeMaster);
