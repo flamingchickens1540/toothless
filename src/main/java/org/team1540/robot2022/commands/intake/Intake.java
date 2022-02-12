@@ -20,7 +20,8 @@ public class Intake extends SubsystemBase {
     public void periodic() {
     }
 
-    public void setTilt(boolean state) {
+    public void setFold(boolean state) {
+        // TODO: Make sure the solenoid is configured so that setFold(true) moves the intake to the upwards (folded) position
         leftSolenoid.set(state);
         rightSolenoid.set(state);
     }
