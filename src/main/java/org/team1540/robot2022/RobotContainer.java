@@ -6,11 +6,19 @@ package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.PointToTarget;
+import org.team1540.robot2022.commands.intake.Intake;
+import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.commands.shooter.VelocitySetCommand;
+import org.team1540.robot2022.utils.Limelight;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.utils.RevBlinken;
+import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
@@ -21,8 +29,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import org.team1540.robot2022.commands.shooter.Shooter;
-import org.team1540.robot2022.commands.shooter.VelocitySetCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -50,6 +58,12 @@ public class RobotContainer {
 
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+    public final RevBlinken robotLEDs = new RevBlinken(0);
+
+    public final Limelight limelight = new Limelight("limelight");
+
+    public final InterpolationTable interpolationTable = new InterpolationTable();
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -59,6 +73,7 @@ public class RobotContainer {
 
         initSmartDashboard();
         configureButtonBindings();
+        initModeTransitionBindings();
     }
 
     /**
@@ -75,6 +90,26 @@ public class RobotContainer {
                 .whenPressed(() -> navx.zeroYaw());
         new JoystickButton(copilot, Button.kLeftBumper.value)
                 .whileHeld(new VelocitySetCommand(shooter, null)); 
+        new JoystickButton(driverController, Button.kRightBumper.value)
+                .whenHeld(new PointToTarget(driveTrain, limelight));
+    }
+
+    private void initModeTransitionBindings() {
+        var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
+        var teleop = new Trigger(DriverStation::isTeleopEnabled);
+        var disabled = new Trigger(DriverStation::isDisabled);
+
+        teleop.whenActive(() -> {
+            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP);
+        });
+
+        autonomous.whenActive(() -> {
+            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.AUTONOMOUS);
+        });
+
+        disabled.whenActive(() -> {
+            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.DISABLE);
+        });
     }
 
     private void initSmartDashboard() {
@@ -85,7 +120,18 @@ public class RobotContainer {
             .add("NavX", navx)
             .withWidget(BuiltInWidgets.kGyro);
 
-        SmartDashboard.putNumber("drivePID/kP", SmartDashboard.getNumber("drivePID/kP", 0.5));
+        // PointToTarget values
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/kD", 0.4);
+        SmartDashboard.putNumber("pointToTarget/pidOutput", 0);
+        SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", 0);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/pidClamp", 0.8);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/targetDeadzoneDegrees", 2);
+        SmartDashboard.putBoolean("pointToTarget/isClamping", false);
+
+        ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("tankDrive/maxVelocity", 0.8);
+        ChickenSmartDashboard.putDefaultNumber("tankDrive/maxAcceleration", 0.5);
     }
 
     public Command getAutonomousCommand() {

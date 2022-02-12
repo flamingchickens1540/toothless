@@ -1,0 +1,20 @@
+* @natesales
+
+# DriveTrain and Path Following
+/src/main/java/org/team1540/robot2022/commands/drivetrain @rutmanz
+/src/main/java/org/team1540/robot2022/RamseteConfig.java @rutmanz
+/src/main/deploy/paths/ @rutmanz
+/PathWeaver @rutmanz
+
+
+# Climber
+/src/main/java/org/team1540/robot2022/commands/climber @rutmanz
+
+# Shooter
+/src/main/java/org/team1540/robot2022/commands/shooter @sanashah007
+
+# Intake
+/src/main/java/org/team1540/robot2022/commands/intake @sanashah007
+
+# Indexer
+/src/main/java/org/team1540/robot2022/commands/indexer @sanashah007

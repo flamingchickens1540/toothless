@@ -4,6 +4,8 @@
 
 package org.team1540.robot2022;
 
+import org.team1540.robot2022.utils.RevBlinken.ColorPattern;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -24,7 +26,19 @@ public final class Constants {
             public static final int rightFront = 3;
             public static final int rightRear = 4;
         }
-
         public static final double encoderTicksPerMeter = 49866;
+        
+    }
+    public static final class LightConstants {
+        public static final ColorPattern disable = ColorPattern.FIRE_LARGE;
+
+        public static final ColorPattern redAuto = ColorPattern.BPM_LAVA;
+        public static final ColorPattern blueAuto = ColorPattern.BPM_OCEAN;
+
+        public static final ColorPattern redTeleop = ColorPattern.RAINBOW_LAVA;
+        public static final ColorPattern blueTeleop = ColorPattern.RAINBOW_OCEAN;
+
+        public static final ColorPattern redEndgame = ColorPattern.RAINBOW_PARTY;
+        public static final ColorPattern blueEndgame = ColorPattern.RAINBOW_PARTY;
     }
 }
