@@ -3,21 +3,21 @@ package org.team1540.robot2022.commands.shooter;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.LinearInterpolator;
 
+import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class VelocitySetCommand extends CommandBase {
     private final Shooter shooter;
     private Limelight limeLight;
-    private TalonFX flywheel;
     private double velocity;
-    private LinearInterpolator interpolator; 
-    public  VelocitySetCommand(Shooter shooter, LinearInterpolator interpolator, TalonFX flywheel, Limelight limelight){
+    private InterpolationTable interpolationTable; 
+    public  VelocitySetCommand(Shooter shooter, InterpolationTable interpolationTable, Limelight limelight){
         this.shooter = shooter; 
-        this.interpolator = interpolator; 
-        this.flywheel = flywheel; 
+        this.interpolationTable = interpolationTable; 
         this.limeLight = limeLight; 
         addRequirements(shooter); 
     }
@@ -29,6 +29,8 @@ public class VelocitySetCommand extends CommandBase {
 
     @Override
     public void execute(){
-                flywheel.set(TalonFXControlMode.Velocity, (interpolator.getInterpolatedValue(limeLight.getCalculatedDistance()) * 2048.0) / 600);
+                shooter.shooterMotorFront.set(TalonFXControlMode.Velocity, (interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(limeLight.getCalculatedDistance()) * 2048.0) / 600);
+                shooter.shooterMotorRear.set(TalonFXControlMode.Velocity, (interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(limeLight.getCalculatedDistance()) * 2048.0) / 600);
+
     }
 }
