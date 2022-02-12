@@ -9,6 +9,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
+import org.team1540.robot2022.commands.hood.Hood;
+import org.team1540.robot2022.commands.hood.HoodSet;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.InterpolationTable;
@@ -39,30 +41,26 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    // The robot's subsystems and commands are defined here...
+    // Hardware
+    public final RevBlinken robotLEDs = new RevBlinken(0);
+    public final Limelight limelight = new Limelight("limelight");
+    public final NavX navx = new NavX(SPI.Port.kMXP);
 
-    public final DriveTrain driveTrain;
+    // Subsystems
+    public final DriveTrain driveTrain = new DriveTrain(NeutralMode.Brake, navx);
+    public final Hood hood = new Hood();
 
+    // Controllers
     public final XboxController driverController = new XboxController(0);
     public final XboxController copilotController = new XboxController(1);
 
-    public final NavX navx = new NavX(SPI.Port.kMXP);
-
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
-
-    public final RevBlinken robotLEDs = new RevBlinken(0);
-
-    public final Limelight limelight = new Limelight("limelight");
-
     public final InterpolationTable interpolationTable = new InterpolationTable();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        // Configure the button bindings
-        driveTrain = new DriveTrain(NeutralMode.Brake, navx);
-
         initSmartDashboard();
         configureButtonBindings();
         initModeTransitionBindings();
@@ -77,10 +75,17 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        // Driver
         new JoystickButton(driverController, Button.kX.value)
-                .whenPressed(() -> navx.zeroYaw());
+                .whenPressed(navx::zeroYaw);
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(driveTrain, limelight));
+
+        // Copilot
+        new JoystickButton(copilotController, Button.kA.value)
+                .whenPressed(new HoodSet(hood, true));
+        new JoystickButton(copilotController, Button.kB.value)
+                .whenPressed(new HoodSet(hood, false));
     }
 
     private void initModeTransitionBindings() {
@@ -106,8 +111,8 @@ public class RobotContainer {
         SmartDashboard.putData(autoChooser);
 
         Shuffleboard.getTab("SmartDashboard")
-            .add("NavX", navx)
-            .withWidget(BuiltInWidgets.kGyro);
+                .add("NavX", navx)
+                .withWidget(BuiltInWidgets.kGyro);
 
         // PointToTarget values
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);

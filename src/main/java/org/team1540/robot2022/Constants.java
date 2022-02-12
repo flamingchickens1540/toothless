@@ -29,6 +29,11 @@ public final class Constants {
         public static final double encoderTicksPerMeter = 49866;
         
     }
+
+    public static final class HoodConstants {
+        public static final int solenoidChannel = 0;
+    }
+
     public static final class LightConstants {
         public static final ColorPattern disable = ColorPattern.FIRE_LARGE;
 
