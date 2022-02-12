@@ -6,7 +6,7 @@ package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import org.team1540.robot2022.commands.Intake.Intake;
+import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.utils.NavX;
@@ -21,7 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import main.java.org.team1540.robot2022.commands.shooter.setVelocity;
+import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.commands.shooter.VelocitySetCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -69,10 +70,11 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        new JoystickButton(copilot, Button.kRightBumper.value); 
         new JoystickButton(driverController, Button.kX.value)
                 .whenPressed(() -> navx.zeroYaw());
         new JoystickButton(copilot, Button.kLeftBumper.value)
-                .whenHeld(new SetVelocity(shooter)); 
+                .whileHeld(new VelocitySetCommand(shooter, null)); 
     }
 
     private void initSmartDashboard() {

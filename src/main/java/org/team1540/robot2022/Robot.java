@@ -6,7 +6,7 @@ package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import org.team1540.robot2022.commands.Intake.Intake;
+import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 //import org.team1540.robot2022.commands.shooter.ShooterManualControl;

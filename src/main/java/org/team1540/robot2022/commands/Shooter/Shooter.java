@@ -6,21 +6,17 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.XboxController.Axis;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.team1540.robot2022.LunaUtils.ControlUtils;
 import org.team1540.robot2022.LunaUtils.MotorConfigUtils;
 import org.team1540.robot2022.LunaUtils.Timer;
-
-import edu.wpi.first.wpilibj2.command.button.getLeftBumper;
-import edu.wpi.first.wpilibj2.command.button.getRightBumper;
+;
 
 
 
@@ -42,7 +38,7 @@ public class Shooter extends SubsystemBase {
     //public static final int LOW_RPM_kD = 10;
     private Timer kdTimer = new Timer();
 
-    public Shooter() {
+    public Shooter(XboxController copilot) {
         setupFlywheelMotors();
         setupPIDs();
         updatePIDs();
@@ -113,7 +109,7 @@ public class Shooter extends SubsystemBase {
         return velocity; 
     }
     public double setVelocityRPMB(double velocity) {
-        if (kdTimer.hasPeriodPassed(0.3)) configLowRPM(velocity);
+        //if (kdTimer.hasPeriodPassed(0.3)) configLowRPM(velocity);
         shooterMotorA.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
         return velocity; 
     }
@@ -150,24 +146,7 @@ public class Shooter extends SubsystemBase {
         return new InstantCommand(this::stop, this);
     }
 
-  /* public Command commandStartFlyWheelA(){
-       //return new RunCommand(() -> shooter.setVelocityRPMA(
-           
-       
-       //return setVelocityRPMA(0.3); 
-   }
-   */ 
-
-   public void startFlyWheelA(){
-       new RightBumper(this::setVelocityRPMA)
-            .whileActiveContinuous(setRPMA); 
-   }
-
-   public void startFlyWheelB(){
-    new LeftBumper(this::setVelocityRPMB)
-            .whileActiveContinuous(setRPMB); 
-   }
-
+   
     
     
 }

@@ -1,4 +1,4 @@
-package org.team1540.robot2022.commands.Intake;
+package org.team1540.robot2022.commands.intake;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -58,6 +58,19 @@ public class Intake extends SubsystemBase {
   }
   public void outtakeMotors(){
     shooterMotorA.set(ControlMode.PercentOutput, -0.5); 
+  }
+
+  public void intakeUp(){
+    if(copilot.getRightStickButton()){
+            PH.set(true);
+      }
+    }
+
+  public void intakeDown(){
+    if(copilot.getLeftStickButton())
+       {
+            PH.set(false);
+        }
   }
   
 }
