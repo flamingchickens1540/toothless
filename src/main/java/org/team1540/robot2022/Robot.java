@@ -55,8 +55,8 @@ public class Robot extends TimedRobot {
         this.robotContainer = new RobotContainer();
         this.driveTrain = robotContainer.driveTrain;
         this.driverXbox = robotContainer.driverController;
-        this.intake =  robotContainer.intake; 
-        this.copilot = robotContainer.copilot; 
+        this.intake =  robotContainer.intake;
+        this.copilot = robotContainer.copilot;
         this.limelight = robotContainer.limelight;
     }
 
@@ -121,9 +121,14 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        intake.periodic();
-      System.out.println("running periodic"); 
     }
 
+    @Override
+    public void testInit() {
+    }
 
-  }
+    /** This function is called periodically during test mode. */
+    @Override
+    public void testPeriodic() {
+    }
+}
