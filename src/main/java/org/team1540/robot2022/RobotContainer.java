@@ -10,7 +10,7 @@ import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.hood.Hood;
-import org.team1540.robot2022.commands.hood.HoodSet;
+import org.team1540.robot2022.commands.hood.HoodSetCommand;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.InterpolationTable;
@@ -83,9 +83,9 @@ public class RobotContainer {
 
         // Copilot
         new JoystickButton(copilotController, Button.kA.value)
-                .whenPressed(new HoodSet(hood, true));
+                .whenPressed(new HoodSetCommand(hood, true));
         new JoystickButton(copilotController, Button.kB.value)
-                .whenPressed(new HoodSet(hood, false));
+                .whenPressed(new HoodSetCommand(hood, false));
     }
 
     private void initModeTransitionBindings() {
