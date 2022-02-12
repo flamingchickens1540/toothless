@@ -9,9 +9,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
-import org.team1540.robot2022.commands.intake.Intake;
-import org.team1540.robot2022.commands.shooter.Shooter;
-import org.team1540.robot2022.commands.shooter.VelocitySetCommand;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.InterpolationTable;
@@ -32,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -44,17 +40,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    public XboxController pilot = new XboxController(0); 
-
-    public XboxController copilot = new XboxController(1); 
-
-    public Intake intake = new Intake(copilot);
-
-    public Shooter shooter = new Shooter(copilot); 
 
     public final DriveTrain driveTrain;
 
     public final XboxController driverController = new XboxController(0);
+    public final XboxController copilotController = new XboxController(1);
 
     public final NavX navx = new NavX(SPI.Port.kMXP);
 
@@ -87,11 +77,8 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        new JoystickButton(copilot, Button.kRightBumper.value); 
         new JoystickButton(driverController, Button.kX.value)
                 .whenPressed(() -> navx.zeroYaw());
-        new JoystickButton(copilot, Button.kLeftBumper.value)
-                .whileHeld(new VelocitySetCommand(shooter, interpolationTable, limelight)); 
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(driveTrain, limelight));
     }
