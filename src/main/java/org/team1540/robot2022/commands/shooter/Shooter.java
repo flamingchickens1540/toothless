@@ -52,8 +52,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter/velocityFront", getFrontVelocityRPM());
         SmartDashboard.putNumber("shooter/velocityRear", getRearVelocityRPM());
         SmartDashboard.putNumber("shooter/error", getClosedLoopError());
-        SmartDashboard.putNumber("setFrontVelocityRPM", setFrontVelocityRPM(500));
-        SmartDashboard.putNumber("setRearVelocityRPM", setRearVelocityRPM(500));
+        SmartDashboard.putNumber("setFrontVelocityRPM", setVelocityRPM(shooterMotorFront, 500));
+        SmartDashboard.putNumber("setRearVelocityRPM", setVelocityRPM(shooterMotorRear, 500));
     }
 
     public void stop() {
@@ -69,13 +69,8 @@ public class Shooter extends SubsystemBase {
         return (shooterMotorRear.getSelectedSensorVelocity() / 2048.0) * 600;
     }
 
-    public double setFrontVelocityRPM(double velocity) {
-        shooterMotorFront.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
-        return velocity;
-    }
-
-    public double setRearVelocityRPM(double velocity) {
-        shooterMotorRear.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
+    public double setVelocityRPM(TalonFX motor, double velocity) {
+        motor.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
         return velocity;
     }
 
