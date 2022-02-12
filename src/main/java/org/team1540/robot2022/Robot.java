@@ -31,10 +31,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 */
 
 public class Robot extends TimedRobot {
- 
 
-  //ShooterManualControl shooterManualControl = new ShooterManualControl(shooter, pilot); 
-  //ShooterManualControl shooterManualControl = new ShooterManualControl(shooter, copilot); 
 
     private RobotContainer robotContainer;
     private DriveTrain driveTrain;
@@ -126,7 +123,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         intake.periodic();
       System.out.println("running periodic"); 
-     //shooter.setDefaultCommand(shooterManualControl);
     }
 
 

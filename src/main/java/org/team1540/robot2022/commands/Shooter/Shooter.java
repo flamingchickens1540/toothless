@@ -34,8 +34,7 @@ public class Shooter extends SubsystemBase {
     public TalonFX shooterMotorFront = new TalonFX(9);
     public TalonFX shooterMotorRear = new TalonFX(10);
 
-   // public static final int HIGH_RPM_kD = 30;
-    //public static final int LOW_RPM_kD = 10;
+   
     private Timer kdTimer = new Timer();
 
     public Shooter(XboxController copilot) {
@@ -53,8 +52,7 @@ public class Shooter extends SubsystemBase {
         shooterMotorRear.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 0, 0, 0));
         shooterMotorFront.setNeutralMode(NeutralMode.Coast);
         shooterMotorRear.setNeutralMode(NeutralMode.Coast);
-//        shooterMotorA.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_1Ms);
-//        shooterMotorA.configVelocityMeasurementWindow(4);
+
 
 
         shooterMotorRear.setInverted(TalonFXInvertType.OpposeMaster);
@@ -64,7 +62,6 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter/tuning/kP", kP);
         SmartDashboard.putNumber("shooter/tuning/kI", kI);
         SmartDashboard.putNumber("shooter/tuning/iZone", iZone);
-//        SmartDashboard.putNumber("shooter/tuning/kD", kD);
         SmartDashboard.putNumber("shooter/tuning/kF", kF);
         SmartDashboard.putNumber("shooter/tuning/kD", kD);
 
@@ -72,7 +69,7 @@ public class Shooter extends SubsystemBase {
         NetworkTableInstance.getDefault().getTable("SmartDashboard/shooter/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 
-    //@Override
+    @Override
     public void periodic() {
         SmartDashboard.putNumber("shooter/current", shooterMotorFront.getStatorCurrent() + shooterMotorRear.getStatorCurrent());
         SmartDashboard.putNumber("shooter/velocityA", getVelocityRPMA());
@@ -83,13 +80,6 @@ public class Shooter extends SubsystemBase {
 
     }
 
-
-    /*private void configLowRPM(double targetRPM) {
-        double kD = ControlUtils.linearDeadzoneRamp(targetRPM, false, HIGH_RPM_kD, LOW_RPM_kD, 5000, 3000);
-        config_kD(kD);
-        SmartDashboard.putNumber("shooter/calculatedKd", kD);
-    }
-    */
 
     public void stop() {
         shooterMotorFront.set(TalonFXControlMode.PercentOutput, 0);
@@ -104,12 +94,10 @@ public class Shooter extends SubsystemBase {
     }
 
     public double setVelocityRPMA(double velocity) {
-        //if (kdTimer.hasPeriodPassed(0.3)) configLowRPM(velocity);
         shooterMotorFront.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
         return velocity; 
     }
     public double setVelocityRPMB(double velocity) {
-        //if (kdTimer.hasPeriodPassed(0.3)) configLowRPM(velocity);
         shooterMotorFront.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
         return velocity; 
     }
@@ -117,7 +105,6 @@ public class Shooter extends SubsystemBase {
     private void updatePIDs() {
         shooterMotorFront.config_kP(0, SmartDashboard.getNumber("shooter/tuning/kP", kP));
         shooterMotorFront.config_kI(0, SmartDashboard.getNumber("shooter/tuning/kI", kI));
-//        shooterMotorA.config_kD(0, SmartDashboard.getNumber("shooter/tuning/kD", kD));
         shooterMotorFront.config_kF(0, SmartDashboard.getNumber("shooter/tuning/kF", kF));
         shooterMotorFront.config_IntegralZone(0, (int) SmartDashboard.getNumber("shooter/tuning/iZone", iZone));
     }

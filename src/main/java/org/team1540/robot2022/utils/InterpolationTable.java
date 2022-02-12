@@ -1,4 +1,4 @@
-package org.team1540.robot2022;
+package org.team1540.robot2022.utils;
 
 import org.team1540.robot2022.utils.LinearInterpolator;
 

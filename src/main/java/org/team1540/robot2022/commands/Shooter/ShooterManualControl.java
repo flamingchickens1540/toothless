@@ -26,8 +26,7 @@ public class ShooterManualControl extends CommandBase {
         if(copilot.getRightBumper()){
             shooter.setVelocityRPMB(0.3); 
         }
-        //SmartDashboard.putNumber("leftY", copilot.getLeftY()); 
-        //shooter.setPercent(copilot.getLeftY());//setting speed of motors
+       
     } 
 }
 

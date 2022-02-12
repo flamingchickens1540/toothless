@@ -14,6 +14,7 @@ import org.team1540.robot2022.commands.shooter.Shooter;
 import org.team1540.robot2022.commands.shooter.VelocitySetCommand;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
+import org.team1540.robot2022.utils.InterpolationTable;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
@@ -43,9 +44,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    //public XboxController pilot = new XboxController(0);
+    
     public XboxController copilot = new XboxController(1); 
-    //private ShooterTesting shooter = new ShooterTesting();
+
     public Intake intake = new Intake(copilot);
 
     public Shooter shooter = new Shooter(copilot); 

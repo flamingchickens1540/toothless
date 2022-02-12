@@ -3,7 +3,7 @@ package org.team1540.robot2022.commands.shooter;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import org.team1540.robot2022.InterpolationTable;
+import org.team1540.robot2022.utils.InterpolationTable;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.LinearInterpolator;
 
