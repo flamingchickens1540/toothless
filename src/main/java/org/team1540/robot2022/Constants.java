@@ -25,28 +25,26 @@ public final class Constants {
         public static final double encoderTicksPerMeter = 49866;
 
         public static final class Motors {
-            public static final int leftFront = 1;
-            public static final int leftRear = 2;
-            public static final int rightFront = 3;
-            public static final int rightRear = 4;
+            public static final int leftFront = 3;
+            public static final int leftRear = 4;
+            public static final int rightFront = 1;
+            public static final int rightRear = 2;
         }
-
     }
 
     public static final class HoodConstants {
-        public static final int solenoidChannel = 0;
+        public static final int solenoidChannel = 2;
     }
 
     public static final class IntakeConstants {
-        public static final int leftSolenoidChannel = 0;
-        public static final int rightSolenoidChannel = 0;
-        public static final int falcon = 0;
+        public static final int solenoid = 3;
+        public static final int falcon = 5;
         public static final CurrentLimitConfig currentLimitConfig = new CurrentLimitConfig(20, 25, 1, 10, 15, 0.5);
     }
 
     public static final class ShooterConstants {
-        public static final int front = 0;
-        public static final int rear = 0;
+        public static final int front = 9;
+        public static final int rear = 8;
 
         public static final CurrentLimitConfig currentLimitConfig = new CurrentLimitConfig(20, 25, 1, 10, 15, 0.5);
     }
