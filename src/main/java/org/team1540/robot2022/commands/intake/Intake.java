@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
 
 public class Intake extends SubsystemBase {
-    private final Solenoid solenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.IntakeConstants.solenoid);
+    private final Solenoid solenoid = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, Constants.IntakeConstants.solenoid);
     private final TalonFX motor = new TalonFX(Constants.IntakeConstants.falcon);
 
     public Intake() {

@@ -46,6 +46,7 @@ public class RobotContainer {
     public final RevBlinken robotLEDs = new RevBlinken(0);
     public final Limelight limelight = new Limelight("limelight");
     public final NavX navx = new NavX(SPI.Port.kMXP);
+    public final PneumaticHub ph = new PneumaticHub(Constants.ph);
 
     // Subsystems
     public final DriveTrain driveTrain = new DriveTrain(NeutralMode.Brake, navx);

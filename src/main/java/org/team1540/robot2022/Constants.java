@@ -21,6 +21,8 @@ import org.team1540.robot2022.utils.RevBlinken.ColorPattern;
  */
 
 public final class Constants {
+    public static final int ph = 20;
+
     public static final class DriveConstants {
         public static final double encoderTicksPerMeter = 49866;
 
