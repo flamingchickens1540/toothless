@@ -11,6 +11,7 @@ import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.hood.HoodSetCommand;
+import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
@@ -54,6 +55,7 @@ public class RobotContainer {
     public final DriveTrain driveTrain = new DriveTrain(NeutralMode.Brake, navx);
     public final Hood hood = new Hood();
     public final Intake intake = new Intake();
+    public final Indexer indexer = new Indexer(NeutralMode.Brake);
 
     // Controllers
     public final XboxController driverController = new XboxController(0);

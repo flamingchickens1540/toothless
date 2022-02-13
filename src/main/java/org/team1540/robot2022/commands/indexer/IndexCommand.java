@@ -1,6 +1,7 @@
 package org.team1540.robot2022.commands.indexer;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class IndexCommand extends CommandBase {
@@ -26,13 +27,19 @@ public class IndexCommand extends CommandBase {
         return (indexer.getBottomSensor() && indexer.getTopSensor());
     }
 
-    @Override
-    public void initialize() {
+    private void scheduleCommands() {
         if (this.indexToTop()) {
             indexTop.schedule();
         } else if (this.indexToBottom()) {
             indexBottom.schedule();
         }
+    }
+    @Override
+    public void initialize() {
+        indexTop.andThen(new InstantCommand(() -> {this.scheduleCommands();}));
+        indexBottom.andThen(new InstantCommand(() -> {this.scheduleCommands();}));
+        
+        scheduleCommands();
     }
 
     @Override
