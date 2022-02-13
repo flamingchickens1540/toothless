@@ -28,9 +28,16 @@ public class IndexCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        new Trigger(this::indexToTop)
-                .whileActiveOnce(indexTop);
-        new Trigger(this::indexToBottom)
-                .whileActiveOnce(indexBottom);
+        if (this.indexToTop()) {
+            indexTop.schedule();
+        } else if (this.indexToBottom()) {
+            indexBottom.schedule();
+        }
+    }
+
+    @Override
+    public void end(boolean isInterrupted) {
+        indexTop.cancel();
+        indexBottom.cancel();
     }
 }
