@@ -9,6 +9,7 @@ public class IntakeFoldCommand extends CommandBase {
     public IntakeFoldCommand(Intake intake, boolean state) {
         this.intake = intake;
         this.state = state;
+        addRequirements(intake);
     }
 
     @Override

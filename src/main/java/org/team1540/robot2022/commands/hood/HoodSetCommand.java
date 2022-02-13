@@ -9,6 +9,7 @@ public class HoodSetCommand extends CommandBase {
     public HoodSetCommand(Hood hood, boolean state) {
         this.hood = hood;
         this.state = state;
+        addRequirements(hood);
     }
 
     @Override
