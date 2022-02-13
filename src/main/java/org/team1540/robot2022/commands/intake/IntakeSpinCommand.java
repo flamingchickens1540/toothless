@@ -9,6 +9,7 @@ public class IntakeSpinCommand extends CommandBase {
     public IntakeSpinCommand(Intake intake, double speed) {
         this.intake = intake;
         this.speed = speed;
+        addRequirements(intake);
     }
 
     @Override
