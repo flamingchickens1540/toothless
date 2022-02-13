@@ -11,6 +11,8 @@ import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.hood.HoodSetCommand;
+import org.team1540.robot2022.commands.intake.Intake;
+import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.NavX;
@@ -48,6 +50,7 @@ public class RobotContainer {
     // Subsystems
     public final DriveTrain driveTrain = new DriveTrain(NeutralMode.Brake, navx);
     public final Hood hood = new Hood();
+    public final Intake intake = new Intake();
 
     // Controllers
     public final XboxController driverController = new XboxController(0);
@@ -85,6 +88,11 @@ public class RobotContainer {
                 .whenPressed(new HoodSetCommand(hood, true));
         new JoystickButton(copilotController, Button.kB.value)
                 .whenPressed(new HoodSetCommand(hood, false));
+
+        new JoystickButton(copilotController, Button.kX.value)
+                .whenPressed(new IntakeFoldCommand(intake, true));
+        new JoystickButton(copilotController, Button.kY.value)
+                .whenPressed(new IntakeFoldCommand(intake, false));
     }
 
     private void initModeTransitionBindings() {
