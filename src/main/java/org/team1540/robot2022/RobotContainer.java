@@ -13,6 +13,7 @@ import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.hood.HoodSetCommand;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
+import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.NavX;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.PneumaticHub;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -94,6 +96,11 @@ public class RobotContainer {
                 .whenPressed(new IntakeFoldCommand(intake, true));
         new JoystickButton(copilotController, Button.kY.value)
                 .whenPressed(new IntakeFoldCommand(intake, false));
+
+        new JoystickButton(copilotController, Button.kLeftBumper.value)
+                .whileHeld(new IntakeSpinCommand(intake, 0.5));
+        new JoystickButton(copilotController, Button.kRightBumper.value)
+                .whileHeld(new IntakeSpinCommand(intake, -0.5));
     }
 
     private void initModeTransitionBindings() {
