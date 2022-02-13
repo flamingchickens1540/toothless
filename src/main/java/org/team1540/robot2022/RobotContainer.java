@@ -8,6 +8,14 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.PointToTarget;
+import org.team1540.robot2022.commands.hood.Hood;
+import org.team1540.robot2022.commands.hood.HoodSetCommand;
+import org.team1540.robot2022.commands.intake.Intake;
+import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
+import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
+import org.team1540.robot2022.utils.Limelight;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
@@ -24,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.PneumaticHub;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -35,25 +44,28 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    // The robot's subsystems and commands are defined here...
-
-    public final DriveTrain driveTrain;
-
-    public final XboxController driverController = new XboxController(0);
-
+    // Hardware
+    public final RevBlinken robotLEDs = new RevBlinken(0);
+    public final Limelight limelight = new Limelight("limelight");
     public final NavX navx = new NavX(SPI.Port.kMXP);
+    public final PneumaticHub ph = new PneumaticHub(Constants.ph);
+
+    // Subsystems
+    public final DriveTrain driveTrain = new DriveTrain(NeutralMode.Brake, navx);
+    public final Hood hood = new Hood();
+    public final Intake intake = new Intake();
+
+    // Controllers
+    public final XboxController driverController = new XboxController(0);
+    public final XboxController copilotController = new XboxController(1);
 
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
-
-    public final RevBlinken robotLEDs = new RevBlinken(0);
+    public final InterpolationTable interpolationTable = new InterpolationTable();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        // Configure the button bindings
-        driveTrain = new DriveTrain(NeutralMode.Brake, navx);
-
         initSmartDashboard();
         configureButtonBindings();
         initModeTransitionBindings();
@@ -68,8 +80,27 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        // Driver
         new JoystickButton(driverController, Button.kX.value)
-                .whenPressed(() -> navx.zeroYaw());
+                .whenPressed(navx::zeroYaw);
+        new JoystickButton(driverController, Button.kRightBumper.value)
+                .whenHeld(new PointToTarget(driveTrain, limelight));
+
+        // Copilot
+        new JoystickButton(copilotController, Button.kA.value)
+                .whenPressed(new HoodSetCommand(hood, true));
+        new JoystickButton(copilotController, Button.kB.value)
+                .whenPressed(new HoodSetCommand(hood, false));
+
+        new JoystickButton(copilotController, Button.kX.value)
+                .whenPressed(new IntakeFoldCommand(intake, true));
+        new JoystickButton(copilotController, Button.kY.value)
+                .whenPressed(new IntakeFoldCommand(intake, false));
+
+        new JoystickButton(copilotController, Button.kLeftBumper.value)
+                .whileHeld(new IntakeSpinCommand(intake, 0.5));
+        new JoystickButton(copilotController, Button.kRightBumper.value)
+                .whileHeld(new IntakeSpinCommand(intake, -0.5));
     }
 
     private void initModeTransitionBindings() {
@@ -78,7 +109,7 @@ public class RobotContainer {
         var disabled = new Trigger(DriverStation::isDisabled);
 
         teleop.whenActive(() -> {
-            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.ENDGAME);
+            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP);
         });
 
         autonomous.whenActive(() -> {
@@ -95,10 +126,21 @@ public class RobotContainer {
         SmartDashboard.putData(autoChooser);
 
         Shuffleboard.getTab("SmartDashboard")
-            .add("NavX", navx)
-            .withWidget(BuiltInWidgets.kGyro);
+                .add("NavX", navx)
+                .withWidget(BuiltInWidgets.kGyro);
 
-        SmartDashboard.putNumber("drivePID/kP", SmartDashboard.getNumber("drivePID/kP", 0.5));
+        // PointToTarget values
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/kD", 0.4);
+        SmartDashboard.putNumber("pointToTarget/pidOutput", 0);
+        SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", 0);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/pidClamp", 0.8);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/targetDeadzoneDegrees", 2);
+        SmartDashboard.putBoolean("pointToTarget/isClamping", false);
+
+        ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("tankDrive/maxVelocity", 0.8);
+        ChickenSmartDashboard.putDefaultNumber("tankDrive/maxAcceleration", 0.5);
     }
 
     public Command getAutonomousCommand() {

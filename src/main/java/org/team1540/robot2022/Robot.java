@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
+import org.team1540.robot2022.utils.Limelight;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
     private RobotContainer robotContainer;
     private DriveTrain driveTrain;
     private XboxController driverXbox;
+    private Limelight limelight;
 
     private Command autonomousCommand;
 
@@ -44,6 +46,7 @@ public class Robot extends TimedRobot {
         this.robotContainer = new RobotContainer();
         this.driveTrain = robotContainer.driveTrain;
         this.driverXbox = robotContainer.driverController;
+        this.limelight = robotContainer.limelight;
     }
 
     /**
@@ -67,6 +70,9 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+
+        // Update the calculated distance in the SmartDashboard
+        limelight.publishCalculatedDistance();
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
