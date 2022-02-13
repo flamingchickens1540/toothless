@@ -9,23 +9,29 @@ import org.team1540.robot2022.Constants.IndexerConstants.BeamBreaks;
 import org.team1540.robot2022.Constants.IndexerConstants.IndexerMotors;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
     private final TalonFX bottomMotor = new TalonFX(IndexerMotors.bottomMotor);
     private final TalonFX topMotor = new TalonFX(IndexerMotors.topMotor);
+    private final TalonFX[] motors = { topMotor, bottomMotor};
 
     private final DigitalInput topSensor = new DigitalInput(BeamBreaks.topIndexerSensor);
     private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.bottomIndexerSensor);
 
     public Indexer(NeutralMode brakeType) {
-        IndexerMotors.currentLimitConfig.applyTo(new TalonFX[]{topMotor, bottomMotor});
-        bottomMotor.setNeutralMode(brakeType);
-        topMotor.setNeutralMode(brakeType);
+        IndexerMotors.currentLimitConfig.applyTo(motors);
+        for (TalonFX motor:motors) {
+            motor.setNeutralMode(brakeType);
+            motor.setInverted(true);
+        }
     }
 
     @Override
     public void periodic() {
+        SmartDashboard.putBoolean("indexer/top", this.getTopSensor());
+        SmartDashboard.putBoolean("indexer/bottom", this.getBottomSensor());
     }
 
     /**
@@ -33,7 +39,7 @@ public class Indexer extends SubsystemBase {
      * @return if the sensor is blocked
      */
     public boolean getTopSensor() {
-        return topSensor.get();
+        return !topSensor.get();
     }
 
     /**
@@ -41,7 +47,7 @@ public class Indexer extends SubsystemBase {
      * @return if the sensor is blocked
      */
     public boolean getBottomSensor() {
-        return bottomSensor.get();
+        return !bottomSensor.get();
     }
     
     /**

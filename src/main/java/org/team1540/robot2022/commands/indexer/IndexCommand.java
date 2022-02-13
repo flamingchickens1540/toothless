@@ -1,18 +1,19 @@
 package org.team1540.robot2022.commands.indexer;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class IndexCommand extends CommandBase {
     private Indexer indexer;
-    private IndexBottom indexBottom;
-    private IndexTop indexTop;
+    private SequentialCommandGroup indexBottom, indexTop;
 
     public IndexCommand(Indexer indexer) {
         this.indexer = indexer;
-        this.indexBottom = new IndexBottom(indexer);
-        this.indexTop = new IndexTop(indexer);
+        this.indexBottom = new IndexBottom(indexer).andThen(new InstantCommand(() -> {this.scheduleCommands();}));
+        this.indexTop = new IndexTop(indexer).andThen(new InstantCommand(() -> {this.scheduleCommands();}));
         addRequirements(indexer);
     }
 
@@ -36,8 +37,8 @@ public class IndexCommand extends CommandBase {
     }
     @Override
     public void initialize() {
-        indexTop.andThen(new InstantCommand(() -> {this.scheduleCommands();}));
-        indexBottom.andThen(new InstantCommand(() -> {this.scheduleCommands();}));
+        DriverStation.reportWarning("Indexer Top "+indexToTop(), false);
+        DriverStation.reportWarning("Indexer Bottom "+indexToBottom(), false);
         
         scheduleCommands();
     }
