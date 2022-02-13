@@ -19,6 +19,7 @@ public class Indexer extends SubsystemBase {
     private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.bottomIndexerSensor);
 
     public Indexer(NeutralMode brakeType) {
+        IndexerMotors.currentLimitConfig.applyTo(new TalonFX[]{topMotor, bottomMotor});
         bottomMotor.setNeutralMode(brakeType);
         topMotor.setNeutralMode(brakeType);
     }
