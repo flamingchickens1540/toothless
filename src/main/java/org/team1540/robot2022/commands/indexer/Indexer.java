@@ -96,10 +96,12 @@ public class Indexer extends SubsystemBase {
         });
     }
 
+    public void stop() {
+        this.set(false,false);
+    }
+
     public Command commandStop() {
-        return new InstantCommand(() -> {
-            System.out.println("CommandStop");
-            this.set(false,false);});
+        return new InstantCommand(this::stop);
     }
 
 }
