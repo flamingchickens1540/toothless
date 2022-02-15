@@ -64,7 +64,7 @@ public final class Constants {
         }
 
         public static final double topPercent = 0.5;
-        public static final double bottomPercent = 0.5;
+        public static final double bottomPercent = 0.8;
     }
 
     public static final class LightConstants {
