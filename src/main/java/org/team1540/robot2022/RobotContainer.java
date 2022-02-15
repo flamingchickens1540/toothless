@@ -11,6 +11,7 @@ import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.hood.HoodSetCommand;
+import org.team1540.robot2022.commands.indexer.IndexCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -63,6 +65,8 @@ public class RobotContainer {
 
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
     public final InterpolationTable interpolationTable = new InterpolationTable();
+
+    public final IndexCommand indexCommand = new IndexCommand(indexer);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -130,6 +134,8 @@ public class RobotContainer {
         Shuffleboard.getTab("SmartDashboard")
                 .add("NavX", navx)
                 .withWidget(BuiltInWidgets.kGyro);
+
+        ChickenSmartDashboard.putDefaultNumber("intake/speed", 0.5);
 
         // PointToTarget values
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);

@@ -1,51 +1,33 @@
 package org.team1540.robot2022.commands.indexer;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class IndexCommand extends CommandBase {
+public class IndexCommand extends SequentialCommandGroup {
     private Indexer indexer;
-    private SequentialCommandGroup indexBottom, indexTop;
 
     public IndexCommand(Indexer indexer) {
         this.indexer = indexer;
-        this.indexBottom = new IndexBottom(indexer).andThen(new InstantCommand(() -> {this.scheduleCommands();}));
-        this.indexTop = new IndexTop(indexer).andThen(new InstantCommand(() -> {this.scheduleCommands();}));
         addRequirements(indexer);
-    }
-
-    private boolean indexToTop() {
-        return (!indexer.getBottomSensor() && !indexer.getTopSensor());
-    }
-    private boolean indexToBottom() {
-        return (!indexer.getBottomSensor() && indexer.getTopSensor());
-    }
-
-    private boolean indexerFull() {
-        return (indexer.getBottomSensor() && indexer.getTopSensor());
-    }
-
-    private void scheduleCommands() {
-        if (this.indexToTop()) {
-            indexTop.schedule();
-        } else if (this.indexToBottom()) {
-            indexBottom.schedule();
-        }
-    }
-    @Override
-    public void initialize() {
-        DriverStation.reportWarning("Indexer Top "+indexToTop(), false);
-        DriverStation.reportWarning("Indexer Bottom "+indexToBottom(), false);
-        
-        scheduleCommands();
+        addCommands(
+                new ConditionalCommand(
+                        indexer.commandStop(), // If (indexer is full)     -> stop indexer
+                        parallel(              // If (indexer is not full) -> run enclosed
+                                indexer.commandSetBottom(true),  // Run bottom indexer
+                                new ConditionalCommand(       
+                                        indexer.commandSetTop(false), // If (top sensor blocked)     -> Stop top indexer motor
+                                        indexer.commandSetTop(true),  // If not (top sensor blocked) -> Run top indexer motor
+                                        indexer::getTopSensor         // Condition for top indexer motor
+                                )
+                        ),
+                        indexer::isFull // Condition for indexer
+                )
+        );
     }
 
     @Override
     public void end(boolean isInterrupted) {
-        indexTop.cancel();
-        indexBottom.cancel();
+        this.indexer.set(false, false);
     }
 }
+

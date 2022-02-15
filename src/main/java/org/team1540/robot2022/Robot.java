@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
-import org.team1540.robot2022.commands.indexer.IndexCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.utils.Limelight;
 
@@ -112,7 +111,7 @@ public class Robot extends TimedRobot {
         }
         driveTrain.setNeutralMode(NeutralMode.Brake);
         driveTrain.setDefaultCommand(new TankDriveCommand(driveTrain, driverXbox));
-        indexer.setDefaultCommand(new IndexCommand(indexer));
+        indexer.setDefaultCommand(robotContainer.indexCommand);
     }
 
     /** This function is called periodically during operator control. */
