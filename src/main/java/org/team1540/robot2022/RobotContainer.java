@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
+import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.hood.HoodSetCommand;
 import org.team1540.robot2022.commands.indexer.IndexCommand;
@@ -63,10 +64,19 @@ public class RobotContainer {
     public final XboxController driverController = new XboxController(0);
     public final XboxController copilotController = new XboxController(1);
 
+    // Commands
+    public final IndexCommand indexCommand = new IndexCommand(indexer);
+    public final TankDriveCommand tankDriveCommand = new TankDriveCommand(driveTrain, driverController);
+
+    // SmartDashboard
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+    // Misc
     public final InterpolationTable interpolationTable = new InterpolationTable();
 
-    public final IndexCommand indexCommand = new IndexCommand(indexer);
+
+
+    
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.

@@ -32,7 +32,6 @@ public class Robot extends TimedRobot {
     private DriveTrain driveTrain;
     private Indexer indexer;
 
-    private XboxController driverXbox;
 
     private Limelight limelight;
 
@@ -50,7 +49,6 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         this.robotContainer = new RobotContainer();
         this.driveTrain = robotContainer.driveTrain;
-        this.driverXbox = robotContainer.driverController;
         this.limelight = robotContainer.limelight;
         this.indexer = robotContainer.indexer;
     }
@@ -94,6 +92,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         driveTrain.setNeutralMode(NeutralMode.Brake);
         autonomousCommand = robotContainer.getAutonomousCommand();
+        
         if (autonomousCommand != null) {
             autonomousCommand.schedule();
         }
@@ -109,8 +108,10 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+
         driveTrain.setNeutralMode(NeutralMode.Brake);
-        driveTrain.setDefaultCommand(new TankDriveCommand(driveTrain, driverXbox));
+        driveTrain.setDefaultCommand(robotContainer.tankDriveCommand);
+
         indexer.setDefaultCommand(robotContainer.indexCommand);
     }
 
