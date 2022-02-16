@@ -17,17 +17,39 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Indexer extends SubsystemBase {
     private final TalonFX bottomMotor = new TalonFX(IndexerMotors.bottomMotor);
     private final TalonFX topMotor = new TalonFX(IndexerMotors.topMotor);
-    private final TalonFX[] motors = { topMotor, bottomMotor};
+    private final TalonFX[] motors = { topMotor, bottomMotor };
 
     private final DigitalInput topSensor = new DigitalInput(BeamBreaks.topIndexerSensor);
     private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.bottomIndexerSensor);
 
     public Indexer(NeutralMode brakeType) {
         IndexerMotors.currentLimitConfig.applyTo(motors);
-        for (TalonFX motor:motors) {
+        for (TalonFX motor : motors) {
             motor.setNeutralMode(brakeType);
             motor.setInverted(true);
         }
+    }
+
+    /**
+     * States to set an indexer motor to
+     */
+    public enum IndexerState {
+        /**
+         * Runs the motor forward
+         */
+        FORWARD,
+        /**
+         * Runs the motor in reverse
+         */
+        REVERSE,
+        /**
+         * Stops the motor
+         */
+        OFF,
+        /**
+         * Does not modify the motor's state
+         */
+        UNCHANGED;
     }
 
     @Override
@@ -39,6 +61,7 @@ public class Indexer extends SubsystemBase {
 
     /**
      * Returns true if the top beam break is blocked
+     * 
      * @return if the sensor is blocked
      */
     public boolean getTopSensor() {
@@ -47,6 +70,7 @@ public class Indexer extends SubsystemBase {
 
     /**
      * Returns true if the bottom beam break is blocked
+     * 
      * @return if the sensor is blocked
      */
     public boolean getBottomSensor() {
@@ -56,50 +80,112 @@ public class Indexer extends SubsystemBase {
     public boolean isFull() {
         return (this.getBottomSensor() && this.getTopSensor());
     }
-    
+
     /**
-     * Sets the top and bottom parts of the indexer active/
-     * @param topOn If the top motors should turn on
-     * @param bottomOn If the bottom motors should turn on
+     * Sets the top and bottom indexer motors to an IndexerMode
+     * 
+     * @param topMode    The mode for the top motor
+     * @param bottomMode The mode for the bottom motor
      */
-    public void set(boolean topOn, boolean bottomOn) {
-        this.setTop(topOn);
-        this.setBottom(bottomOn);
+    public void set(IndexerState topMode, IndexerState bottomMode) {
+        this.setTop(topMode);
+        this.setBottom(bottomMode);
     }
 
-    public void setTop(boolean topOn) {
-        topMotor.set(ControlMode.PercentOutput, 
-                (topOn ? IndexerConstants.topPercent : 0)
-        );
+    /**
+     * Sets the top indexer motor to an IndexerMode
+     * 
+     * @param mode The mode to set the motor to
+     */
+    public void setTop(IndexerState mode) {
+        this.setMotor(topMotor, mode, IndexerConstants.topPercent);
     }
 
-    public void setBottom(boolean bottomOn) {
-        bottomMotor.set(ControlMode.PercentOutput, 
-                (bottomOn ? IndexerConstants.bottomPercent : 0)
-        );
+    /**
+     * Sets the bottom indexer motor to an IndexerMode
+     * 
+     * @param mode The mode to set the motor to
+     */
+    public void setBottom(IndexerState mode) {
+        this.setMotor(bottomMotor, mode, IndexerConstants.bottomPercent);
     }
 
-    public Command commandSetTop(boolean topOn) {
+    /**
+     * Sets a motor to an IndexerState
+     * 
+     * @param motor     The motor to run
+     * @param mode      The mode to set it to
+     * @param onPercent the speed to use for running forward and reverse
+     */
+    private void setMotor(TalonFX motor, IndexerState mode, double onPercent) {
+        switch (mode) {
+            case FORWARD:
+                motor.set(ControlMode.PercentOutput, onPercent);
+                break;
+            case REVERSE:
+                motor.set(ControlMode.PercentOutput, -onPercent);
+                break;
+            case OFF:
+                motor.set(ControlMode.PercentOutput, 0);
+                break;
+            case UNCHANGED:
+                break;
+        }
+    }
+
+    /**
+     * Returns a command that sets the top and bottom indexer motors to an
+     * IndexerMode
+     * 
+     * @param topMode    The mode for the top motor
+     * @param bottomMode The mode for the bottom motor
+     * 
+     * @return an InstantCommand that sets the motors
+     */
+    public Command commandSet(IndexerState topMode, IndexerState bottomMode) {
         return new InstantCommand(() -> {
-            this.setTop(topOn);
+            this.set(topMode, bottomMode);
         });
     }
-    public Command commandSetBottom(boolean bottomOn) {
+
+    /**
+     * Returns a command that sets the top indexer motor to an IndexerMode
+     * 
+     * @param mode The mode for the top motor
+     * 
+     * @return an InstantCommand that sets the motor
+     */
+    public Command commandSetTop(IndexerState mode) {
         return new InstantCommand(() -> {
-            this.setBottom(bottomOn);
-        });
-    }
-    
-    public Command commandSet(boolean topOn, boolean bottomOn) {
-        return new InstantCommand(() -> {
-            this.set(topOn, bottomOn);
+            this.setTop(mode);
         });
     }
 
+    /**
+     * Returns a command that sets the bottom indexer motor to an IndexerMode
+     * 
+     * @param mode The mode for the bottom motor
+     * 
+     * @return an InstantCommand that sets the motor
+     */
+    public Command commandSetBottom(IndexerState mode) {
+        return new InstantCommand(() -> {
+            this.setBottom(mode);
+        });
+    }
+
+    /**
+     * Stops both indexer motors
+     */
     public void stop() {
-        this.set(false,false);
+        this.set(IndexerState.OFF, IndexerState.OFF);
     }
 
+    /**
+     * Returns a command to stop both indexer motors
+     * 
+     * @return an InstantCommand to stop the indexer motors
+     */
     public Command commandStop() {
         return new InstantCommand(this::stop);
     }
