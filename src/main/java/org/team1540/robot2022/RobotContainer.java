@@ -17,14 +17,15 @@ import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
-import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
+import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -33,10 +34,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj.PneumaticHub;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -145,17 +144,25 @@ public class RobotContainer {
                 .add("NavX", navx)
                 .withWidget(BuiltInWidgets.kGyro);
 
+
+        // Indexer values
         ChickenSmartDashboard.putDefaultNumber("intake/speed", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/top", 0.2);
+        ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/bottom", 0.2);
 
         // PointToTarget values
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kD", 0.4);
-        SmartDashboard.putNumber("pointToTarget/pidOutput", 0);
-        SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", 0);
+        
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/pidClamp", 0.8);
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/targetDeadzoneDegrees", 2);
+
+        SmartDashboard.putNumber("pointToTarget/pidOutput", 0);
+        SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", 0);
+        
         SmartDashboard.putBoolean("pointToTarget/isClamping", false);
 
+        // Drivetrain values
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("tankDrive/maxVelocity", 0.8);
         ChickenSmartDashboard.putDefaultNumber("tankDrive/maxAcceleration", 0.5);
