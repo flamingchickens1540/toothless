@@ -13,11 +13,11 @@ public class IndexCommand extends SequentialCommandGroup {
         addRequirements(indexer);
         addCommands(
                 new ConditionalCommand(
-                        new IndexRollbackCommand(indexer,0.2,false),  // If (indexer is full)     -> stop indexer
+                        new IndexReverseCommand(indexer,0.2,false),  // If (indexer is full)     -> stop indexer
                         parallel(               // If (indexer is not full) -> run enclosed
                                 indexer.commandSetBottom(IndexerState.FORWARD), // Run bottom indexer
                                 new ConditionalCommand(       
-                                        new IndexRollbackCommand(indexer,0.2,true),     // If (top sensor blocked)     -> Stop top indexer motor
+                                        new IndexReverseCommand(indexer,0.2,true),     // If (top sensor blocked)     -> Stop top indexer motor
                                         indexer.commandSetTop(IndexerState.FORWARD), // If not (top sensor blocked) -> Run top indexer motor
                                         indexer::getTopSensor         // Condition for top indexer motor
                                 )

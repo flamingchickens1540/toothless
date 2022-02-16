@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class IndexRollbackCommand extends CommandBase {
+public class IndexReverseCommand extends CommandBase {
     private Timer timer = new Timer();
     private double duration;
     private Consumer<IndexerState> setterFunction;
@@ -19,7 +19,7 @@ public class IndexRollbackCommand extends CommandBase {
      * @param duration The duration to run in reverse for
      * @param isTop If the operation should be performed on the top motor
      */
-    public IndexRollbackCommand(Indexer indexer, double duration, boolean isTop) {
+    public IndexReverseCommand(Indexer indexer, double duration, boolean isTop) {
         this.setterFunction = isTop ? indexer::setTop : indexer::setBottom; // Store the function to set motors with based on the value of isTop
         this.duration = duration;
         addRequirements(indexer);
@@ -30,7 +30,7 @@ public class IndexRollbackCommand extends CommandBase {
      * @param indexer The indexer subsystem
      * @param isTop If the operation should be performed on the top motor
      */
-    public IndexRollbackCommand(Indexer indexer, boolean isTop) {
+    public IndexReverseCommand(Indexer indexer, boolean isTop) {
         if (isTop) {
             this.setterFunction = indexer::setTop;
             this.duration = SmartDashboard.getNumber("indexer/waitDuration/top", 0.2);
