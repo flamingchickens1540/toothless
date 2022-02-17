@@ -5,12 +5,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.utils.Limelight;
 
-public class VelocitySetCommand extends CommandBase {
+public class InterpolateVelocityCommand extends CommandBase {
     private final Shooter shooter;
     private final InterpolationTable interpolationTable;
     private final Limelight limelight;
 
-    public VelocitySetCommand(Shooter shooter, InterpolationTable interpolationTable, Limelight limelight) {
+    public InterpolateVelocityCommand(Shooter shooter, InterpolationTable interpolationTable, Limelight limelight) {
         this.shooter = shooter;
         this.interpolationTable = interpolationTable;
         this.limelight = limelight;
