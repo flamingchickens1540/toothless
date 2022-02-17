@@ -134,6 +134,9 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("tankDrive/maxVelocity", 0.8);
         ChickenSmartDashboard.putDefaultNumber("tankDrive/maxAcceleration", 0.5);
+
+        SmartDashboard.putNumber("shooter/tarmacDefaultFrontRPM", 1000);
+        SmartDashboard.putNumber("shooter/tarmacDefaultRearRPM", 1000);
     }
 
     public Command getAutonomousCommand() {
