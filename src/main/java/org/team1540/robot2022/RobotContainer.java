@@ -5,25 +5,7 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
-import org.team1540.robot2022.commands.drivetrain.AutoTest;
-import org.team1540.robot2022.commands.drivetrain.DriveTrain;
-import org.team1540.robot2022.commands.drivetrain.PointToTarget;
-import org.team1540.robot2022.commands.hood.Hood;
-import org.team1540.robot2022.commands.hood.HoodSetCommand;
-import org.team1540.robot2022.commands.intake.Intake;
-import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
-import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
-import org.team1540.robot2022.utils.Limelight;
-import org.team1540.robot2022.utils.ChickenSmartDashboard;
-import org.team1540.robot2022.utils.NavX;
-import org.team1540.robot2022.utils.RevBlinken;
-import org.team1540.robot2022.utils.RevBlinken.GameStage;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -32,7 +14,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj.PneumaticHub;
+import org.team1540.robot2022.commands.drivetrain.AutoTest;
+import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.PointToTarget;
+import org.team1540.robot2022.commands.hood.Hood;
+import org.team1540.robot2022.commands.hood.HoodSetCommand;
+import org.team1540.robot2022.commands.intake.Intake;
+import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
+import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
+import org.team1540.robot2022.utils.Limelight;
+import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.utils.RevBlinken;
+import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -58,9 +52,8 @@ public class RobotContainer {
     // Controllers
     public final XboxController driverController = new XboxController(0);
     public final XboxController copilotController = new XboxController(1);
-
-    private SendableChooser<Command> autoChooser = new SendableChooser<>();
     public final InterpolationTable interpolationTable = new InterpolationTable();
+    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -98,9 +91,9 @@ public class RobotContainer {
                 .whenPressed(new IntakeFoldCommand(intake, false));
 
         new JoystickButton(copilotController, Button.kLeftBumper.value)
-                .whileHeld(new IntakeSpinCommand(intake, 0.5));
+                .whileHeld(new IntakeSpinCommand(intake, Constants.IntakeConstants.speed));
         new JoystickButton(copilotController, Button.kRightBumper.value)
-                .whileHeld(new IntakeSpinCommand(intake, -0.5));
+                .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
     }
 
     private void initModeTransitionBindings() {
@@ -141,6 +134,9 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("tankDrive/maxVelocity", 0.8);
         ChickenSmartDashboard.putDefaultNumber("tankDrive/maxAcceleration", 0.5);
+
+        SmartDashboard.putNumber("shooter/tarmacDefaultFrontRPM", 1000);
+        SmartDashboard.putNumber("shooter/tarmacDefaultRearRPM", 1000);
     }
 
     public Command getAutonomousCommand() {
