@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.OdometryResetSequence;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 import org.team1540.robot2022.commands.hood.Hood;
@@ -25,6 +26,7 @@ import org.team1540.robot2022.utils.RepeatCommand;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -66,6 +68,9 @@ public class RobotContainer {
     // Controllers
     public final XboxController driverController = new XboxController(0);
     public final XboxController copilotController = new XboxController(1);
+
+    // Buttons
+    public final DigitalInput zeroOdometry = new DigitalInput(0);
     
     // Commands
     public final RepeatCommand indexCommand = new RepeatCommand(new IndexCommand(indexer));
@@ -125,6 +130,11 @@ public class RobotContainer {
                 .whileHeld(new IntakeSpinCommand(intake, Constants.IntakeConstants.speed));
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
+
+        // Button
+
+        new Trigger(zeroOdometry::get)
+                .whenActive(new OdometryResetSequence(driveTrain, navx, limelight));
 
         //SmartDashboard
         SmartDashboard.putData(new IntakeFoldCommand(intake, true));
