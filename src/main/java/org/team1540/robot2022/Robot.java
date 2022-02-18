@@ -7,7 +7,6 @@ package org.team1540.robot2022;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
-import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.utils.Limelight;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -107,7 +106,7 @@ public class Robot extends TimedRobot {
         }
 
         driveTrain.setNeutralMode(NeutralMode.Brake);
-        driveTrain.setDefaultCommand(new TankDriveCommand(driveTrain, driverXbox));
+        driveTrain.setDefaultCommand(robotContainer.tankDriveCommand);
         limelight.setLeds(true);
     }
 

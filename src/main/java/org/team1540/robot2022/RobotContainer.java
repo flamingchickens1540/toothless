@@ -5,15 +5,7 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
@@ -79,9 +71,6 @@ public class RobotContainer {
     public final RepeatCommand indexCommand = new RepeatCommand(new IndexCommand(indexer));
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer);
     public final TankDriveCommand tankDriveCommand = new TankDriveCommand(driveTrain, driverController);
-
-    // SmartDashboard
-    private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     // Misc
     public final InterpolationTable interpolationTable = new InterpolationTable();
