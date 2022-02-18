@@ -1,8 +1,22 @@
 package org.team1540.robot2022;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+
+import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 public class RamseteConfig {
     // Calculated in frc-characterization
@@ -34,4 +48,81 @@ public class RamseteConfig {
             kDriveKinematics,
             10);
 
+    // RamseteCommand Defaults
+    public static final RamseteController ramseteController = new RamseteController(kRamseteB, kRamseteZeta);
+    public static final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(ksVolts, kvVoltSecondsPerMeter,
+            kaVoltSecondsSquaredPerMeter);
+    public static final PIDController leftPID = new PIDController(SmartDashboard.getNumber("ramsetePID/kP", 0.5), 0, 0);
+    public static final PIDController rightPID = new PIDController(SmartDashboard.getNumber("ramsetePID/kP", 0.5), 0,
+            0);
+
+    /**
+     * Returns a new {@link RamseteCommand} with constants pre-filled for
+     * convenience
+     * 
+     * @param driveTrain The drivetrain subsystem
+     * @param trajectory The trajectory to follow with the command
+     * @return A RamseteCommand to follow the trajectory
+     */
+    public static RamseteCommand getRamseteCommand(DriveTrain driveTrain, Trajectory trajectory) {
+        return getRamseteCommand(driveTrain, trajectory, leftPID, rightPID);
+    }
+
+    /**
+     * Returns a new {@link RamseteCommand} with constants pre-filled for
+     * convenience
+     * 
+     * @param driveTrain The drivetrain subsystem
+     * @param trajectory The trajectory to follow with the command
+     * @param leftPID    A PID controller to use for the left wheels
+     * @param rightPID   A PID controller to use for the right wheels
+     * @return A RamseteCommand to follow the trajectory
+     */
+    public static RamseteCommand getRamseteCommand(DriveTrain driveTrain, Trajectory trajectory, PIDController leftPID,
+            PIDController rightPID) {
+        return new RamseteCommand(
+                trajectory,
+                driveTrain::getPose,
+                RamseteConfig.ramseteController,
+                RamseteConfig.feedForward,
+                RamseteConfig.kDriveKinematics,
+                driveTrain::getWheelSpeeds,
+                leftPID,
+                rightPID,
+                driveTrain::tankDriveVolts,
+                driveTrain);
+    }
+
+    /**
+     * Returns a new {@link RamseteCommand} with trajectory and constants pre-filled
+     * for convenience
+     * 
+     * @param driveTrain     The drivetrain subsystem
+     * @param trajectoryName The name of the trajectory file relative to the
+     *                       <code>deploy/paths</code> directory.
+     * @return A RamseteCommand to follow the trajectory
+     */
+    public static RamseteCommand getRamseteCommand(DriveTrain driveTrain, String trajectoryName) {
+        Path trajectoryPath = getTrajectoryPath(trajectoryName);
+        Trajectory trajectory;
+
+        try {
+            trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+        } catch (IOException ex) {
+
+            File file = trajectoryPath.toFile();
+
+            if (!file.exists()) {
+                DriverStation.reportError("File does not exist! "+ex.getLocalizedMessage(), ex.getStackTrace());
+            } else if (!file.canRead()) {
+                DriverStation.reportError("File can't be read! "+ex.getLocalizedMessage(), ex.getStackTrace());
+            }
+            trajectory = new Trajectory();
+        }
+        return getRamseteCommand(driveTrain, trajectory);
+    }
+
+    public static Path getTrajectoryPath(String trajectoryName) {
+        return Filesystem.getDeployDirectory().toPath().resolve("paths").resolve(trajectoryName);
+    }
 }
