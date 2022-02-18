@@ -61,8 +61,9 @@ public class TankDriveCommand extends CommandBase {
     }
 
     public void execute() {
-        double valueL = applyLimits(controller.getLeftY(), leftRateLimiter);
-        double valueR = applyLimits(controller.getRightY(), rightRateLimiter);
+        // Reverse controls so it drives intake-first
+        double valueR = -applyLimits(controller.getLeftY(), leftRateLimiter);
+        double valueL = -applyLimits(controller.getRightY(), rightRateLimiter);
         drivetrain.setPercent(valueL, valueR);
     }
 }
