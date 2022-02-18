@@ -28,7 +28,6 @@ public class Robot extends TimedRobot {
     private RobotContainer robotContainer;
     
     private DriveTrain driveTrain;
-    private Indexer indexer;
 
 
     private Limelight limelight;
@@ -48,7 +47,6 @@ public class Robot extends TimedRobot {
         this.robotContainer = new RobotContainer();
         this.driveTrain = robotContainer.driveTrain;
         this.limelight = robotContainer.limelight;
-        this.indexer = robotContainer.indexer;
     }
 
     /**
@@ -103,7 +101,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        robotContainer.ph.disableCompressor();
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }

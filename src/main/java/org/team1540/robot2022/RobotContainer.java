@@ -13,7 +13,6 @@ import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.hood.HoodSetCommand;
 import org.team1540.robot2022.commands.indexer.IndexCommand;
-import org.team1540.robot2022.commands.indexer.IndexReverseCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
 import org.team1540.robot2022.commands.intake.Intake;
@@ -39,8 +38,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 

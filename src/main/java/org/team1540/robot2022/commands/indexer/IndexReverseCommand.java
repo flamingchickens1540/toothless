@@ -5,9 +5,7 @@ import java.util.function.Consumer;
 
 import org.team1540.robot2022.commands.indexer.Indexer.IndexerState;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class IndexReverseCommand extends CommandBase {
@@ -42,14 +40,12 @@ public class IndexReverseCommand extends CommandBase {
         this.duration = 0.7;
         setterFunction.accept(IndexerState.REVERSE);
         hasCompleted = false;
-        System.out.println("Reverse Initialized!");
         
     }
 
     @Override
     public void execute() {
         if (timer.hasElapsed(duration) && !hasCompleted) {
-            DriverStation.reportWarning("Execute elapsed! - "+duration, false);
             setterFunction.accept(IndexerState.OFF);
             hasCompleted = true;
         }
