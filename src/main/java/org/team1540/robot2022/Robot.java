@@ -7,11 +7,9 @@ package org.team1540.robot2022;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
-import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 import org.team1540.robot2022.utils.Limelight;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -27,8 +25,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
 
     private RobotContainer robotContainer;
+    
     private DriveTrain driveTrain;
-    private XboxController driverXbox;
+
+
     private Limelight limelight;
 
     private Command autonomousCommand;
@@ -45,7 +45,6 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         this.robotContainer = new RobotContainer();
         this.driveTrain = robotContainer.driveTrain;
-        this.driverXbox = robotContainer.driverController;
         this.limelight = robotContainer.limelight;
     }
 
@@ -89,6 +88,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         driveTrain.setNeutralMode(NeutralMode.Brake);
         autonomousCommand = robotContainer.getAutonomousCommand();
+        
         if (autonomousCommand != null) {
             autonomousCommand.schedule();
         }
@@ -104,8 +104,9 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+
         driveTrain.setNeutralMode(NeutralMode.Brake);
-        driveTrain.setDefaultCommand(new TankDriveCommand(driveTrain, driverXbox));
+        driveTrain.setDefaultCommand(robotContainer.tankDriveCommand);
         limelight.setLeds(true);
     }
 

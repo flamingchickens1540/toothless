@@ -55,18 +55,18 @@ public final class Constants {
 
     public static final class IndexerConstants {
         public static final class IndexerMotors {
-            public static final int bottomMotor = 5;
-            public static final int topMotor = 6;
+            public static final int bottomMotor = 6;
+            public static final int topMotor = 7;
 
             public static final CurrentLimitConfig currentLimitConfig = new CurrentLimitConfig(20, 25, 1, 10, 15, 0.5);
         }
         public static final class BeamBreaks {
-            public static final int topIndexerSensor = 1;
-            public static final int bottomIndexerSensor = 2;
+            public static final int topIndexerSensor = 8;
+            public static final int bottomIndexerSensor = 9;
         }
 
         public static final double topPercent = 0.5;
-        public static final double bottomPercent = 0.5;
+        public static final double bottomPercent = 0.8;
     }
 
     public static final class LightConstants {
