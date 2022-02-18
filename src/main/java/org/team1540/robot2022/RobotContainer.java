@@ -5,7 +5,17 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
@@ -18,28 +28,8 @@ import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
-import org.team1540.robot2022.utils.ChickenSmartDashboard;
-import org.team1540.robot2022.utils.Limelight;
-import org.team1540.robot2022.utils.NavX;
-import org.team1540.robot2022.utils.RepeatCommand;
-import org.team1540.robot2022.utils.RevBlinken;
+import org.team1540.robot2022.utils.*;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -66,7 +56,7 @@ public class RobotContainer {
     // Controllers
     public final XboxController driverController = new XboxController(0);
     public final XboxController copilotController = new XboxController(1);
-    
+
     // Commands
     public final RepeatCommand indexCommand = new RepeatCommand(new IndexCommand(indexer));
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer);
@@ -75,10 +65,6 @@ public class RobotContainer {
     // Misc
     public final InterpolationTable interpolationTable = new InterpolationTable();
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-
-
-
-    
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -109,12 +95,12 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kX.value)
                 // .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(indexCommand);
-                
-        
+
+
         new JoystickButton(copilotController, Button.kY.value)
                 .cancelWhenPressed(indexCommand)
                 .whenPressed(indexerEjectCommand);
-                
+
 
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
@@ -174,13 +160,13 @@ public class RobotContainer {
         // PointToTarget values
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kD", 0.4);
-        
+
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/pidClamp", 0.8);
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/targetDeadzoneDegrees", 2);
 
         SmartDashboard.putNumber("pointToTarget/pidOutput", 0);
         SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", 0);
-        
+
         SmartDashboard.putBoolean("pointToTarget/isClamping", false);
 
         // Drivetrain values
