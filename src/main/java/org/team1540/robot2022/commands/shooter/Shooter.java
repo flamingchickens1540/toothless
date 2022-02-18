@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
+import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
 
 public class Shooter extends SubsystemBase {
     private final double kP = 0.5;
@@ -87,5 +88,18 @@ public class Shooter extends SubsystemBase {
 
     public Command commandStop() {
         return new InstantCommand(this::stop, this);
+    }
+
+    /**
+     * Factory method to set shooter velocity
+     * @param front velocity RPM
+     * @param rear velocity RPM
+     * @return new InstantCommand
+     */
+    public Command commandSetVelocity(double front, double rear) {
+        return new InstantCommand(() -> {
+            shooterMotorFront.set(TalonFXControlMode.Velocity, front);
+            shooterMotorRear.set(TalonFXControlMode.Velocity, rear);
+        }, this);
     }
 }
