@@ -118,6 +118,7 @@ public class Indexer extends SubsystemBase {
      * @param onPercent the speed to use for running forward and reverse
      */
     private void setMotor(TalonFX motor, IndexerState mode, double onPercent) {
+        System.out.println(""+mode+" "+onPercent);
         switch (mode) {
             case FORWARD:
                 motor.set(ControlMode.PercentOutput, onPercent);

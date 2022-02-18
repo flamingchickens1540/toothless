@@ -103,14 +103,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        robotContainer.ph.disableCompressor();
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
 
         driveTrain.setNeutralMode(NeutralMode.Brake);
         driveTrain.setDefaultCommand(robotContainer.tankDriveCommand);
-
-        indexer.setDefaultCommand(robotContainer.indexCommand);
     }
 
     /** This function is called periodically during operator control. */

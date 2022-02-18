@@ -13,13 +13,16 @@ import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.hood.HoodSetCommand;
 import org.team1540.robot2022.commands.indexer.IndexCommand;
+import org.team1540.robot2022.commands.indexer.IndexReverseCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
+import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.utils.RepeatCommand;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
@@ -34,6 +37,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -64,7 +71,8 @@ public class RobotContainer {
     public final XboxController copilotController = new XboxController(1);
 
     // Commands
-    public final IndexCommand indexCommand = new IndexCommand(indexer);
+    public final RepeatCommand indexCommand = new RepeatCommand(new IndexCommand(indexer));
+    public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer);
     public final TankDriveCommand tankDriveCommand = new TankDriveCommand(driveTrain, driverController);
 
     // SmartDashboard
@@ -84,6 +92,7 @@ public class RobotContainer {
         initSmartDashboard();
         configureButtonBindings();
         initModeTransitionBindings();
+        DriverStation.silenceJoystickConnectionWarning(false);
     }
 
     /**
@@ -102,20 +111,34 @@ public class RobotContainer {
                 .whenHeld(new PointToTarget(driveTrain, limelight));
 
         // Copilot
-        new JoystickButton(copilotController, Button.kA.value)
-                .whenPressed(new HoodSetCommand(hood, true));
-        new JoystickButton(copilotController, Button.kB.value)
-                .whenPressed(new HoodSetCommand(hood, false));
-
         new JoystickButton(copilotController, Button.kX.value)
-                .whenPressed(new IntakeFoldCommand(intake, true));
+                // .cancelWhenPressed(indexerEjectCommand)
+                .whenPressed(indexCommand);
+                
+        
         new JoystickButton(copilotController, Button.kY.value)
-                .whenPressed(new IntakeFoldCommand(intake, false));
+                .cancelWhenPressed(indexCommand)
+                .whenPressed(indexerEjectCommand);
+                
+
+        new JoystickButton(copilotController, Button.kA.value)
+                .cancelWhenPressed(indexerEjectCommand)
+                .cancelWhenPressed(indexCommand);
+
 
         new JoystickButton(copilotController, Button.kLeftBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, 0.5));
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, -0.5));
+
+        //SmartDashboard
+        SmartDashboard.putData(new IntakeFoldCommand(intake, true));
+        SmartDashboard.putData(new IntakeFoldCommand(intake, false));
+
+        SmartDashboard.putData(new HoodSetCommand(hood, true));
+        SmartDashboard.putData(new HoodSetCommand(hood, false));
+
+        SmartDashboard.putData(new InstantCommand(ph::disableCompressor));
     }
 
     private void initModeTransitionBindings() {
@@ -138,7 +161,10 @@ public class RobotContainer {
 
     private void initSmartDashboard() {
         autoChooser.addOption("Test Auto", new AutoTest(driveTrain));
+
+
         SmartDashboard.putData(autoChooser);
+        SmartDashboard.putData(CommandScheduler.getInstance());
 
         Shuffleboard.getTab("SmartDashboard")
                 .add("NavX", navx)
