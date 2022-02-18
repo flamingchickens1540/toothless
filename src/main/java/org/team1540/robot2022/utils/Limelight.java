@@ -26,7 +26,7 @@ public class Limelight {
     public Limelight(String name) {
         limelightTable = NetworkTableInstance.getDefault().getTable(name);
         SmartDashboard.putNumber("limelight/calculatedDistance", 0);
-        limelight.setLeds(false);
+        setLeds(false);
     }
 
     public NetworkTable getNetworkTable() {
