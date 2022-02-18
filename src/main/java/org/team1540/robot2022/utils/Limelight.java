@@ -14,9 +14,9 @@ public class Limelight {
     private static final double VERTICAL_FOV = Math.toRadians(49.7);
     private static final Vector2d CAM_RESOLUTION = new Vector2d(320, 240);
     private final NetworkTable limelightTable;
-    private double limelightHeight = 0.94; // 37in to m
-    private double limelightAngle = Math.toRadians(25.5);
-    private double targetHeight = 2.64; // 8f8in to m
+    private final double limelightHeight = 0.94; // 37in to m
+    private final double limelightAngle = Math.toRadians(25.5);
+    private final double targetHeight = 2.64; // 8f8in to m
 
     /**
      * Constructs a new limelight interface with the default hostname.
@@ -26,7 +26,7 @@ public class Limelight {
     public Limelight(String name) {
         limelightTable = NetworkTableInstance.getDefault().getTable(name);
         SmartDashboard.putNumber("limelight/calculatedDistance", 0);
-        // setLeds(false);
+        setLeds(false);
     }
 
     public NetworkTable getNetworkTable() {
@@ -47,15 +47,13 @@ public class Limelight {
 
     /**
      * Gets the current calculated distance of the limelight to the base of the hub.
-     * 
+     *
      * @return the distance in meters
      */
     public double getCalculatedDistance() {
-        double d = 0;
         double theta = Math.toRadians(getTargetAngles().y) + limelightAngle;
         double actualHeight = targetHeight - limelightHeight;
-        d = actualHeight / Math.tan(theta);
-        return d;
+        return actualHeight / Math.tan(theta);
     }
 
     /**

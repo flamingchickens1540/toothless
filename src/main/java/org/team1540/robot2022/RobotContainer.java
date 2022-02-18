@@ -5,7 +5,15 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
@@ -66,7 +74,7 @@ public class RobotContainer {
     // Controllers
     public final XboxController driverController = new XboxController(0);
     public final XboxController copilotController = new XboxController(1);
-
+    
     // Commands
     public final RepeatCommand indexCommand = new RepeatCommand(new IndexCommand(indexer));
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer);
@@ -77,6 +85,7 @@ public class RobotContainer {
 
     // Misc
     public final InterpolationTable interpolationTable = new InterpolationTable();
+    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 
 
@@ -124,9 +133,9 @@ public class RobotContainer {
 
 
         new JoystickButton(copilotController, Button.kLeftBumper.value)
-                .whileHeld(new IntakeSpinCommand(intake, 0.5));
+                .whileHeld(new IntakeSpinCommand(intake, Constants.IntakeConstants.speed));
         new JoystickButton(copilotController, Button.kRightBumper.value)
-                .whileHeld(new IntakeSpinCommand(intake, -0.5));
+                .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
 
         //SmartDashboard
         SmartDashboard.putData(new IntakeFoldCommand(intake, true));
@@ -189,6 +198,9 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("tankDrive/maxVelocity", 0.8);
         ChickenSmartDashboard.putDefaultNumber("tankDrive/maxAcceleration", 0.5);
+
+        SmartDashboard.putNumber("shooter/tarmacDefaultFrontRPM", 1000);
+        SmartDashboard.putNumber("shooter/tarmacDefaultRearRPM", 1000);
     }
 
     public Command getAutonomousCommand() {

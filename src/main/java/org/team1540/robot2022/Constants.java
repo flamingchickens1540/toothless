@@ -42,6 +42,8 @@ public final class Constants {
         public static final int solenoid = 3;
         public static final int falcon = 5;
         public static final CurrentLimitConfig currentLimitConfig = new CurrentLimitConfig(20, 25, 1, 10, 15, 0.5);
+
+        public static final double speed = 0.75;
     }
 
     public static final class ShooterConstants {

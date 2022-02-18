@@ -78,6 +78,7 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
+        limelight.setLeds(false);
     }
 
     @Override
@@ -106,7 +107,8 @@ public class Robot extends TimedRobot {
         }
 
         driveTrain.setNeutralMode(NeutralMode.Brake);
-        driveTrain.setDefaultCommand(robotContainer.tankDriveCommand);
+        driveTrain.setDefaultCommand(new TankDriveCommand(driveTrain, driverXbox));
+        limelight.setLeds(true);
     }
 
     /** This function is called periodically during operator control. */

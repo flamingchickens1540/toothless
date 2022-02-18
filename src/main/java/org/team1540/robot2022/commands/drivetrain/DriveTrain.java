@@ -2,11 +2,6 @@ package org.team1540.robot2022.commands.drivetrain;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
-import org.team1540.robot2022.Constants.DriveConstants.Motors;
-import org.team1540.robot2022.utils.ChickenTalonFX;
-import org.team1540.robot2022.utils.NavX;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -14,15 +9,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2022.Constants.DriveConstants.Motors;
+import org.team1540.robot2022.utils.ChickenTalonFX;
+import org.team1540.robot2022.utils.NavX;
 
 public class DriveTrain extends SubsystemBase {
     private final ChickenTalonFX driveLFront = new ChickenTalonFX(Motors.leftFront);
     private final ChickenTalonFX driveLRear = new ChickenTalonFX(Motors.leftRear);
     private final ChickenTalonFX driveRFront = new ChickenTalonFX(Motors.rightFront);
     private final ChickenTalonFX driveRRear = new ChickenTalonFX(Motors.rightRear);
-    private final ChickenTalonFX[] driveL = { driveLFront, driveLRear };
-    private final ChickenTalonFX[] driveR = { driveRFront, driveRRear };
-    private final ChickenTalonFX[] driveMotors = { driveLFront, driveLRear, driveRFront, driveRRear };
+    private final ChickenTalonFX[] driveL = {driveLFront, driveLRear};
+    private final ChickenTalonFX[] driveR = {driveRFront, driveRRear};
+    private final ChickenTalonFX[] driveMotors = {driveLFront, driveLRear, driveRFront, driveRRear};
     private final NavX navx;
     private final DifferentialDriveOdometry driveOdometry;
 
@@ -62,17 +60,15 @@ public class DriveTrain extends SubsystemBase {
         }
     }
 
-
     /**
      * Returns the current wheel speeds of the robot.
-     * 
+     *
      * @return The current wheel speeds.
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
         return new DifferentialDriveWheelSpeeds(
                 driveLFront.getRateMetersPerSecond(),
                 driveRFront.getRateMetersPerSecond());
-
     }
 
     /**
@@ -80,14 +76,9 @@ public class DriveTrain extends SubsystemBase {
      *
      * @param pose The pose to which to set the odometry.
      */
-
-
     public void resetOdometry(Pose2d pose) {
-
         resetEncoders();
-
         driveOdometry.resetPosition(pose, navx.getRotation2d());
-
     }
 
     /**
@@ -99,7 +90,9 @@ public class DriveTrain extends SubsystemBase {
         return driveOdometry.getPoseMeters();
     }
 
-    /** Zeroes the heading of the robot. */
+    /**
+     * Zeroes the heading of the robot.
+     */
     public void zeroHeading() {
         navx.reset();
     }
@@ -128,6 +121,5 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putNumber("rightVolts", rightVolts);
         driveLFront.setVoltage(leftVolts);
         driveRFront.setVoltage(rightVolts);
-
     }
 }
