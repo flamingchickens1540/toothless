@@ -20,11 +20,9 @@ public class Auto4BallSequence extends SequentialCommandGroup {
             deadline( // End this command when the path sequence is done
                 sequence (                          // Run the path sequence
                     RamseteConfig.getRamseteCommand(driveTrain, "2ball.posA.path1.wpilib.json"), // Path follow to collect first ball
-                    new PointToTarget(driveTrain, limelight),                                    // Point towards target with limelight
-                    new ShootSequence(shooter, indexer, indexCommand),                           // Shoot the 2 indexed balls (starts with one, collects one)
+                    new ShootSequence(shooter, indexer, driveTrain, limelight, indexCommand),    // Shoot the 2 indexed balls (starts with one, collects one)
                     RamseteConfig.getRamseteCommand(driveTrain, "4ball.posA.path2.wpilib.json"), // Path follow to collect second and third balls ball
-                    new PointToTarget(driveTrain, limelight),                                    // Point towards target with limelight
-                    new ShootSequence(shooter, indexer, indexCommand)                            // Shoot the 2 indexed balls (collects both)
+                    new ShootSequence(shooter, indexer, driveTrain, limelight, indexCommand)     // Shoot the 2 indexed balls (collects both)
                 ),
                 sequence(
                     new IntakeFoldCommand(intake, false), // Lower the intake

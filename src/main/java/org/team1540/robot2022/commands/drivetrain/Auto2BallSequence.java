@@ -30,9 +30,8 @@ public class Auto2BallSequence extends SequentialCommandGroup {
         addCommands( 
             deadline( // End this command when the path sequence is done
                 sequence (                          // Run the path sequence
-                    RamseteConfig.getRamseteCommand(driveTrain, trajectoryFile), // Path follow to collect first ball
-                    new PointToTarget(driveTrain, limelight),                    // Point towards target with limelight
-                    new ShootSequence(shooter, indexer, indexCommand)            // Shoot the 2 indexed balls (starts with one, collects one)
+                    RamseteConfig.getRamseteCommand(driveTrain, trajectoryFile),             // Path follow to collect first ball
+                    new ShootSequence(shooter, indexer, driveTrain, limelight, indexCommand) // Shoot the 2 indexed balls (starts with one, collects one)
                 ),
                 sequence(
                     new IntakeFoldCommand(intake, false), // Lower the intake
