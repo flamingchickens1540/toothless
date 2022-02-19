@@ -46,6 +46,7 @@ public class DriveTrain extends SubsystemBase {
         }
         driveLRear.follow(driveLFront);
         driveRRear.follow(driveRFront);
+        updatePID();
     }
 
     @Override
@@ -126,5 +127,11 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putNumber("driveTrain/auto/rightVolts", rightVolts);
         driveLFront.setVoltage(leftVolts);
         driveRFront.setVoltage(rightVolts);
+    }
+
+    private void updatePID() {
+        for (TalonFX motor: driveMotors) {
+            motor.config_kP(0, SmartDashboard.getNumber("driveTrain/PID/kP", 0.3));
+        }
     }
 }
