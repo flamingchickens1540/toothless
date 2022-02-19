@@ -10,14 +10,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TankDriveCommand extends CommandBase {
     private final double deadzone = 0.15;
-    private final DriveTrain drivetrain;
+    private final Drivetrain drivetrain;
     private final XboxController controller;
     private SlewRateLimiter rateLimiter = new SlewRateLimiter(
-            SmartDashboard.getNumber("driveTrain/tankDrive/maxAcceleration", 0.5));
+            SmartDashboard.getNumber("drivetrain/tankDrive/maxAcceleration", 0.5));
 
-    public TankDriveCommand(DriveTrain drivetrain, XboxController controller) {
+    public TankDriveCommand(Drivetrain drivetrain, XboxController controller) {
         NetworkTableInstance.getDefault()
-                .getEntry("SmartDashboard/driveTrain/tankDrive/maxAcceleration")
+                .getEntry("SmartDashboard/drivetrain/tankDrive/maxAcceleration")
                 .addListener(this::limitUpdateListener, EntryListenerFlags.kUpdate);
         this.drivetrain = drivetrain;
         this.controller = controller;
@@ -40,7 +40,7 @@ public class TankDriveCommand extends CommandBase {
             percent = -1;
         else
             percent = inputPercent;
-        double maximumSpeed = SmartDashboard.getNumber("driveTrain/tankDrive/maxVelocity", 1);
+        double maximumSpeed = SmartDashboard.getNumber("drivetrain/tankDrive/maxVelocity", 1);
         return percent * maximumSpeed;
     }
 
@@ -90,23 +90,23 @@ public class TankDriveCommand extends CommandBase {
 
         double valueR = applyJoystickModifiers(controller.getLeftY());
         double valueL = applyJoystickModifiers(controller.getRightY());
-        SmartDashboard.putNumber("driveTrain/tankDrive/debug/valueL", valueL);
-        SmartDashboard.putNumber("driveTrain/tankDrive/debug/valueR", valueR);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/valueL", valueL);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/valueR", valueR);
         
         double combined = Math.abs(valueR) + Math.abs(valueL);
 
         double ratioL = valueL / combined;
         double ratioR = valueR / combined;
-        SmartDashboard.putNumber("driveTrain/tankDrive/debug/ratioL", ratioL);
-        SmartDashboard.putNumber("driveTrain/tankDrive/debug/ratioR", ratioR);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/ratioL", ratioL);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/ratioR", ratioR);
 
         double total = applyLimiter(combined / 2) * 2.0;
-        SmartDashboard.putNumber("driveTrain/tankDrive/debug/total", total);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/total", total);
 
         double leftCalculated = ratioL * total;
         double rightCalculated = ratioR * total;
-        SmartDashboard.putNumber("driveTrain/tankDrive/debug/calcL", leftCalculated);
-        SmartDashboard.putNumber("driveTrain/tankDrive/debug/calcR", rightCalculated);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/calcL", leftCalculated);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/calcR", rightCalculated);
         
         drivetrain.setPercent(leftCalculated, rightCalculated);
     }

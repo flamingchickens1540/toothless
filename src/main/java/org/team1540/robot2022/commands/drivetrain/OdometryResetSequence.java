@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 public class OdometryResetSequence extends ParallelCommandGroup {
     //TODO: Set these to actual values
     public Pose2d zeroPose = new Pose2d(new Translation2d(1, 2), new Rotation2d(3, 4));
-    public OdometryResetSequence(DriveTrain driveTrain, NavX navx, Limelight limelight) {
+    public OdometryResetSequence(Drivetrain drivetrain, NavX navx, Limelight limelight) {
         boolean initialLightState = limelight.getLeds();
         addCommands(
             sequence( // Flash Limelight LEDs as confirmation
@@ -21,7 +21,7 @@ public class OdometryResetSequence extends ParallelCommandGroup {
                 new WaitCommand(0.5),
                 new InstantCommand(() -> {limelight.setLeds(initialLightState);})
             ),
-            new InstantCommand(() -> {driveTrain.resetOdometry(zeroPose);}) // Reset odometry to known starting pose
+            new InstantCommand(() -> {drivetrain.resetOdometry(zeroPose);}) // Reset odometry to known starting pose
 
         );
     }

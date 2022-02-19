@@ -14,7 +14,6 @@ public class IndexReverseCommand extends CommandBase {
     private Consumer<IndexerState> setterFunction;
     private BooleanSupplier shouldEnd;
     private boolean hasCompleted = false;
-    private boolean isTop;
 
     /**
      * Constructs an IndexRollbackCommand that will run part of the indexer backwards for a duration from SmartDashboard, then stop

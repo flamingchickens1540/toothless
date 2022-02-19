@@ -17,7 +17,7 @@ public class Auto2BallSequence extends SequentialCommandGroup {
 
     /**
      * Constructs a new Auto2Ball Sequence
-     * @param driveTrain The drivetrain subsystem (For driving)
+     * @param drivetrain The drivetrain subsystem (For driving)
      * @param intake The intake subsystem (For collecting balls)
      * @param indexer The indexer subsystem (For collecting balls and ShootSequence)
      * @param shooter The shooter subsystem (For ShootSequence)
@@ -25,14 +25,13 @@ public class Auto2BallSequence extends SequentialCommandGroup {
      * @param indexCommand The indexCommand (for cancelling and rescheduling)
      * @param isPosA If the robot is positioned in the upper right or bottom left starting position
      */
-    public Auto2BallSequence(DriveTrain driveTrain, Intake intake, Indexer indexer, Shooter shooter, Limelight limelight, RepeatCommand indexCommand, boolean isPosA) {
+    public Auto2BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Limelight limelight, RepeatCommand indexCommand, boolean isPosA) {
         String trajectoryFile = "2ball.pos"+(isPosA?"A":"B")+".path1.wpilib.json";
         addCommands( 
             deadline( // End this command when the path sequence is done
                 sequence (                          // Run the path sequence
-                    RamseteConfig.getRamseteCommand(driveTrain, trajectoryFile), // Path follow to collect first ball
-                    new PointToTarget(driveTrain, limelight),                    // Point towards target with limelight
-                    new ShootSequence(shooter, indexer, indexCommand)            // Shoot the 2 indexed balls (starts with one, collects one)
+                    RamseteConfig.getRamseteCommand(drivetrain, trajectoryFile),             // Path follow to collect first ball
+                    new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand) // Shoot the 2 indexed balls (starts with one, collects one)
                 ),
                 sequence(
                     new IntakeFoldCommand(intake, false), // Lower the intake

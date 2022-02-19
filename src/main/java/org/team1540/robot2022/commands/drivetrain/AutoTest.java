@@ -22,9 +22,9 @@ public class AutoTest extends SequentialCommandGroup {
     private String trajectoryJSON = "paths/test.path2.wpilib.json";
     private Trajectory trajectory = new Trajectory();
 
-    private DriveTrain driveTrain;
+    private Drivetrain drivetrain;
 
-    public AutoTest(DriveTrain driveTrain) {
+    public AutoTest(Drivetrain drivetrain) {
         Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
         try {
             trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
@@ -36,33 +36,33 @@ public class AutoTest extends SequentialCommandGroup {
             DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
         }
 
-        this.driveTrain = driveTrain;
-        addCommands(getRamseteCommand(trajectory), driveTrain.commandStop());
-        addRequirements(driveTrain);
+        this.drivetrain = drivetrain;
+        addCommands(getRamseteCommand(trajectory), drivetrain.commandStop());
+        addRequirements(drivetrain);
     }
 
     private RamseteCommand getRamseteCommand(Trajectory trajectory) {
         return new RamseteCommand(
                 trajectory,                                                                 // The trajectory to follow.
-                driveTrain::getPose,                                                        // A function that supplies the robot pose
+                drivetrain::getPose,                                                        // A function that supplies the robot pose
                 new RamseteController(RamseteConfig.kRamseteB, RamseteConfig.kRamseteZeta), // The RAMSETE controller used to follow the trajectory.
                 new SimpleMotorFeedforward(                                                 // The feedforward to use for the drive.
                         RamseteConfig.ksVolts,
                         RamseteConfig.kvVoltSecondsPerMeter,
                         RamseteConfig.kaVoltSecondsSquaredPerMeter),
                 RamseteConfig.kDriveKinematics,                                             // The kinematics for the robot drivetrain.
-                driveTrain::getWheelSpeeds,                                                 // A function that supplies the speeds of the left and right sides of the robot
+                drivetrain::getWheelSpeeds,                                                 // A function that supplies the speeds of the left and right sides of the robot
                 new PIDController(SmartDashboard.getNumber("ramsetePID/kP", 0.5), 0, 0),                          // Left PID controller
                 new PIDController(SmartDashboard.getNumber("ramsetePID/kP", 0.5), 0, 0),                          // Right PID controller
-                driveTrain::setVolts,                                                 // RamseteCommand passes volts to the callback
-                driveTrain                                                                  // Subsystem requirements
+                drivetrain::setVolts,                                                 // RamseteCommand passes volts to the callback
+                drivetrain                                                                  // Subsystem requirements
         );
     }
 
     @Override
     public void initialize() {
-        driveTrain.zeroHeading();
-        driveTrain.resetOdometry(trajectory.getInitialPose());
+        drivetrain.zeroHeading();
+        drivetrain.resetOdometry(trajectory.getInitialPose());
         super.initialize();
     }
 }

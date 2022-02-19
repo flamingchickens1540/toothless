@@ -9,13 +9,13 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class PointToTarget extends CommandBase {
     private final double LIMELIGHT_HORIZONTAL_FOV = 29.8;
-    private final DriveTrain drivetrain;
+    private final Drivetrain drivetrain;
     private final Limelight limelight;
 
     // A little testing says kP=0.7 and kD=0.4 are fairly strong.
     private final MiniPID pid = new MiniPID(1, 0, 0);
 
-    public PointToTarget(DriveTrain drivetrain, Limelight limelight) {
+    public PointToTarget(Drivetrain drivetrain, Limelight limelight) {
         this.drivetrain = drivetrain;
         this.limelight = limelight;
         addRequirements(drivetrain);
@@ -60,13 +60,13 @@ public class PointToTarget extends CommandBase {
 
             double valueL = multiplier * -pidOutput;
             double valueR = multiplier * pidOutput;
-//            System.out.println(valueL + ", " + valueR);
+
             drivetrain.setPercent(valueL, valueR);
         }
     }
 
     public void end(boolean isInterrupted) {
-        drivetrain.setPercent(0, 0);
+        drivetrain.stopMotors();
         limelight.setLeds(false);
     }
 }
