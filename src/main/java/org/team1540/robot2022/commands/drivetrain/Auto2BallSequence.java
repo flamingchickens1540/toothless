@@ -15,13 +15,24 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class Auto2BallSequence extends SequentialCommandGroup {
 
-    public Auto2BallSequence(DriveTrain driveTrain, Intake intake, Indexer indexer, Shooter shooter, Limelight limelight, RepeatCommand indexCommand) {
+    /**
+     * Constructs a new Auto2Ball Sequence
+     * @param driveTrain The drivetrain subsystem (For driving)
+     * @param intake The intake subsystem (For collecting balls)
+     * @param indexer The indexer subsystem (For collecting balls and ShootSequence)
+     * @param shooter The shooter subsystem (For ShootSequence)
+     * @param limelight The limelight (For PointToTarget)
+     * @param indexCommand The indexCommand (for cancelling and rescheduling)
+     * @param isPosA If the robot is positioned in the upper right or bottom left starting position
+     */
+    public Auto2BallSequence(DriveTrain driveTrain, Intake intake, Indexer indexer, Shooter shooter, Limelight limelight, RepeatCommand indexCommand, boolean isPosA) {
+        String trajectoryFile = "2ball.pos"+(isPosA?"A":"B")+".path1.wpilib.json";
         addCommands( 
             deadline( // End this command when the path sequence is done
                 sequence (                          // Run the path sequence
-                    RamseteConfig.getRamseteCommand(driveTrain, "2ball.posA.path1.wpilib.json"), // Path follow to collect first ball
-                    new PointToTarget(driveTrain, limelight),                                    // Point towards target with limelight
-                    new ShootSequence(shooter, indexer, indexCommand)                            // Shoot the 2 indexed balls (starts with one, collects one)
+                    RamseteConfig.getRamseteCommand(driveTrain, trajectoryFile), // Path follow to collect first ball
+                    new PointToTarget(driveTrain, limelight),                    // Point towards target with limelight
+                    new ShootSequence(shooter, indexer, indexCommand)            // Shoot the 2 indexed balls (starts with one, collects one)
                 ),
                 sequence(
                     new IntakeFoldCommand(intake, false), // Lower the intake
@@ -31,6 +42,5 @@ public class Auto2BallSequence extends SequentialCommandGroup {
                 indexCommand                        // Run the indexer
             )
         );
-        addRequirements(driveTrain,intake,indexer);
     }
 }
