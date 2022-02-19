@@ -106,4 +106,12 @@ public class Shooter extends SubsystemBase {
             shooterMotorRear.set(TalonFXControlMode.Velocity, rear);
         }, this);
     }
+
+    /**
+     * Check if the shooter is spun up close enough to target velocity
+     * @return if the shooter is spun up
+     */
+    public boolean isSpunUp() {
+        return Math.abs(getClosedLoopError()) < SmartDashboard.getNumber("shooter/tuning/targetError", 0);
+    }
 }
