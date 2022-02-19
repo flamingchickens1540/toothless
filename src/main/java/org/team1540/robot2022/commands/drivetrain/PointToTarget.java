@@ -26,6 +26,7 @@ public class PointToTarget extends CommandBase {
         double p = SmartDashboard.getNumber("pointToTarget/kP", 0.7);
         double i = SmartDashboard.getNumber("pointToTarget/kI", 0);
         double d = SmartDashboard.getNumber("pointToTarget/kD", 0.4);
+        limelight.setLeds(true);
         pid.setPID(p, i, d);
         pid.setSetpoint(0);
     }
@@ -66,5 +67,6 @@ public class PointToTarget extends CommandBase {
 
     public void end(boolean isInterrupted) {
         drivetrain.setPercent(0, 0);
+        limelight.setLeds(false);
     }
 }
