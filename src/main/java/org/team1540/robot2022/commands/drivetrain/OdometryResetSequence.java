@@ -18,7 +18,7 @@ public class OdometryResetSequence extends ParallelCommandGroup {
         addCommands(
             sequence( // Flash Limelight LEDs as confirmation
                 new InstantCommand(() -> {limelight.setLeds(!initialLightState);}),
-                new WaitCommand(1),
+                new WaitCommand(0.5),
                 new InstantCommand(() -> {limelight.setLeds(initialLightState);})
             ),
             new InstantCommand(() -> {driveTrain.resetOdometry(zeroPose);}) // Reset odometry to known starting pose
