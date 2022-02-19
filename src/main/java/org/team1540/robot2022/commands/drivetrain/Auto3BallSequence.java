@@ -13,18 +13,18 @@ import org.team1540.robot2022.utils.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-public class Auto4BallSequence extends SequentialCommandGroup {
+public class Auto3BallSequence extends SequentialCommandGroup {
 
-    public Auto4BallSequence(DriveTrain driveTrain, Intake intake, Indexer indexer, Shooter shooter, Limelight limelight, RepeatCommand indexCommand) {
+    public Auto3BallSequence(DriveTrain driveTrain, Intake intake, Indexer indexer, Shooter shooter, Limelight limelight, RepeatCommand indexCommand) {
         addCommands( 
             deadline( // End this command when the path sequence is done
                 sequence (                          // Run the path sequence
                     RamseteConfig.getRamseteCommand(driveTrain, "2ball.posA.path1.wpilib.json"), // Path follow to collect first ball
                     new PointToTarget(driveTrain, limelight),                                    // Point towards target with limelight
                     new ShootSequence(shooter, indexer, indexCommand),                           // Shoot the 2 indexed balls (starts with one, collects one)
-                    RamseteConfig.getRamseteCommand(driveTrain, "4ball.posA.path2.wpilib.json"), // Path follow to collect second and third balls ball
+                    RamseteConfig.getRamseteCommand(driveTrain, "3ball.posA.path2.wpilib.json"), // Path follow to collect second ball
                     new PointToTarget(driveTrain, limelight),                                    // Point towards target with limelight
-                    new ShootSequence(shooter, indexer, indexCommand)                            // Shoot the 2 indexed balls (collects both)
+                    new ShootSequence(shooter, indexer, indexCommand)                            // Shoot the 1 indexed balls (collects)
                 ),
                 sequence(
                     new IntakeFoldCommand(intake, false), // Lower the intake
