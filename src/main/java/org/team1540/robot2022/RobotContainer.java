@@ -5,18 +5,7 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
@@ -31,8 +20,29 @@ import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
-import org.team1540.robot2022.utils.*;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
+import org.team1540.robot2022.utils.Limelight;
+import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.utils.RepeatCommand;
+import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -157,14 +167,12 @@ public class RobotContainer {
     private void initSmartDashboard() {
         autoChooser.addOption("Test Auto", new AutoTest(driveTrain));
 
-
         SmartDashboard.putData(autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
 
         Shuffleboard.getTab("SmartDashboard")
                 .add("NavX", navx)
                 .withWidget(BuiltInWidgets.kGyro);
-
 
         // Indexer values
         ChickenSmartDashboard.putDefaultNumber("intake/speed", 0.5);
@@ -185,9 +193,10 @@ public class RobotContainer {
 
         // Drivetrain values
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
-        ChickenSmartDashboard.putDefaultNumber("tankDrive/maxVelocity", 0.8);
-        ChickenSmartDashboard.putDefaultNumber("tankDrive/maxAcceleration", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("driveTrain/tankDrive/maxVelocity", 1);
+        ChickenSmartDashboard.putDefaultNumber("driveTrain/tankDrive/maxAcceleration", 0.5);
 
+        // Shooter values
         SmartDashboard.putNumber("shooter/tarmacDefaultFrontRPM", 1000);
         SmartDashboard.putNumber("shooter/tarmacDefaultRearRPM", 1000);
 

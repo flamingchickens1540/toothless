@@ -105,7 +105,6 @@ public class Robot extends TimedRobot {
             autonomousCommand.cancel();
         }
 
-        driveTrain.setNeutralMode(NeutralMode.Coast);
         driveTrain.setDefaultCommand(robotContainer.tankDriveCommand);
     }
 

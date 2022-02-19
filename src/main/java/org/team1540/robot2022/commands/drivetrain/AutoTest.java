@@ -54,7 +54,7 @@ public class AutoTest extends SequentialCommandGroup {
                 driveTrain::getWheelSpeeds,                                                 // A function that supplies the speeds of the left and right sides of the robot
                 new PIDController(SmartDashboard.getNumber("ramsetePID/kP", 0.5), 0, 0),                          // Left PID controller
                 new PIDController(SmartDashboard.getNumber("ramsetePID/kP", 0.5), 0, 0),                          // Right PID controller
-                driveTrain::tankDriveVolts,                                                 // RamseteCommand passes volts to the callback
+                driveTrain::setVolts,                                                 // RamseteCommand passes volts to the callback
                 driveTrain                                                                  // Subsystem requirements
         );
     }
