@@ -26,8 +26,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void setFold(boolean state) {
-        // TODO: Make sure the solenoid is configured so that setFold(true) moves the intake to the upwards (folded) position
-        solenoid.set(state);
+        solenoid.set(!state);
     }
 
     public void setPercent(double percent) {

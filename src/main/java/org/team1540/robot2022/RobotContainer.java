@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
@@ -99,6 +100,13 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(driveTrain, limelight));
 
+        
+        new POVButton(driverController, 0)
+            .whenPressed(new HoodSetCommand(hood, true));
+        
+        new POVButton(driverController, 180)
+            .whenPressed(new HoodSetCommand(hood, false));
+
         // Copilot
         new JoystickButton(copilotController, Button.kX.value)
                 // .cancelWhenPressed(indexerEjectCommand)
@@ -120,14 +128,16 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
 
+
+        new POVButton(copilotController, 0)
+            .whenPressed(new IntakeFoldCommand(intake, true));
+        
+        new POVButton(copilotController, 180)
+            .whenPressed(new IntakeFoldCommand(intake, false));
+
         //SmartDashboard
-        SmartDashboard.putData(new IntakeFoldCommand(intake, true));
-        SmartDashboard.putData(new IntakeFoldCommand(intake, false));
 
-        SmartDashboard.putData(new HoodSetCommand(hood, true));
-        SmartDashboard.putData(new HoodSetCommand(hood, false));
-
-        SmartDashboard.putData(new InstantCommand(ph::disableCompressor));
+        SmartDashboard.putData("ph/disableCompressor",new InstantCommand(ph::disableCompressor));
     }
 
     private void initModeTransitionBindings() {
