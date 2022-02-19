@@ -89,7 +89,7 @@ public class RamseteConfig {
                 driveTrain::getWheelSpeeds,
                 leftPID,
                 rightPID,
-                driveTrain::tankDriveVolts,
+                driveTrain::setVolts,
                 driveTrain);
     }
 
