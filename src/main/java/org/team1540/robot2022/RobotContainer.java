@@ -74,6 +74,14 @@ public class RobotContainer {
         configureButtonBindings();
         initModeTransitionBindings();
         DriverStation.silenceJoystickConnectionWarning(false);
+
+        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
+        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
+        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
+        ph.disableCompressor();
+        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
+        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
+        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
     }
 
     /**
