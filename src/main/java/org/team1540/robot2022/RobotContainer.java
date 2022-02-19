@@ -195,7 +195,7 @@ public class RobotContainer {
 
         // Drivetrain values
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
-        ChickenSmartDashboard.putDefaultNumber("driveTrain/tankDrive/maxVelocity", 0.8);
+        ChickenSmartDashboard.putDefaultNumber("driveTrain/tankDrive/maxVelocity", 1);
         ChickenSmartDashboard.putDefaultNumber("driveTrain/tankDrive/maxAcceleration", 0.5);
 
         // Shooter values
