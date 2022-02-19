@@ -10,8 +10,13 @@ public class ShootSequence extends SequentialCommandGroup {
     private final Command indexCommand;
     private boolean indexCommandScheduled;
 
+    private final Shooter shooter;
+    private final Indexer indexer;
+
     public ShootSequence(Shooter shooter, Indexer indexer, Command indexCommand) {
         this.indexCommand = indexCommand;
+        this.shooter = shooter;
+        this.indexer = indexer;
         addRequirements(shooter, indexer);
         addCommands(
                 sequence(
@@ -38,6 +43,9 @@ public class ShootSequence extends SequentialCommandGroup {
 
     @Override
     public void end(boolean isInterrupted) {
+        shooter.stop();
+        indexer.stop();
+
         if (indexCommandScheduled) {
             indexCommand.schedule();
         }
