@@ -105,10 +105,9 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kLeftBumper.value)
                 .whenHeld(new ShootSequence(shooter, indexer, indexCommand));
 
-        new POVButton(driverController, 0)
+        new POVButton(driverController, 0) // D-pad up
                 .whenPressed(new HoodSetCommand(hood, true));
-
-        new POVButton(driverController, 180)
+        new POVButton(driverController, 180) // D-pad down
                 .whenPressed(new HoodSetCommand(hood, false));
 
         // Copilot
@@ -128,10 +127,9 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
 
-        new POVButton(copilotController, 0)
+        new POVButton(copilotController, 0) // D-pad up
                 .whenPressed(new IntakeFoldCommand(intake, true));
-
-        new POVButton(copilotController, 180)
+        new POVButton(copilotController, 180) // D-pad down
                 .whenPressed(new IntakeFoldCommand(intake, false));
 
         // SmartDashboard
