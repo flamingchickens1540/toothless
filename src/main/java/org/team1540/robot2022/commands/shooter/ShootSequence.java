@@ -1,17 +1,20 @@
 package org.team1540.robot2022.commands.shooter;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2022.commands.indexer.Indexer;
 
 public class ShootSequence extends SequentialCommandGroup {
     private final Command indexCommand;
     private boolean indexCommandScheduled;
 
+    private final Shooter shooter;
+    private final Indexer indexer;
+
     public ShootSequence(Shooter shooter, Indexer indexer, Command indexCommand) {
         this.indexCommand = indexCommand;
+        this.shooter = shooter;
+        this.indexer = indexer;
         addRequirements(shooter, indexer);
         addCommands(
                 sequence(
@@ -19,12 +22,11 @@ public class ShootSequence extends SequentialCommandGroup {
                             indexCommandScheduled = indexCommand.isScheduled();
                             indexCommand.cancel();
                         }),
-
                         new InstantCommand(() -> {
-                            shooter.setVelocityRPM(shooter.shooterMotorFront, -5000);
-                            shooter.setVelocityRPM(shooter.shooterMotorRear, -5000);
+                            shooter.setVelocityRPM(shooter.shooterMotorFront, SmartDashboard.getNumber("shooter/tuning/frontRPM", 0));
+                            shooter.setVelocityRPM(shooter.shooterMotorRear, SmartDashboard.getNumber("shooter/tuning/rearRPM", 0));
                         }, shooter),
-                        new WaitCommand(2), // TODO: Wait for shooter to reach velocity
+                        new WaitUntilCommand(shooter::isSpunUp),
                         new InstantCommand(() -> indexer.set(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL)),
                         new WaitCommand(2),
                         new InstantCommand(() -> {
@@ -38,6 +40,9 @@ public class ShootSequence extends SequentialCommandGroup {
 
     @Override
     public void end(boolean isInterrupted) {
+        shooter.stop();
+        indexer.stop();
+
         if (indexCommandScheduled) {
             indexCommand.schedule();
         }
