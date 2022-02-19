@@ -29,6 +29,8 @@ import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
+import org.team1540.robot2022.commands.shooter.ShootSequence;
+import org.team1540.robot2022.commands.shooter.Shooter;
 import org.team1540.robot2022.utils.*;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
@@ -42,6 +44,8 @@ import org.team1540.robot2022.utils.RevBlinken.GameStage;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+    private final boolean ENABLE_COMPRESSOR = true;
+
     // Hardware
     public final RevBlinken robotLEDs = new RevBlinken(0);
     public final Limelight limelight = new Limelight("limelight");
@@ -53,6 +57,7 @@ public class RobotContainer {
     public final Hood hood = new Hood();
     public final Intake intake = new Intake();
     public final Indexer indexer = new Indexer(NeutralMode.Brake);
+    public final Shooter shooter = new Shooter();
 
     // Controllers
     public final XboxController driverController = new XboxController(0);
@@ -76,13 +81,11 @@ public class RobotContainer {
         initModeTransitionBindings();
         DriverStation.silenceJoystickConnectionWarning(false);
 
-        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
-        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
-        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
-        ph.disableCompressor();
-        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
-        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
-        // TODO: -------------------- [WARNING] -------------------- This needs to be removed!
+        if (ENABLE_COMPRESSOR) {
+            ph.enableCompressorDigital();
+        } else {
+            ph.disableCompressor();
+        }
     }
 
     /**
@@ -99,6 +102,8 @@ public class RobotContainer {
                 .whenPressed(navx::zeroYaw);
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(driveTrain, limelight));
+        new JoystickButton(driverController, Button.kLeftBumper.value)
+                .whenPressed(new ShootSequence(shooter, indexer, indexCommand));
 
         
         new POVButton(driverController, 0)
@@ -112,16 +117,13 @@ public class RobotContainer {
                 // .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(indexCommand);
 
-
         new JoystickButton(copilotController, Button.kY.value)
                 .cancelWhenPressed(indexCommand)
                 .whenPressed(indexerEjectCommand);
 
-
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .cancelWhenPressed(indexCommand);
-
 
         new JoystickButton(copilotController, Button.kLeftBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, Constants.IntakeConstants.speed));
@@ -194,6 +196,12 @@ public class RobotContainer {
 
         SmartDashboard.putNumber("shooter/tarmacDefaultFrontRPM", 1000);
         SmartDashboard.putNumber("shooter/tarmacDefaultRearRPM", 1000);
+
+        SmartDashboard.putNumber("shooter/manualSetpoint", 0);
+        SmartDashboard.putData("shooter/manualSetRPM", new InstantCommand(() -> {
+            shooter.setVelocityRPM(shooter.shooterMotorFront, SmartDashboard.getNumber("shooter/manualSetpoint", 0));
+            shooter.setVelocityRPM(shooter.shooterMotorRear, SmartDashboard.getNumber("shooter/manualSetpoint", 0));
+        }));
     }
 
     public Command getAutonomousCommand() {
