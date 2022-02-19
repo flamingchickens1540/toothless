@@ -60,7 +60,7 @@ public class PointToTarget extends CommandBase {
 
             double valueL = multiplier * -pidOutput;
             double valueR = multiplier * pidOutput;
-            System.out.println(valueL + ", " + valueR);
+//            System.out.println(valueL + ", " + valueR);
             drivetrain.setPercent(valueL, valueR);
         }
     }
