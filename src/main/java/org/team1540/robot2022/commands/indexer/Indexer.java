@@ -35,6 +35,10 @@ public class Indexer extends SubsystemBase {
      */
     public enum IndexerState {
         /**
+         * Full speed forward to shoot
+         */
+        FORWARD_FULL,
+        /**
          * Runs the motor forward
          */
         FORWARD,
@@ -119,6 +123,9 @@ public class Indexer extends SubsystemBase {
      */
     private void setMotor(TalonFX motor, IndexerState mode, double onPercent) {
         switch (mode) {
+            case FORWARD_FULL:
+                motor.set(ControlMode.PercentOutput, 1);
+                break;
             case FORWARD:
                 motor.set(ControlMode.PercentOutput, onPercent);
                 break;

@@ -28,7 +28,7 @@ public class ShootSequence extends SequentialCommandGroup {
                         new InstantCommand(() -> indexer.set(Indexer.IndexerState.FORWARD, Indexer.IndexerState.FORWARD)),
                         new WaitCommand(2),
                         new InstantCommand(() -> {
-                            indexer.set(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF);
+                            indexer.set(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL);
                             shooter.setVelocityRPM(shooter.shooterMotorFront, 0);
                             shooter.setVelocityRPM(shooter.shooterMotorRear, 0);
                         })
