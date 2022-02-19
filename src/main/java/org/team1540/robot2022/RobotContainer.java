@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
 import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.OdometryResetSequence;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 import org.team1540.robot2022.commands.hood.Hood;
@@ -27,6 +28,7 @@ import org.team1540.robot2022.utils.RepeatCommand;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -73,6 +75,9 @@ public class RobotContainer {
     public final XboxController driverController = new XboxController(0);
     public final XboxController copilotController = new XboxController(1);
 
+    // Buttons
+    public final DigitalInput zeroOdometry = new DigitalInput(0);
+    
     // Commands
     public final RepeatCommand indexCommand = new RepeatCommand(new IndexCommand(indexer, intake));
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
@@ -122,7 +127,7 @@ public class RobotContainer {
 
         // Copilot
         new JoystickButton(copilotController, Button.kX.value)
-                // .cancelWhenPressed(indexerEjectCommand)
+                .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(indexCommand);
         new JoystickButton(copilotController, Button.kY.value)
                 .cancelWhenPressed(indexCommand)
@@ -141,6 +146,12 @@ public class RobotContainer {
                 .whenPressed(new IntakeFoldCommand(intake, true));
         new POVButton(copilotController, 180) // D-pad down
                 .whenPressed(new IntakeFoldCommand(intake, false));
+        // Button
+
+        new Trigger(zeroOdometry::get)
+                .whenActive(new OdometryResetSequence(driveTrain, navx, limelight));
+
+
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
