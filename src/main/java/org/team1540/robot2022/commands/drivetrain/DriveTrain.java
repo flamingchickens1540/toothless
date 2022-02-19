@@ -41,7 +41,7 @@ public class DriveTrain extends SubsystemBase {
         for (ChickenTalonFX motor : driveR) { motor.setInverted(true); }
         driveLRear.follow(driveLFront);
         driveRRear.follow(driveRFront);
-        updatePID();
+        updatePIDs();
     }
 
     @Override
@@ -109,31 +109,55 @@ public class DriveTrain extends SubsystemBase {
         navx.reset();
     }
 
+    /**
+     * Sets the percent output for the drivetrain motors
+     * @param leftPercent the percent to run the left side at
+     * @param rightPercent the percent to run the right side at
+     */
     public void setPercent(double leftPercent, double rightPercent) {
         driveLFront.set(ControlMode.PercentOutput, leftPercent);
         driveRFront.set(ControlMode.PercentOutput, rightPercent);
     }
 
+    /**
+     * Stops both sides of the drivetrain 
+     */
     public void stopMotors() {
         this.setPercent(0, 0);
     }
 
+    /**
+     * Returns an {@link InstantCommand} to stop the drivetrain
+     * @return the InstantCommand
+     */
     public Command commandStop() {
         return new InstantCommand(this::stopMotors, this);
     }
 
+    /**
+     * Sets the NeutralMode for the drivetrain (either coast or brake)
+     * @param mode The mode to set the wheels to
+     */
     public void setNeutralMode(NeutralMode mode) {
         for (ChickenTalonFX motor : driveMotors) { motor.setNeutralMode(mode); }
     }
 
-    public void tankDriveVolts(double leftVolts, double rightVolts) {
+    /**
+     * Sets the voltage for both sides of the drivetrain
+     * @param leftVolts The voltage for the left side
+     * @param rightVolts The voltage for the right side
+     */
+    public void setVolts(double leftVolts, double rightVolts) {
         SmartDashboard.putNumber("driveTrain/auto/leftVolts", leftVolts);
         SmartDashboard.putNumber("driveTrain/auto/rightVolts", rightVolts);
         driveLFront.setVoltage(leftVolts);
         driveRFront.setVoltage(rightVolts);
     }
 
-    private void updatePID() {
+    /**
+     * Updates the PIDs on the drivetrain motors from SmartDashboard
+     */
+    private void updatePIDs() {
         for (TalonFX motor : driveMotors) {
             motor.config_kP(0, SmartDashboard.getNumber("driveTrain/PID/kP", 0.3));
         }

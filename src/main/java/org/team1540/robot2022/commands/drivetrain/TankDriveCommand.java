@@ -62,8 +62,9 @@ public class TankDriveCommand extends CommandBase {
         if (value == 0) {
             rateLimiter.reset(0);
             return 0;
-        } else
+        } else {
             return rateLimiter.calculate(value);
+        }
     }
 
     /**
