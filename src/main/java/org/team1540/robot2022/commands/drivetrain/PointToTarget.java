@@ -60,13 +60,13 @@ public class PointToTarget extends CommandBase {
 
             double valueL = multiplier * -pidOutput;
             double valueR = multiplier * pidOutput;
-//            System.out.println(valueL + ", " + valueR);
+
             drivetrain.setPercent(valueL, valueR);
         }
     }
 
     public void end(boolean isInterrupted) {
-        drivetrain.setPercent(0, 0);
+        drivetrain.stopMotors();
         limelight.setLeds(false);
     }
 }
