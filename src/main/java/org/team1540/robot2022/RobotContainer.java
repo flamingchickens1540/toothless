@@ -112,7 +112,7 @@ public class RobotContainer {
 
         // Copilot
         new JoystickButton(copilotController, Button.kX.value)
-                // .cancelWhenPressed(indexerEjectCommand)
+                .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(indexCommand);
                 
         
