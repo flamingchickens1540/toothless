@@ -2,9 +2,13 @@ package org.team1540.robot2022.commands.drivetrain;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -25,6 +29,7 @@ public class DriveTrain extends SubsystemBase {
     private final DifferentialDriveOdometry driveOdometry;
 
     public DriveTrain(NeutralMode brakeType, NavX navx) {
+        
         driveOdometry = new DifferentialDriveOdometry(navx.getRotation2d());
         this.navx = navx;
         for (ChickenTalonFX motor : driveMotors) {
@@ -50,8 +55,8 @@ public class DriveTrain extends SubsystemBase {
                 driveLFront.getDistanceMeters(),
                 driveRFront.getDistanceMeters());
 
-        SmartDashboard.putNumber("leftEncoder", driveLFront.getDistanceMeters());
-        SmartDashboard.putNumber("rightEncoder", driveRFront.getDistanceMeters());
+        SmartDashboard.putNumber("driveTrain/leftEncoder", driveLFront.getDistanceMeters());
+        SmartDashboard.putNumber("driveTrain/rightEncoder", driveRFront.getDistanceMeters());
     }
 
     public void resetEncoders() {
@@ -117,8 +122,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public void tankDriveVolts(double leftVolts, double rightVolts) {
-        SmartDashboard.putNumber("leftVolts", leftVolts);
-        SmartDashboard.putNumber("rightVolts", rightVolts);
+        SmartDashboard.putNumber("driveTrain/auto/leftVolts", leftVolts);
+        SmartDashboard.putNumber("driveTrain/auto/rightVolts", rightVolts);
         driveLFront.setVoltage(leftVolts);
         driveRFront.setVoltage(rightVolts);
     }
