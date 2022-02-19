@@ -27,6 +27,6 @@ public class IndexerEjectCommand extends CommandBase {
     @Override
     public void end(boolean isInterrupted) {
         indexer.set(IndexerState.OFF, IndexerState.OFF);
-        intake.setPercent(0);
+        intake.stop();
     }
 }
