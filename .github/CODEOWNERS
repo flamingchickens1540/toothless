@@ -1,6 +1,6 @@
 * @natesales
 
-# DriveTrain and Path Following
+# Drivetrain and Path Following
 /src/main/java/org/team1540/robot2022/commands/drivetrain @rutmanz
 /src/main/java/org/team1540/robot2022/RamseteConfig.java @rutmanz
 /src/main/deploy/paths/ @rutmanz

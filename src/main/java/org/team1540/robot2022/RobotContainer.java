@@ -7,7 +7,7 @@ package org.team1540.robot2022;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.team1540.robot2022.commands.drivetrain.AutoTest;
-import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 import org.team1540.robot2022.commands.drivetrain.OdometryResetSequence;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
@@ -65,7 +65,7 @@ public class RobotContainer {
     public final PneumaticHub ph = new PneumaticHub(Constants.ph);
 
     // Subsystems
-    public final DriveTrain driveTrain = new DriveTrain(NeutralMode.Brake, navx);
+    public final Drivetrain drivetrain = new Drivetrain(NeutralMode.Brake, navx);
     public final Hood hood = new Hood();
     public final Intake intake = new Intake();
     public final Indexer indexer = new Indexer(NeutralMode.Brake);
@@ -81,7 +81,7 @@ public class RobotContainer {
     // Commands
     public final RepeatCommand indexCommand = new RepeatCommand(new IndexCommand(indexer, intake));
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
-    public final TankDriveCommand tankDriveCommand = new TankDriveCommand(driveTrain, driverController);
+    public final TankDriveCommand tankDriveCommand = new TankDriveCommand(drivetrain, driverController);
 
     // Misc
     public final InterpolationTable interpolationTable = new InterpolationTable();
@@ -116,9 +116,9 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kX.value)
                 .whenPressed(navx::zeroYaw);
         new JoystickButton(driverController, Button.kRightBumper.value)
-                .whenHeld(new PointToTarget(driveTrain, limelight));
+                .whenHeld(new PointToTarget(drivetrain, limelight));
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(new ShootSequence(shooter, indexer, driveTrain, limelight, indexCommand));
+                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand));
 
         new POVButton(driverController, 0) // D-pad up
                 .whenPressed(new HoodSetCommand(hood, true));
@@ -149,7 +149,7 @@ public class RobotContainer {
         // Button
 
         new Trigger(zeroOdometry::get)
-                .whenActive(new OdometryResetSequence(driveTrain, navx, limelight));
+                .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
 
 
 
@@ -176,7 +176,7 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        autoChooser.addOption("Test Auto", new AutoTest(driveTrain));
+        autoChooser.addOption("Test Auto", new AutoTest(drivetrain));
 
         SmartDashboard.putData(autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
@@ -204,8 +204,8 @@ public class RobotContainer {
 
         // Drivetrain values
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
-        ChickenSmartDashboard.putDefaultNumber("driveTrain/tankDrive/maxVelocity", 1);
-        ChickenSmartDashboard.putDefaultNumber("driveTrain/tankDrive/maxAcceleration", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxVelocity", 1);
+        ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxAcceleration", 0.5);
 
         // Shooter values
         SmartDashboard.putNumber("shooter/tarmacDefaultFrontRPM", 1000);

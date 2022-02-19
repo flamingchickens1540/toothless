@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class DriveTrain extends SubsystemBase {
+public class Drivetrain extends SubsystemBase {
     private final ChickenTalonFX driveLFront = new ChickenTalonFX(Motors.leftFront);
     private final ChickenTalonFX driveLRear = new ChickenTalonFX(Motors.leftRear);
     private final ChickenTalonFX driveRFront = new ChickenTalonFX(Motors.rightFront);
@@ -27,7 +27,7 @@ public class DriveTrain extends SubsystemBase {
 
     public static final double motorToMPS = 26.0349916751;
 
-    public DriveTrain(NeutralMode brakeType, NavX navx) {
+    public Drivetrain(NeutralMode brakeType, NavX navx) {
 
         driveOdometry = new DifferentialDriveOdometry(navx.getRotation2d());
         this.navx = navx;
@@ -51,10 +51,10 @@ public class DriveTrain extends SubsystemBase {
                 driveLFront.getDistanceMeters(),
                 driveRFront.getDistanceMeters());
 
-        SmartDashboard.putNumber("driveTrain/leftEncoderMeters", driveLFront.getDistanceMeters());
-        SmartDashboard.putNumber("driveTrain/rightEncoderMeters", driveRFront.getDistanceMeters());
-        SmartDashboard.putNumber("driveTrain/PID/errorL", driveLFront.getClosedLoopError());
-        SmartDashboard.putNumber("driveTrain/PID/errorR", driveRFront.getClosedLoopError());
+        SmartDashboard.putNumber("drivetrain/leftEncoderMeters", driveLFront.getDistanceMeters());
+        SmartDashboard.putNumber("drivetrain/rightEncoderMeters", driveRFront.getDistanceMeters());
+        SmartDashboard.putNumber("drivetrain/PID/errorL", driveLFront.getClosedLoopError());
+        SmartDashboard.putNumber("drivetrain/PID/errorR", driveRFront.getClosedLoopError());
     }
 
     /**
@@ -148,8 +148,8 @@ public class DriveTrain extends SubsystemBase {
      * @param rightVolts The voltage for the right side
      */
     public void setVolts(double leftVolts, double rightVolts) {
-        SmartDashboard.putNumber("driveTrain/auto/leftVolts", leftVolts);
-        SmartDashboard.putNumber("driveTrain/auto/rightVolts", rightVolts);
+        SmartDashboard.putNumber("drivetrain/auto/leftVolts", leftVolts);
+        SmartDashboard.putNumber("drivetrain/auto/rightVolts", rightVolts);
         driveLFront.setVoltage(leftVolts);
         driveRFront.setVoltage(rightVolts);
     }
@@ -159,7 +159,7 @@ public class DriveTrain extends SubsystemBase {
      */
     private void updatePIDs() {
         for (TalonFX motor : driveMotors) {
-            motor.config_kP(0, SmartDashboard.getNumber("driveTrain/PID/kP", 0.3));
+            motor.config_kP(0, SmartDashboard.getNumber("drivetrain/PID/kP", 0.3));
         }
     }
 }

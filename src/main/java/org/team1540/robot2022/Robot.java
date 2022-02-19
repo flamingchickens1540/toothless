@@ -6,7 +6,7 @@ package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 import org.team1540.robot2022.utils.Limelight;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
 
     private RobotContainer robotContainer;
     
-    private DriveTrain driveTrain;
+    private Drivetrain drivetrain;
 
 
     private Limelight limelight;
@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
         // and put our
         // autonomous chooser on the dashboard.
         this.robotContainer = new RobotContainer();
-        this.driveTrain = robotContainer.driveTrain;
+        this.drivetrain = robotContainer.drivetrain;
         this.limelight = robotContainer.limelight;
     }
 
@@ -86,7 +86,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        driveTrain.setNeutralMode(NeutralMode.Brake);
+        drivetrain.setNeutralMode(NeutralMode.Brake);
         autonomousCommand = robotContainer.getAutonomousCommand();
         
         if (autonomousCommand != null) {
@@ -105,7 +105,7 @@ public class Robot extends TimedRobot {
             autonomousCommand.cancel();
         }
 
-        driveTrain.setDefaultCommand(robotContainer.tankDriveCommand);
+        drivetrain.setDefaultCommand(robotContainer.tankDriveCommand);
     }
 
     /** This function is called periodically during operator control. */

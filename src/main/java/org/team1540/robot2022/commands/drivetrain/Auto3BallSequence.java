@@ -15,14 +15,14 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class Auto3BallSequence extends SequentialCommandGroup {
 
-    public Auto3BallSequence(DriveTrain driveTrain, Intake intake, Indexer indexer, Shooter shooter, Limelight limelight, RepeatCommand indexCommand) {
+    public Auto3BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Limelight limelight, RepeatCommand indexCommand) {
         addCommands( 
             deadline( // End this command when the path sequence is done
                 sequence (                          // Run the path sequence
-                    RamseteConfig.getRamseteCommand(driveTrain, "2ball.posA.path1.wpilib.json"), // Path follow to collect first ball
-                    new ShootSequence(shooter, indexer, driveTrain, limelight,indexCommand),     // Shoot the 2 indexed balls (starts with one, collects one)
-                    RamseteConfig.getRamseteCommand(driveTrain, "3ball.posA.path2.wpilib.json"), // Path follow to collect second ball
-                    new ShootSequence(shooter, indexer, driveTrain, limelight,indexCommand)      // Shoot the 1 indexed balls (collects)
+                    RamseteConfig.getRamseteCommand(drivetrain, "2ball.posA.path1.wpilib.json"), // Path follow to collect first ball
+                    new ShootSequence(shooter, indexer, drivetrain, limelight,indexCommand),     // Shoot the 2 indexed balls (starts with one, collects one)
+                    RamseteConfig.getRamseteCommand(drivetrain, "3ball.posA.path2.wpilib.json"), // Path follow to collect second ball
+                    new ShootSequence(shooter, indexer, drivetrain, limelight,indexCommand)      // Shoot the 1 indexed balls (collects)
                 ),
                 sequence(
                     new IntakeFoldCommand(intake, false), // Lower the intake

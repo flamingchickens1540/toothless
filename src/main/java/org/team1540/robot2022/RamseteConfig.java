@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import org.team1540.robot2022.commands.drivetrain.DriveTrain;
+import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -60,49 +60,49 @@ public class RamseteConfig {
      * Returns a new {@link RamseteCommand} with constants pre-filled for
      * convenience
      * 
-     * @param driveTrain The drivetrain subsystem
+     * @param drivetrain The drivetrain subsystem
      * @param trajectory The trajectory to follow with the command
      * @return A RamseteCommand to follow the trajectory
      */
-    public static RamseteCommand getRamseteCommand(DriveTrain driveTrain, Trajectory trajectory) {
-        return getRamseteCommand(driveTrain, trajectory, leftPID, rightPID);
+    public static RamseteCommand getRamseteCommand(Drivetrain drivetrain, Trajectory trajectory) {
+        return getRamseteCommand(drivetrain, trajectory, leftPID, rightPID);
     }
 
     /**
      * Returns a new {@link RamseteCommand} with constants pre-filled for
      * convenience
      * 
-     * @param driveTrain The drivetrain subsystem
+     * @param drivetrain The drivetrain subsystem
      * @param trajectory The trajectory to follow with the command
      * @param leftPID    A PID controller to use for the left wheels
      * @param rightPID   A PID controller to use for the right wheels
      * @return A RamseteCommand to follow the trajectory
      */
-    public static RamseteCommand getRamseteCommand(DriveTrain driveTrain, Trajectory trajectory, PIDController leftPID,
+    public static RamseteCommand getRamseteCommand(Drivetrain drivetrain, Trajectory trajectory, PIDController leftPID,
             PIDController rightPID) {
         return new RamseteCommand(
                 trajectory,
-                driveTrain::getPose,
+                drivetrain::getPose,
                 RamseteConfig.ramseteController,
                 RamseteConfig.feedForward,
                 RamseteConfig.kDriveKinematics,
-                driveTrain::getWheelSpeeds,
+                drivetrain::getWheelSpeeds,
                 leftPID,
                 rightPID,
-                driveTrain::setVolts,
-                driveTrain);
+                drivetrain::setVolts,
+                drivetrain);
     }
 
     /**
      * Returns a new {@link RamseteCommand} with trajectory and constants pre-filled
      * for convenience
      * 
-     * @param driveTrain     The drivetrain subsystem
+     * @param drivetrain     The drivetrain subsystem
      * @param trajectoryName The name of the trajectory file relative to the
      *                       <code>deploy/paths</code> directory.
      * @return A RamseteCommand to follow the trajectory
      */
-    public static RamseteCommand getRamseteCommand(DriveTrain driveTrain, String trajectoryName) {
+    public static RamseteCommand getRamseteCommand(Drivetrain drivetrain, String trajectoryName) {
         Path trajectoryPath = getTrajectoryPath(trajectoryName);
         Trajectory trajectory;
 
@@ -119,7 +119,7 @@ public class RamseteConfig {
             }
             trajectory = new Trajectory();
         }
-        return getRamseteCommand(driveTrain, trajectory);
+        return getRamseteCommand(drivetrain, trajectory);
     }
 
     public static Path getTrajectoryPath(String trajectoryName) {
