@@ -105,18 +105,16 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kLeftBumper.value)
                 .whenPressed(new ShootSequence(shooter, indexer, indexCommand));
 
-        
         new POVButton(driverController, 0)
-            .whenPressed(new HoodSetCommand(hood, true));
-        
+                .whenPressed(new HoodSetCommand(hood, true));
+
         new POVButton(driverController, 180)
-            .whenPressed(new HoodSetCommand(hood, false));
+                .whenPressed(new HoodSetCommand(hood, false));
 
         // Copilot
         new JoystickButton(copilotController, Button.kX.value)
                 // .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(indexCommand);
-
         new JoystickButton(copilotController, Button.kY.value)
                 .cancelWhenPressed(indexCommand)
                 .whenPressed(indexerEjectCommand);
@@ -130,16 +128,14 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
 
-
         new POVButton(copilotController, 0)
-            .whenPressed(new IntakeFoldCommand(intake, true));
-        
+                .whenPressed(new IntakeFoldCommand(intake, true));
+
         new POVButton(copilotController, 180)
-            .whenPressed(new IntakeFoldCommand(intake, false));
+                .whenPressed(new IntakeFoldCommand(intake, false));
 
-        //SmartDashboard
-
-        SmartDashboard.putData("ph/disableCompressor",new InstantCommand(ph::disableCompressor));
+        // SmartDashboard
+        SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
     }
 
     private void initModeTransitionBindings() {
