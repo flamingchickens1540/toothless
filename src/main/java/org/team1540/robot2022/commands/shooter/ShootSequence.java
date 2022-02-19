@@ -25,10 +25,10 @@ public class ShootSequence extends SequentialCommandGroup {
                             shooter.setVelocityRPM(shooter.shooterMotorRear, -5000);
                         }, shooter),
                         new WaitCommand(2), // TODO: Wait for shooter to reach velocity
-                        new InstantCommand(() -> indexer.set(Indexer.IndexerState.FORWARD, Indexer.IndexerState.FORWARD)),
+                        new InstantCommand(() -> indexer.set(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL)),
                         new WaitCommand(2),
                         new InstantCommand(() -> {
-                            indexer.set(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL);
+                            indexer.set(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF);
                             shooter.setVelocityRPM(shooter.shooterMotorFront, 0);
                             shooter.setVelocityRPM(shooter.shooterMotorRear, 0);
                         })
