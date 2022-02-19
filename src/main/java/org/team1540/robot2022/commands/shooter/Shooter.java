@@ -48,6 +48,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter/velocityFront", getVelocityRPM(shooterMotorFront));
         SmartDashboard.putNumber("shooter/velocityRear", getVelocityRPM(shooterMotorRear));
         SmartDashboard.putNumber("shooter/error", getClosedLoopError());
+        SmartDashboard.putNumber("shooter/error/front", getFrontClosedLoopError());
+        SmartDashboard.putNumber("shooter/error/rear", getRearClosedLoopError());
     }
 
     public void stop() {
@@ -73,7 +75,7 @@ public class Shooter extends SubsystemBase {
         motor.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
     }
 
-    private void updatePIDs() {
+    public void updatePIDs() {
         shooterMotorFront.config_kP(0, SmartDashboard.getNumber("shooter/tuning/frontP", frontP));
         shooterMotorFront.config_kI(0, SmartDashboard.getNumber("shooter/tuning/frontI", frontI));
         shooterMotorFront.config_kD(0, SmartDashboard.getNumber("shooter/tuning/frontI", frontD));
@@ -85,8 +87,14 @@ public class Shooter extends SubsystemBase {
         shooterMotorRear.config_kF(0, SmartDashboard.getNumber("shooter/tuning/rearF", rearF));
     }
 
+    public double getFrontClosedLoopError() {
+        return shooterMotorRear.getClosedLoopError();
+    }
+    public double getRearClosedLoopError() {
+        return shooterMotorFront.getClosedLoopError();
+    }
     public double getClosedLoopError() {
-        return shooterMotorFront.getClosedLoopError() + shooterMotorRear.getClosedLoopError();
+        return getFrontClosedLoopError() + getRearClosedLoopError();
     }
 
     public Command commandStop() {
