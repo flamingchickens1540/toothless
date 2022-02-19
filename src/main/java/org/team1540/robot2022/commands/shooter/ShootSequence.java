@@ -18,7 +18,7 @@ public class ShootSequence extends SequentialCommandGroup {
         this.indexCommand = indexCommand;
         this.shooter = shooter;
         this.indexer = indexer;
-        addRequirements(shooter, indexer);
+        addRequirements(shooter, indexer, drivetrain);
         addCommands(
                 sequence(
                         new InstantCommand(() -> {
