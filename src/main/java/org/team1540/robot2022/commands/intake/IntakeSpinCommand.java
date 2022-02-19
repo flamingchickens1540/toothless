@@ -15,7 +15,7 @@ public class IntakeSpinCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        intake.setPercent(SmartDashboard.getNumber("intake/speed", this.speed));
+        intake.setPercent(this.speed);
     }
 
     @Override
