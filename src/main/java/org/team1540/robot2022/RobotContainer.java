@@ -102,7 +102,7 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(driveTrain, limelight));
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenPressed(new ShootSequence(shooter, indexer));
+                .whenPressed(new ShootSequence(shooter, indexer, indexCommand));
 
         // Copilot
         new JoystickButton(copilotController, Button.kX.value)
