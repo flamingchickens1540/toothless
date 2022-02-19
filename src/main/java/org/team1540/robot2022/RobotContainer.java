@@ -191,11 +191,11 @@ public class RobotContainer {
         SmartDashboard.putNumber("shooter/tarmacDefaultFrontRPM", 1000);
         SmartDashboard.putNumber("shooter/tarmacDefaultRearRPM", 1000);
 
-        SmartDashboard.putNumber("shooter/manualSetpoint", 0);
-        SmartDashboard.putData("shooter/manualSetRPM", new InstantCommand(() -> {
-            shooter.setVelocityRPM(shooter.shooterMotorFront, SmartDashboard.getNumber("shooter/manualSetpoint", 0));
-            shooter.setVelocityRPM(shooter.shooterMotorRear, SmartDashboard.getNumber("shooter/manualSetpoint", 0));
-        }));
+        SmartDashboard.putNumber("shooter/tuning/frontRPM", -1000);
+        SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);
+
+        // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors)
+        SmartDashboard.putNumber("shooter/tuning/targetError", 100);
     }
 
     public Command getAutonomousCommand() {
