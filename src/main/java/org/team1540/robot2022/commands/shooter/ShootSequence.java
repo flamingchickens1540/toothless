@@ -17,6 +17,7 @@ public class ShootSequence extends SequentialCommandGroup {
                 sequence(
                         new InstantCommand(() -> {
                             indexCommandScheduled = indexCommand.isScheduled();
+                            indexCommand.cancel();
                         }),
 
                         new InstantCommand(() -> {
