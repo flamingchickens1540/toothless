@@ -16,7 +16,6 @@ public class IndexReverseCommand extends CommandBase {
     private boolean hasCompleted = false;
     private boolean isTop;
 
-
     /**
      * Constructs an IndexRollbackCommand that will run part of the indexer backwards for a duration from SmartDashboard, then stop
      * @param indexer The indexer subsystem
@@ -40,7 +39,6 @@ public class IndexReverseCommand extends CommandBase {
         this.duration = 0.7;
         setterFunction.accept(IndexerState.REVERSE);
         hasCompleted = false;
-        
     }
 
     @Override

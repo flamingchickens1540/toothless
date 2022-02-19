@@ -64,8 +64,8 @@ public class RobotContainer {
     public final XboxController copilotController = new XboxController(1);
 
     // Commands
-    public final RepeatCommand indexCommand = new RepeatCommand(new IndexCommand(indexer));
-    public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer);
+    public final RepeatCommand indexCommand = new RepeatCommand(new IndexCommand(indexer, intake));
+    public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final TankDriveCommand tankDriveCommand = new TankDriveCommand(driveTrain, driverController);
 
     // Misc

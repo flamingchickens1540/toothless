@@ -24,7 +24,7 @@ public class IntakeSequence extends SequentialCommandGroup{
                     )
                 ),
                 parallel( // if (indexer is not full) -> run intake and indexer
-                    new IndexCommand(indexer),         // run indexer
+                    new IndexCommand(indexer, intake),         // run indexer
                     new IntakeSpinCommand(intake, 0.5) // run intake
                 ),
                 indexer::isFull
