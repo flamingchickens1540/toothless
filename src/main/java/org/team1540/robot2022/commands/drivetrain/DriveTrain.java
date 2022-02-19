@@ -51,8 +51,8 @@ public class DriveTrain extends SubsystemBase {
                 driveLFront.getDistanceMeters(),
                 driveRFront.getDistanceMeters());
 
-        SmartDashboard.putNumber("driveTrain/leftEncoder", driveLFront.getDistanceMeters());
-        SmartDashboard.putNumber("driveTrain/rightEncoder", driveRFront.getDistanceMeters());
+        SmartDashboard.putNumber("driveTrain/leftEncoderMeters", driveLFront.getDistanceMeters());
+        SmartDashboard.putNumber("driveTrain/rightEncoderMeters", driveRFront.getDistanceMeters());
         SmartDashboard.putNumber("driveTrain/PID/errorL", driveLFront.getClosedLoopError());
         SmartDashboard.putNumber("driveTrain/PID/errorR", driveRFront.getClosedLoopError());
     }
