@@ -14,7 +14,7 @@ public class Limelight {
     private static final Vector2d CAM_RESOLUTION = new Vector2d(320, 240);
     private final NetworkTable limelightTable;
     private final double limelightHeight = 0.71; // 28in to m
-    private final double limelightAngle = Math.toRadians(45.0);
+    private final double limelightAngle = Math.toRadians(49.65);
     private final double targetHeight = 2.64; // 8f8in to m
 
     /**
@@ -77,11 +77,13 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-        double y = getTargetAngles().y;
-        double x = getTargetAngles().x;
-        boolean verticalInBounds = y > Math.toRadians(-21);
-        boolean horizontalInBounds = x > Math.toRadians(-22) && x < Math.toRadians(17);
-        return (double) limelightTable.getEntry("tv").getNumber(0) > 0 && verticalInBounds && horizontalInBounds;
+        return getTargetAngles().x != 0;
+
+//        double y = getTargetAngles().y;
+//        double x = getTargetAngles().x;
+//        boolean verticalInBounds = y > Math.toRadians(-21);
+//        boolean horizontalInBounds = x > Math.toRadians(-22) && x < Math.toRadians(17);
+//        return (double) limelightTable.getEntry("tv").getNumber(0) > 0 && verticalInBounds && horizontalInBounds;
     }
 
     public boolean getLeds() {
