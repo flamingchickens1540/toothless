@@ -125,7 +125,7 @@ public class RobotContainer {
 
         // coop:button(LBumper,Shoot [hold],pilot)
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand));
+                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand, interpolationTable));
 
         // coop:button(DPadUp,Hood up [press],pilot)
         new POVButton(driverController, 0) // D-pad up
