@@ -65,8 +65,8 @@ public final class Constants {
             public static final int bottomIndexerSensor = 9;
         }
 
-        public static final double topPercent = 0.5;
-        public static final double bottomPercent = 0.8;
+        public static final double topPercent = 0.2;
+        public static final double bottomPercent = 0.3;
     }
 
     public static final class LightConstants {
