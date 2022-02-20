@@ -5,8 +5,8 @@ import org.team1540.robot2022.utils.LinearInterpolator;
 public class InterpolationTable {
     public static final double[][] data = {
         // {distance (inches), frontSpeed, backSpeed}
-        {-1, 1, 56},
-        {1, 10, 15},
+        {0, -2000, -2000},
+        {150, -2000, -3250},
     };
 
     public LinearInterpolator frontFlywheelInterpolator, rearFlywheelInterpolator;

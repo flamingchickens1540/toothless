@@ -9,13 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Limelight {
-
     private static final double HORIZONTAL_FOV = Math.toRadians(59.6);
     private static final double VERTICAL_FOV = Math.toRadians(49.7);
     private static final Vector2d CAM_RESOLUTION = new Vector2d(320, 240);
     private final NetworkTable limelightTable;
     private final double limelightHeight = 0.71; // 28in to m
-    private final double limelightAngle = Math.toRadians(45.0);
+    private final double limelightAngle = Math.toRadians(49.65);
     private final double targetHeight = 2.64; // 8f8in to m
 
     /**
@@ -25,7 +24,7 @@ public class Limelight {
      */
     public Limelight(String name) {
         limelightTable = NetworkTableInstance.getDefault().getTable(name);
-        SmartDashboard.putNumber("limelight/calculatedDistance", 0);
+        SmartDashboard.putNumber("limelight/custom/calculatedDistance", 0);
         setLeds(false);
     }
 
@@ -56,11 +55,9 @@ public class Limelight {
         return actualHeight / Math.tan(theta);
     }
 
-    /**
-     * Publishes the current calculated distance (in inches) to the SmartDashboard.
-     */
-    public void publishCalculatedDistance() {
-        SmartDashboard.putNumber("limelight/calculatedDistance", 39.37007874 * getCalculatedDistance());
+    public void updateSmartDashboardValues() {
+        SmartDashboard.putNumber("limelight/custom/calculatedDistance", 39.37007874 * getCalculatedDistance()); // convert meters to inches
+        SmartDashboard.putBoolean("limelight/custom/targetFound", isTargetFound());
     }
 
     /**
@@ -80,11 +77,8 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-        double y = getTargetAngles().y;
-        double x = getTargetAngles().x;
-        boolean verticalInBounds = y > Math.toRadians(-21);
-        boolean horizontalInBounds = x > Math.toRadians(-22) && x < Math.toRadians(17);
-        return (double) limelightTable.getEntry("tv").getNumber(0) > 0 && verticalInBounds && horizontalInBounds;
+        return getTargetAngles().x != 0;
+
     }
 
     public boolean getLeds() {

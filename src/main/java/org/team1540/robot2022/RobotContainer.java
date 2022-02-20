@@ -118,7 +118,7 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(drivetrain, limelight));
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand));
+                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand, interpolationTable));
 
         new POVButton(driverController, 0) // D-pad up
                 .whenPressed(new HoodSetCommand(hood, true));
@@ -215,7 +215,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);
 
         // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors)
-        SmartDashboard.putNumber("shooter/tuning/targetError", 100);
+        SmartDashboard.putNumber("shooter/tuning/targetError", 75); // +- 75
     }
 
     public Command getAutonomousCommand() {
