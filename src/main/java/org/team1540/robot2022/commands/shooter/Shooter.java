@@ -13,13 +13,14 @@ import org.team1540.robot2022.Constants;
 
 public class Shooter extends SubsystemBase {
     private final double rearP = 0.5;
-    private final double rearD = 30;
-    private final double rearF = 0.0484;
     private final double rearI = 0;
+    private final double rearD = 10;
+    private final double rearF = 0.048;
+
     private final double frontP = 0.5;
-    private final double frontD = 30;
-    private final double frontF = 0.0484;
     private final double frontI = 0;
+    private final double frontD = 10;
+    private final double frontF = 0.048;
 
     public TalonFX shooterMotorFront = new TalonFX(Constants.ShooterConstants.front);
     public TalonFX shooterMotorRear = new TalonFX(Constants.ShooterConstants.rear);
@@ -78,20 +79,20 @@ public class Shooter extends SubsystemBase {
     public void updatePIDs() {
         shooterMotorFront.config_kP(0, SmartDashboard.getNumber("shooter/tuning/frontP", frontP));
         shooterMotorFront.config_kI(0, SmartDashboard.getNumber("shooter/tuning/frontI", frontI));
-        shooterMotorFront.config_kD(0, SmartDashboard.getNumber("shooter/tuning/frontI", frontD));
+        shooterMotorFront.config_kD(0, SmartDashboard.getNumber("shooter/tuning/frontD", frontD));
         shooterMotorFront.config_kF(0, SmartDashboard.getNumber("shooter/tuning/frontF", frontF));
 
         shooterMotorRear.config_kP(0, SmartDashboard.getNumber("shooter/tuning/rearP", rearP));
         shooterMotorRear.config_kI(0, SmartDashboard.getNumber("shooter/tuning/rearI", rearI));
-        shooterMotorRear.config_kD(0, SmartDashboard.getNumber("shooter/tuning/rearI", rearD));
+        shooterMotorRear.config_kD(0, SmartDashboard.getNumber("shooter/tuning/rearD", rearD));
         shooterMotorRear.config_kF(0, SmartDashboard.getNumber("shooter/tuning/rearF", rearF));
     }
 
     public double getFrontClosedLoopError() {
-        return shooterMotorRear.getClosedLoopError();
+        return shooterMotorFront.getClosedLoopError();
     }
     public double getRearClosedLoopError() {
-        return shooterMotorFront.getClosedLoopError();
+        return shooterMotorRear.getClosedLoopError();
     }
     public double getClosedLoopError() {
         return getFrontClosedLoopError() + getRearClosedLoopError();
