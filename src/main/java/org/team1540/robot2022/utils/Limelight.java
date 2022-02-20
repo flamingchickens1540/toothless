@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Limelight {
-
     private static final double HORIZONTAL_FOV = Math.toRadians(59.6);
     private static final double VERTICAL_FOV = Math.toRadians(49.7);
     private static final Vector2d CAM_RESOLUTION = new Vector2d(320, 240);
@@ -25,7 +24,7 @@ public class Limelight {
      */
     public Limelight(String name) {
         limelightTable = NetworkTableInstance.getDefault().getTable(name);
-        SmartDashboard.putNumber("limelight/calculatedDistance", 0);
+        SmartDashboard.putNumber("limelight/custom/calculatedDistance", 0);
         setLeds(false);
     }
 
@@ -56,11 +55,9 @@ public class Limelight {
         return actualHeight / Math.tan(theta);
     }
 
-    /**
-     * Publishes the current calculated distance (in inches) to the SmartDashboard.
-     */
-    public void publishCalculatedDistance() {
-        SmartDashboard.putNumber("limelight/calculatedDistance", 39.37007874 * getCalculatedDistance());
+    public void updateSmartDashboardValues() {
+        SmartDashboard.putNumber("limelight/custom/calculatedDistance", 39.37007874 * getCalculatedDistance());
+        SmartDashboard.putBoolean("limelight/custom/targetFound", isTargetFound());
     }
 
     /**

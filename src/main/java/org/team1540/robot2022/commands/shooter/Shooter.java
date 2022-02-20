@@ -51,6 +51,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter/error", getClosedLoopError());
         SmartDashboard.putNumber("shooter/error/front", getFrontClosedLoopError());
         SmartDashboard.putNumber("shooter/error/rear", getRearClosedLoopError());
+        SmartDashboard.putBoolean("shooter/isSpunUp", isSpunUp());
     }
 
     public void stop() {
@@ -60,6 +61,7 @@ public class Shooter extends SubsystemBase {
 
     /**
      * Get motor velocity RPM
+     *
      * @param motor to query
      * @return velocity in RPM
      */
@@ -69,7 +71,8 @@ public class Shooter extends SubsystemBase {
 
     /**
      * Set motor velocity
-     * @param motor to set
+     *
+     * @param motor    to set
      * @param velocity to set in RPM
      */
     public void setVelocityRPM(TalonFX motor, double velocity) {
@@ -91,9 +94,11 @@ public class Shooter extends SubsystemBase {
     public double getFrontClosedLoopError() {
         return shooterMotorFront.getClosedLoopError();
     }
+
     public double getRearClosedLoopError() {
         return shooterMotorRear.getClosedLoopError();
     }
+
     public double getClosedLoopError() {
         return getFrontClosedLoopError() + getRearClosedLoopError();
     }
@@ -118,9 +123,11 @@ public class Shooter extends SubsystemBase {
 
     /**
      * Check if the shooter is spun up close enough to target velocity
+     *
      * @return if the shooter is spun up
      */
     public boolean isSpunUp() {
-        return Math.abs(getClosedLoopError()) < SmartDashboard.getNumber("shooter/tuning/targetError", 0);
+        return Math.abs(getClosedLoopError()) < SmartDashboard.getNumber("shooter/tuning/targetError", 0)
+                && Math.abs(getVelocityRPM(shooterMotorFront) + getVelocityRPM(shooterMotorRear)) > 200; // Make sure the shooter is moving
     }
 }
