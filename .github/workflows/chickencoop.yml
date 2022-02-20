@@ -1,0 +1,23 @@
+name: Generate controls diagram
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/main/java/org/team1540/robot2022/RobotContainer.java"
+
+jobs:
+  chickencoop:
+    name: Generate controls diagram with chickencoop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - run: npx chickencoop -i src/main/java/org/team1540/robot2022/RobotContainer.java -o controls.pdf
+
+    - uses: EndBug/add-and-commit@v8
+      with:
+        add: controls.pdf
+        default_author: github_actions
+        message: "refactor: update controls diagram"

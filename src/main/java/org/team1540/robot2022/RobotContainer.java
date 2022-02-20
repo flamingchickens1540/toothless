@@ -77,10 +77,15 @@ public class RobotContainer {
 
     // Buttons
     public final DigitalInput zeroOdometry = new DigitalInput(0);
-    
+
     // Commands
     public final RepeatCommand indexCommand = new RepeatCommand(new IndexCommand(indexer, intake));
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
+
+    // coop:button(LJoystick,Left tank,pilot)
+    // coop:button(RJoystick,Right tank,pilot)
+    // coop:button(LTrigger,Forward,pilot)
+    // coop:button(RTrigger,Reverse,pilot)
     public final TankDriveCommand tankDriveCommand = new TankDriveCommand(drivetrain, driverController);
 
     // Misc
@@ -113,41 +118,53 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Driver
-        new JoystickButton(driverController, Button.kX.value)
-                .whenPressed(navx::zeroYaw);
+
+        // coop:button(RBumper,Point to target [hold],pilot)
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(drivetrain, limelight));
-        new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand, interpolationTable));
 
+        // coop:button(LBumper,Shoot [hold],pilot)
+        new JoystickButton(driverController, Button.kLeftBumper.value)
+                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand));
+
+        // coop:button(DPadUp,Hood up [press],pilot)
         new POVButton(driverController, 0) // D-pad up
                 .whenPressed(new HoodSetCommand(hood, true));
+        // coop:button(DPadDown,Hood down [press],pilot)
         new POVButton(driverController, 180) // D-pad down
                 .whenPressed(new HoodSetCommand(hood, false));
 
         // Copilot
+
+        // coop:button(X,Start intake and indexer [press],copilot)
         new JoystickButton(copilotController, Button.kX.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(indexCommand);
+        // coop:button(Y,Eject intake and indexer [press],copilot)
         new JoystickButton(copilotController, Button.kY.value)
                 .cancelWhenPressed(indexCommand)
                 .whenPressed(indexerEjectCommand);
 
+        // coop:button(A,Stop indexer and intake [press],copilot)
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .cancelWhenPressed(indexCommand);
 
+        // coop:button(LBumper,Manual intake [hold],copilot)
         new JoystickButton(copilotController, Button.kLeftBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, Constants.IntakeConstants.speed));
+        // coop:button(RBumper,Manual reverse intake [hold],copilot)
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
 
+        // coop:button(DPadUp,Intake up [press],copilot)
         new POVButton(copilotController, 0) // D-pad up
                 .whenPressed(new IntakeFoldCommand(intake, true));
+        // coop:button(DPadDown,Intake down [press],copilot)
         new POVButton(copilotController, 180) // D-pad down
                 .whenPressed(new IntakeFoldCommand(intake, false));
-        // Button
 
+        // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
 
