@@ -76,6 +76,11 @@ public class Shooter extends SubsystemBase {
      * @param velocity to set in RPM
      */
     public void setVelocityRPM(TalonFX motor, double velocity) {
+        if (motor == shooterMotorFront) {
+            SmartDashboard.putNumber("shooter/frontVelocitySetpoint", velocity);
+        } else if (motor == shooterMotorRear) {
+            SmartDashboard.putNumber("shooter/rearVelocitySetpoint", velocity);
+        }
         motor.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
     }
 

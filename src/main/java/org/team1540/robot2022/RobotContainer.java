@@ -118,7 +118,7 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(drivetrain, limelight));
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand));
+                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand, interpolationTable));
 
         new POVButton(driverController, 0) // D-pad up
                 .whenPressed(new HoodSetCommand(hood, true));
