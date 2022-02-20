@@ -56,7 +56,7 @@ public class Limelight {
     }
 
     public void updateSmartDashboardValues() {
-        SmartDashboard.putNumber("limelight/custom/calculatedDistance", 39.37007874 * getCalculatedDistance());
+        SmartDashboard.putNumber("limelight/custom/calculatedDistance", 39.37007874 * getCalculatedDistance()); // convert meters to inches
         SmartDashboard.putBoolean("limelight/custom/targetFound", isTargetFound());
     }
 
@@ -79,11 +79,6 @@ public class Limelight {
     public boolean isTargetFound() {
         return getTargetAngles().x != 0;
 
-//        double y = getTargetAngles().y;
-//        double x = getTargetAngles().x;
-//        boolean verticalInBounds = y > Math.toRadians(-21);
-//        boolean horizontalInBounds = x > Math.toRadians(-22) && x < Math.toRadians(17);
-//        return (double) limelightTable.getEntry("tv").getNumber(0) > 0 && verticalInBounds && horizontalInBounds;
     }
 
     public boolean getLeds() {
