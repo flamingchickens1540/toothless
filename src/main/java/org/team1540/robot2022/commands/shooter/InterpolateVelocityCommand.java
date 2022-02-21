@@ -6,12 +6,11 @@ import org.team1540.robot2022.utils.Limelight;
 
 public class InterpolateVelocityCommand extends CommandBase {
     private final Shooter shooter;
-    private final InterpolationTable interpolationTable;
+    private final InterpolationTable interpolationTable = InterpolationTable.getInstance();;
     private final Limelight limelight;
 
-    public InterpolateVelocityCommand(Shooter shooter, InterpolationTable interpolationTable, Limelight limelight) {
+    public InterpolateVelocityCommand(Shooter shooter, Limelight limelight) {
         this.shooter = shooter;
-        this.interpolationTable = interpolationTable;
         this.limelight = limelight;
         addRequirements(shooter);
     }
