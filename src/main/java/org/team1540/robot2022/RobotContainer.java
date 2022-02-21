@@ -89,7 +89,6 @@ public class RobotContainer {
     public final TankDriveCommand tankDriveCommand = new TankDriveCommand(drivetrain, driverController);
 
     // Misc
-    public final InterpolationTable interpolationTable = new InterpolationTable();
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     /**
@@ -125,7 +124,7 @@ public class RobotContainer {
 
         // coop:button(LBumper,Shoot [hold],pilot)
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand, interpolationTable));
+                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand));
 
         // coop:button(DPadUp,Hood up [press],pilot)
         new POVButton(driverController, 0) // D-pad up
