@@ -6,6 +6,7 @@ package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 import org.team1540.robot2022.utils.Limelight;
 
@@ -72,6 +73,8 @@ public class Robot extends TimedRobot {
 
         // Update the limelight's custom SmartDashboard values
         limelight.updateSmartDashboardValues();
+
+        SmartDashboard.putBoolean("pneumatics/pressureSwitch", robotContainer.ph.getPressureSwitch());
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
