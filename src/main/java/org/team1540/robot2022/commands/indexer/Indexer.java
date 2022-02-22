@@ -25,15 +25,27 @@ public class Indexer extends SubsystemBase {
     private final DigitalInput topSensor = new DigitalInput(BeamBreaks.topIndexerSensor);
     private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.bottomIndexerSensor);
 
-    private final BiConsumer<Boolean, Boolean> handleTopInterrupt = (rising, falling) -> {
-        System.out.println("Top sensor: " + rising + " falling " + falling);
-    };
-    private final BiConsumer<Boolean, Boolean> handleBottomInterrupt = (rising, falling) -> {
-        System.out.println("Bottom sensor: " + rising + " falling " + falling);
-    };
+    private final AsynchronousInterrupt topInterrupt = new AsynchronousInterrupt(topSensor, (rising, falling) -> {
+        // These rising/falling booleans are both reporting false, and I don't know why
+        // System.out.println("Top sensor: " + rising + " falling " + falling);
 
-    private final AsynchronousInterrupt topInterrupt = new AsynchronousInterrupt(topSensor, handleTopInterrupt);
-    private final AsynchronousInterrupt bottomInterrupt = new AsynchronousInterrupt(bottomSensor, handleBottomInterrupt);
+        if (getTopSensor()) { // Stop top indexer if ball is there
+            set(IndexerState.OFF, IndexerState.UNCHANGED);
+        } else {
+            set(IndexerState.FORWARD, IndexerState.OFF);
+        }
+    });
+
+    private final AsynchronousInterrupt bottomInterrupt = new AsynchronousInterrupt(bottomSensor, (rising, falling) -> {
+        // These rising/falling booleans are both reporting false, and I don't know why
+        // System.out.println("Bottom sensor: " + rising + " falling " + falling);
+
+        if (getBottomSensor()) { // Stop bottom indexer if ball is there
+            set(IndexerState.UNCHANGED, IndexerState.OFF);
+        } else {
+            set(IndexerState.OFF, IndexerState.FORWARD);
+        }
+    });
 
     public Indexer(NeutralMode brakeType) {
         topInterrupt.setInterruptEdges(true, true);
