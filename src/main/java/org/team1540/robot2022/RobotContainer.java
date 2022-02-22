@@ -118,6 +118,28 @@ public class RobotContainer {
         new POVButton(driverController, 180) // D-pad down
                 .whenPressed(new HoodSetCommand(hood, false));
 
+        // Intake/indexer
+
+        // coop:button(X,Start intake and indexer [press],pilot)
+        new JoystickButton(driverController, Button.kX.value)
+                .cancelWhenPressed(indexerEjectCommand)
+                .whenPressed(indexCommand);
+        // coop:button(Y,Eject intake and indexer [press],pilot)
+        new JoystickButton(driverController, Button.kY.value)
+                .cancelWhenPressed(indexCommand)
+                .whenPressed(indexerEjectCommand);
+        // coop:button(A,Stop indexer and intake [press],pilot)
+        new JoystickButton(driverController, Button.kA.value)
+                .cancelWhenPressed(indexerEjectCommand)
+                .cancelWhenPressed(indexCommand);
+
+        // coop:button(DPadDown,Intake up [press],pilot)
+        new POVButton(copilotController, 270) // D-pad left
+                .whenPressed(new IntakeFoldCommand(intake, true));
+        // coop:button(DPadRight,Intake down [press],pilot)
+        new POVButton(copilotController, 90) // D-pad right
+                .whenPressed(new IntakeFoldCommand(intake, false));
+
         // Copilot
 
         // coop:button(X,Start intake and indexer [press],copilot)
