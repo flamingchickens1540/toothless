@@ -26,8 +26,6 @@ public class OdometryResetSequence extends ParallelCommandGroup {
         );
     }
 
-
-
     @Override
     public boolean runsWhenDisabled() {
         return true;

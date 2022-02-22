@@ -15,7 +15,7 @@ public class Limelight {
     private final NetworkTable limelightTable;
     private final double limelightHeight = 0.71; // 28in to m
     private final double limelightAngle = Math.toRadians(39);
-    private final double targetHeight = 2.64; // 8f8in to m
+    private final double targetHeight = 2.64; // 8'8" to m
 
     /**
      * Constructs a new limelight interface with the default hostname.
@@ -52,11 +52,11 @@ public class Limelight {
     public double getCalculatedDistance() {
         double theta = Math.toRadians(getTargetAngles().y) + limelightAngle;
         double actualHeight = targetHeight - limelightHeight;
-        return actualHeight / Math.tan(theta);
+        return 39.37007874 * actualHeight / Math.tan(theta);
     }
 
     public void updateSmartDashboardValues() {
-        SmartDashboard.putNumber("limelight/custom/calculatedDistance", 39.37007874 * getCalculatedDistance()); // convert meters to inches
+        SmartDashboard.putNumber("limelight/custom/calculatedDistance", getCalculatedDistance());
         SmartDashboard.putBoolean("limelight/custom/targetFound", isTargetFound());
     }
 
@@ -77,9 +77,7 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-        // return getTargetAngles().x != 0;
-        // TODO: VERY BAD!! REMOVE!! TODO: REMOVE! TODO: REMOVE!
-        return false;
+         return getTargetAngles().x != 0;
     }
 
     public boolean getLeds() {
