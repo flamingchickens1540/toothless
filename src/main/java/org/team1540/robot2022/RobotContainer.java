@@ -236,10 +236,6 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxVelocity", 1);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxAcceleration", 0.5);
 
-        // Shooter values
-        SmartDashboard.putNumber("shooter/tarmacDefaultFrontRPM", 1000);
-        SmartDashboard.putNumber("shooter/tarmacDefaultRearRPM", 1000);
-
         SmartDashboard.putNumber("shooter/tuning/frontRPM", -1000);
         SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);
 
