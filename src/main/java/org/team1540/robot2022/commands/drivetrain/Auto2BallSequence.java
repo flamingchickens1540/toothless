@@ -1,5 +1,6 @@
 package org.team1540.robot2022.commands.drivetrain;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
@@ -20,12 +21,11 @@ public class Auto2BallSequence extends SequentialCommandGroup {
      * @param limelight The limelight (For PointToTarget)
      * @param isPosA If the robot is positioned in the upper right or bottom left starting position
      */
-    public Auto2BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, Limelight limelight, boolean isPosA) {
+    public Auto2BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, Limelight limelight, boolean isPosA, Command indexCommand) {
         String trajectoryFile = "2ball.pos"+(isPosA?"A":"B")+".path1.wpilib.json";
         addCommands( 
                 AutoSequenceWrapper.runPath(drivetrain, intake, indexer, trajectoryFile),  // Follow the path to collect the first ball
-                // TODO: This null command need fixing
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, null)         // Shoot the 2 indexed balls (starts with one, collects one)
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, indexCommand)         // Shoot the 2 indexed balls (starts with one, collects one)
         );
     }
 }
