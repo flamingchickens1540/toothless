@@ -230,8 +230,8 @@ public class RobotContainer {
         SmartDashboard.putNumber("shooter/tuning/frontRPM", -1000);
         SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);
 
-        // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors)
-        SmartDashboard.putNumber("shooter/tuning/targetError", 75); // +- 75
+        // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors, plus or minus)
+        SmartDashboard.putNumber("shooter/tuning/targetError", 50);
     }
 
     public Command getAutonomousCommand() {
