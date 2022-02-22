@@ -189,8 +189,8 @@ public class Shooter extends SubsystemBase {
      * Save a shot in the optimization table
      */
     private void saveShotToFile(ShootingState shot) {
-        String jsonl = String.format("{'match': %d, 'replay': %d, 'alliance': '%s', 'location': %d, 'matchSeconds': %f," +
-                        "'frontRPM': %f, 'rearRPM': %f, 'targetDistance': %f, 'hood': %b, 'result': '%s'}",
+        String jsonl = String.format("{\"match\": %d, \"replay\": %d, \"alliance\": \"%s\", \"location\": %d, \"matchSeconds\": %f," +
+                        "\"frontRPM\": %f, \"rearRPM\": %f, \"targetDistance\": %f, \"hood\": %b, \"result\": \"%s\"}",
                 DriverStation.getMatchNumber(),
                 DriverStation.getReplayNumber(),
                 DriverStation.getAlliance().toString(),
