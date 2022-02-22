@@ -6,11 +6,9 @@ import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.hood.Hood;
-import org.team1540.robot2022.commands.indexer.IndexCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.utils.Limelight;
-import org.team1540.robot2022.utils.RepeatCommand;
 
 public class ShootSequence extends SequentialCommandGroup {
     private final Command indexCommand;
@@ -51,7 +49,7 @@ public class ShootSequence extends SequentialCommandGroup {
                                                 rearVelocity = InterpolationTable.tarmacRear;
                                             }
 
-//                                            double frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
+//                                            frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
 //                                            double rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
 //                                            System.out.println("Setting output with distance " + distanceFromTarget + " front " + frontVelocity + " rear " + rearVelocity);
                                             shooter.setVelocityRPM(shooter.shooterMotorFront, frontVelocity);
