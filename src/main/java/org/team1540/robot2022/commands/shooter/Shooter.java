@@ -5,11 +5,17 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class Shooter extends SubsystemBase {
     private final double rearP = 0.5;
@@ -21,6 +27,9 @@ public class Shooter extends SubsystemBase {
     private final double frontI = 0;
     private final double frontD = 10;
     private final double frontF = 0.048;
+
+    // Result of the last shot
+    public ShootingState lastShot;
 
     public TalonFX shooterMotorFront = new TalonFX(Constants.ShooterConstants.front);
     public TalonFX shooterMotorRear = new TalonFX(Constants.ShooterConstants.rear);
@@ -43,6 +52,11 @@ public class Shooter extends SubsystemBase {
         NetworkTableInstance.getDefault().getTable("SmartDashboard/shooter/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
 
         SmartDashboard.putNumber("shooter/tuning/waitAfterFirstBall", 0.5);
+
+        SmartDashboard.putNumber("shooter/lastShot/frontRPM", 0);
+        SmartDashboard.putNumber("shooter/lastShot/rearRPM", 0);
+        SmartDashboard.putNumber("shooter/lastShot/distanceFromTarget", 0);
+        SmartDashboard.putBoolean("shooter/lastShot/hoodState", false);
 
         updatePIDs();
     }
@@ -138,5 +152,60 @@ public class Shooter extends SubsystemBase {
     public boolean isSpunUp() {
         return Math.abs(getClosedLoopError()) < SmartDashboard.getNumber("shooter/tuning/targetError", 0)
                 && Math.abs(getVelocityRPM(shooterMotorFront) + getVelocityRPM(shooterMotorRear)) > 200; // Make sure the shooter is moving
+    }
+
+    /**
+     * Record a shot
+     *
+     * @param frontVelocity  front shooter flywheel RPM
+     * @param rearVelocity   rear shooter flywheel RPM
+     * @param targetDistance target distance in inches
+     * @param hood           is the hood up?
+     */
+    public void recordShot(double frontVelocity, double rearVelocity, double targetDistance, boolean hood) {
+        // If the last shot hasn't been saved yet, save it with an unknown value
+        // (setLastShotResult sets lastShot to null when it's done recording)
+        if (lastShot != null) {
+            setLastShotResult(ShotResult.UNKNOWN);
+        }
+
+        lastShot = new ShootingState(frontVelocity, rearVelocity, targetDistance, hood);
+    }
+
+    /**
+     * Record the result of the last shot and save it
+     *
+     * @param result shot result
+     */
+    public void setLastShotResult(ShotResult result) {
+        if (lastShot != null) {
+            lastShot.result = result;
+            saveShotToFile(lastShot);
+            lastShot = null;
+        }
+    }
+
+    /**
+     * Save a shot in the optimization table
+     */
+    private void saveShotToFile(ShootingState shot) {
+        String jsonl = String.format("{'match': %d, 'replay': %d, 'alliance': '%s', 'location': %d, 'matchSeconds': %f," +
+                        "'frontRPM': %f, 'rearRPM': %f, 'targetDistance': %f, 'hood': %b, 'result': '%s'}",
+                DriverStation.getMatchNumber(),
+                DriverStation.getReplayNumber(),
+                DriverStation.getAlliance().toString(),
+                DriverStation.getLocation(),
+                DriverStation.getMatchTime(),
+                shot.frontVelocity,
+                shot.rearVelocity,
+                shot.targetDistance,
+                shot.hood,
+                shot.result);
+
+        try {
+            Files.write(Paths.get("/optimization.jsonl"), jsonl.getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            System.out.println("ERROR: While appending to optimization file: " + e);
+        }
     }
 }
