@@ -20,14 +20,14 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 public class RamseteConfig {
     // Calculated in frc-characterization
-    public static final double ksVolts = 0.127;
-    public static final double kvVoltSecondsPerMeter = 2.6;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.292;
+    public static final double ksVolts = 0.650;
+    public static final double kvVoltSecondsPerMeter = 2.81;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.224;
 
     // Ramsete PID controllers
-    public static final double kPDriveVel = 0.7;
+    public static final double kPDriveVel = 3.2925;
 
-    private static final double kTrackwidthMeters = 0.67978793613;
+    private static final double kTrackwidthMeters = 0.6604;
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
             kTrackwidthMeters);
 
@@ -52,8 +52,8 @@ public class RamseteConfig {
     public static final RamseteController ramseteController = new RamseteController(kRamseteB, kRamseteZeta);
     public static final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(ksVolts, kvVoltSecondsPerMeter,
             kaVoltSecondsSquaredPerMeter);
-    public static final PIDController leftPID = new PIDController(SmartDashboard.getNumber("ramsetePID/kP", 0.5), 0, 0);
-    public static final PIDController rightPID = new PIDController(SmartDashboard.getNumber("ramsetePID/kP", 0.5), 0,
+    public static final PIDController leftPID = new PIDController(SmartDashboard.getNumber("ramsetePID/kP", kPDriveVel), 0, 0);
+    public static final PIDController rightPID = new PIDController(SmartDashboard.getNumber("ramsetePID/kP", kPDriveVel), 0,
             0);
 
     /**
@@ -103,6 +103,11 @@ public class RamseteConfig {
      * @return A RamseteCommand to follow the trajectory
      */
     public static RamseteCommand getRamseteCommand(Drivetrain drivetrain, String trajectoryName) {
+        Trajectory trajectory = getTrajectory(trajectoryName);
+        return getRamseteCommand(drivetrain, trajectory);
+    }
+
+    public static Trajectory getTrajectory(String trajectoryName) {
         Path trajectoryPath = getTrajectoryPath(trajectoryName);
         Trajectory trajectory;
 
@@ -119,7 +124,7 @@ public class RamseteConfig {
             }
             trajectory = new Trajectory();
         }
-        return getRamseteCommand(drivetrain, trajectory);
+        return trajectory;
     }
 
     public static Path getTrajectoryPath(String trajectoryName) {
