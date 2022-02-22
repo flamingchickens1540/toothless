@@ -4,14 +4,20 @@ import org.team1540.robot2022.utils.LinearInterpolator;
 
 public class InterpolationTable {
     // Interpolation values for the hood down
-    public static final double[][] hoodDown = {
-            {0, 2100, 2500}
-            // TODO: Populate the rest of these
-    };
+
+    // Hood down
+    public static final double hubFront = 2100;
+    public static final double hubRear = 2100;
+    public static final double tarmacFront = 2100;
+    public static final double tarmacRear = 2950;
+    // {98, }
 
     // Interpolation values for the hood up
     public static final double[][] hoodUp = {
             // {distance (inches), frontSpeed, backSpeed}
+            {97, 1950, 2700},
+            {110, 1950, 2850},
+            {120, 1950, 2900},
             {131, 1950, 2950},
             {142, 2050, 3050},
             {151, 2050, 3050},

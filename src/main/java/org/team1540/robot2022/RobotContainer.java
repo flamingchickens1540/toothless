@@ -124,7 +124,7 @@ public class RobotContainer {
 
         // coop:button(LBumper,Shoot [hold],pilot)
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand));
+                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, indexCommand));
 
         // coop:button(DPadUp,Hood up [press],pilot)
         new POVButton(driverController, 0) // D-pad up
@@ -143,7 +143,6 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kY.value)
                 .cancelWhenPressed(indexCommand)
                 .whenPressed(indexerEjectCommand);
-
         // coop:button(A,Stop indexer and intake [press],copilot)
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
@@ -231,7 +230,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);
 
         // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors, plus or minus)
-        SmartDashboard.putNumber("shooter/tuning/targetError", 50);
+        SmartDashboard.putNumber("shooter/tuning/targetError", 30);
     }
 
     public Command getAutonomousCommand() {

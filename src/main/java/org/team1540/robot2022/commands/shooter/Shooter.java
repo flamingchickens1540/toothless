@@ -42,6 +42,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter/tuning/rearD", rearD);
         NetworkTableInstance.getDefault().getTable("SmartDashboard/shooter/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
 
+        SmartDashboard.putNumber("shooter/tuning/waitAfterFirstBall", 0.5);
+
         updatePIDs();
     }
 

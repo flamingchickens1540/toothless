@@ -78,8 +78,6 @@ public class Limelight {
      */
     public boolean isTargetFound() {
          return getTargetAngles().x != 0;
-//        // TODO: VERY BAD!! REMOVE!! TODO: REMOVE! TODO: REMOVE!
-//        return false;
     }
 
     public boolean getLeds() {
