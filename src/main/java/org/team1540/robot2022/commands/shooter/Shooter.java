@@ -203,7 +203,7 @@ public class Shooter extends SubsystemBase {
                 shot.result);
 
         try {
-            Files.write(Paths.get("/optimization.jsonl"), jsonl.getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get("/home/lvuser/optimization.jsonl"), jsonl.getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             DriverStation.reportError("ERROR: While appending to optimization file: " + e, e.getStackTrace());
         }
