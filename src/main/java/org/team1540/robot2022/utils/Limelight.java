@@ -52,7 +52,7 @@ public class Limelight {
     public double getCalculatedDistance() {
         double theta = Math.toRadians(getTargetAngles().y) + limelightAngle;
         double actualHeight = targetHeight - limelightHeight;
-        return actualHeight / Math.tan(theta);
+        return 39.37007874 * actualHeight / Math.tan(theta);
     }
 
     public void updateSmartDashboardValues() {
@@ -77,9 +77,9 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-        // return getTargetAngles().x != 0;
-        // TODO: VERY BAD!! REMOVE!! TODO: REMOVE! TODO: REMOVE!
-        return false;
+         return getTargetAngles().x != 0;
+//        // TODO: VERY BAD!! REMOVE!! TODO: REMOVE! TODO: REMOVE!
+//        return false;
     }
 
     public boolean getLeds() {

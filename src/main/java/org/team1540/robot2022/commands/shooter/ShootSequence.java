@@ -1,7 +1,7 @@
 package org.team1540.robot2022.commands.shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
+import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.indexer.Indexer;
@@ -11,12 +11,15 @@ public class ShootSequence extends SequentialCommandGroup {
     private final Command indexCommand;
     private final Shooter shooter;
     private final Indexer indexer;
+    private final Limelight limelight;
+    private final InterpolationTable interpolationTable = InterpolationTable.getInstance();
     private boolean indexCommandScheduled;
 
     public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Limelight limelight, Command indexCommand) {
         this.indexCommand = indexCommand;
         this.shooter = shooter;
         this.indexer = indexer;
+        this.limelight = limelight;
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
                 sequence(
@@ -25,11 +28,18 @@ public class ShootSequence extends SequentialCommandGroup {
                             indexCommand.cancel();
                         }),
                         parallel(
-                                new InstantCommand(() -> {
-                                    shooter.setVelocityRPM(shooter.shooterMotorFront, SmartDashboard.getNumber("shooter/tuning/frontRPM", 0));
-                                    shooter.setVelocityRPM(shooter.shooterMotorRear, SmartDashboard.getNumber("shooter/tuning/rearRPM", 0));
-                                }, shooter),
-//                                new InterpolateVelocityCommand(shooter, limelight),
+                                sequence(
+                                        new InstantCommand(() -> limelight.setLeds(true)),
+                                        new WaitCommand(0.2),
+                                        new InstantCommand(() -> {
+                                            double distanceFromTarget = limelight.getCalculatedDistance();
+                                            double frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(distanceFromTarget);
+                                            double rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(distanceFromTarget);
+                                            System.out.println("Interpolated output for distance " + distanceFromTarget + " front " + frontVelocity + " rear " + rearVelocity);
+                                            shooter.setVelocityRPM(shooter.shooterMotorFront, frontVelocity);
+                                            shooter.setVelocityRPM(shooter.shooterMotorRear, rearVelocity);
+                                        }, shooter)
+                                ),
                                 new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
                                         new PointToTarget(drivetrain, limelight),
                                         new InstantCommand(),
@@ -54,6 +64,7 @@ public class ShootSequence extends SequentialCommandGroup {
         System.out.println("Stopping ShootSequence");
         shooter.stop();
         indexer.stop();
+        limelight.setLeds(false);
 
         if (indexCommandScheduled) {
             indexCommand.schedule();

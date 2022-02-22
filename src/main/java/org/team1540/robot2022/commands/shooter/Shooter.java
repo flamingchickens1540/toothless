@@ -29,6 +29,8 @@ public class Shooter extends SubsystemBase {
         Constants.ShooterConstants.currentLimitConfig.applyTo(new TalonFX[]{shooterMotorFront, shooterMotorRear});
         shooterMotorFront.setNeutralMode(NeutralMode.Coast);
         shooterMotorRear.setNeutralMode(NeutralMode.Coast);
+        shooterMotorFront.setInverted(true);
+        shooterMotorRear.setInverted(true);
 
         SmartDashboard.putNumber("shooter/tuning/frontP", frontP);
         SmartDashboard.putNumber("shooter/tuning/frontI", frontI);
