@@ -5,8 +5,9 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
-import org.team1540.robot2022.commands.drivetrain.AutoTest;
+import org.team1540.robot2022.commands.drivetrain.Auto2BallSequence;
+import org.team1540.robot2022.commands.drivetrain.Auto3BallSequence;
+import org.team1540.robot2022.commands.drivetrain.Auto4BallSequence;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 import org.team1540.robot2022.commands.drivetrain.OdometryResetSequence;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
@@ -27,7 +28,6 @@ import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RepeatCommand;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -192,7 +192,11 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        autoChooser.addOption("Test Auto", new AutoTest(drivetrain));
+        autoChooser.addOption("1 Ball", new ShootSequence(shooter, indexer, drivetrain, intake, limelight));
+        autoChooser.addOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, limelight, true));
+        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, limelight, false));
+        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, limelight));
+        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, limelight));
 
         SmartDashboard.putData(autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
