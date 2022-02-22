@@ -6,9 +6,11 @@ import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.hood.Hood;
+import org.team1540.robot2022.commands.indexer.IndexCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.utils.Limelight;
+import org.team1540.robot2022.utils.RepeatCommand;
 
 public class ShootSequence extends SequentialCommandGroup {
     private final Command indexCommand;
