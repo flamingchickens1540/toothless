@@ -29,6 +29,8 @@ public class Shooter extends SubsystemBase {
         Constants.ShooterConstants.currentLimitConfig.applyTo(new TalonFX[]{shooterMotorFront, shooterMotorRear});
         shooterMotorFront.setNeutralMode(NeutralMode.Coast);
         shooterMotorRear.setNeutralMode(NeutralMode.Coast);
+        shooterMotorFront.setInverted(true);
+        shooterMotorRear.setInverted(true);
 
         SmartDashboard.putNumber("shooter/tuning/frontP", frontP);
         SmartDashboard.putNumber("shooter/tuning/frontI", frontI);
@@ -39,6 +41,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter/tuning/rearF", rearF);
         SmartDashboard.putNumber("shooter/tuning/rearD", rearD);
         NetworkTableInstance.getDefault().getTable("SmartDashboard/shooter/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
+
+        SmartDashboard.putNumber("shooter/tuning/waitAfterFirstBall", 0.5);
 
         updatePIDs();
     }

@@ -5,35 +5,7 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
-import org.team1540.robot2022.commands.drivetrain.AutoTest;
-import org.team1540.robot2022.commands.drivetrain.Drivetrain;
-import org.team1540.robot2022.commands.drivetrain.OdometryResetSequence;
-import org.team1540.robot2022.commands.drivetrain.PointToTarget;
-import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
-import org.team1540.robot2022.commands.hood.Hood;
-import org.team1540.robot2022.commands.hood.HoodSetCommand;
-import org.team1540.robot2022.commands.indexer.IndexCommand;
-import org.team1540.robot2022.commands.indexer.Indexer;
-import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
-import org.team1540.robot2022.commands.intake.Intake;
-import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
-import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
-import org.team1540.robot2022.commands.shooter.ShootSequence;
-import org.team1540.robot2022.commands.shooter.Shooter;
-import org.team1540.robot2022.utils.ChickenSmartDashboard;
-import org.team1540.robot2022.utils.Limelight;
-import org.team1540.robot2022.utils.NavX;
-import org.team1540.robot2022.utils.RepeatCommand;
-import org.team1540.robot2022.utils.RevBlinken;
-import org.team1540.robot2022.utils.RevBlinken.GameStage;
-
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -45,6 +17,19 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.team1540.robot2022.commands.drivetrain.*;
+import org.team1540.robot2022.commands.hood.Hood;
+import org.team1540.robot2022.commands.hood.HoodSetCommand;
+import org.team1540.robot2022.commands.indexer.IndexCommand;
+import org.team1540.robot2022.commands.indexer.Indexer;
+import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
+import org.team1540.robot2022.commands.intake.Intake;
+import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
+import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
+import org.team1540.robot2022.commands.shooter.ShootSequence;
+import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.utils.*;
+import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -124,7 +109,7 @@ public class RobotContainer {
 
         // coop:button(LBumper,Shoot [hold],pilot)
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, limelight, indexCommand));
+                .whenHeld(new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, indexCommand));
 
         // coop:button(DPadUp,Hood up [press],pilot)
         new POVButton(driverController, 0) // D-pad up
@@ -132,6 +117,28 @@ public class RobotContainer {
         // coop:button(DPadDown,Hood down [press],pilot)
         new POVButton(driverController, 180) // D-pad down
                 .whenPressed(new HoodSetCommand(hood, false));
+
+        // Intake/indexer
+
+        // coop:button(X,Start intake and indexer [press],pilot)
+        new JoystickButton(driverController, Button.kX.value)
+                .cancelWhenPressed(indexerEjectCommand)
+                .whenPressed(indexCommand);
+        // coop:button(Y,Eject intake and indexer [press],pilot)
+        new JoystickButton(driverController, Button.kY.value)
+                .cancelWhenPressed(indexCommand)
+                .whenPressed(indexerEjectCommand);
+        // coop:button(A,Stop indexer and intake [press],pilot)
+        new JoystickButton(driverController, Button.kA.value)
+                .cancelWhenPressed(indexerEjectCommand)
+                .cancelWhenPressed(indexCommand);
+
+        // coop:button(DPadDown,Intake up [press],pilot)
+        new POVButton(copilotController, 270) // D-pad left
+                .whenPressed(new IntakeFoldCommand(intake, true));
+        // coop:button(DPadRight,Intake down [press],pilot)
+        new POVButton(copilotController, 90) // D-pad right
+                .whenPressed(new IntakeFoldCommand(intake, false));
 
         // Copilot
 
@@ -143,7 +150,6 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kY.value)
                 .cancelWhenPressed(indexCommand)
                 .whenPressed(indexerEjectCommand);
-
         // coop:button(A,Stop indexer and intake [press],copilot)
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
@@ -166,8 +172,6 @@ public class RobotContainer {
         // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
-
-
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
@@ -192,7 +196,11 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        autoChooser.addOption("Test Auto", new AutoTest(drivetrain));
+        autoChooser.addOption("1 Ball", new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, indexCommand));
+        autoChooser.addOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, true, indexCommand));
+        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, false, indexCommand));
+        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, indexCommand));
+        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, indexCommand));
 
         SmartDashboard.putData(autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
@@ -230,8 +238,8 @@ public class RobotContainer {
         SmartDashboard.putNumber("shooter/tuning/frontRPM", -1000);
         SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);
 
-        // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors)
-        SmartDashboard.putNumber("shooter/tuning/targetError", 75); // +- 75
+        // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors, plus or minus)
+        SmartDashboard.putNumber("shooter/tuning/targetError", 30);
     }
 
     public Command getAutonomousCommand() {
