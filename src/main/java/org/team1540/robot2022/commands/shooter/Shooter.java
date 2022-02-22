@@ -205,7 +205,7 @@ public class Shooter extends SubsystemBase {
         try {
             Files.write(Paths.get("/optimization.jsonl"), jsonl.getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
-            System.out.println("ERROR: While appending to optimization file: " + e);
+            DriverStation.reportError("ERROR: While appending to optimization file: " + e, e.getStackTrace());
         }
     }
 }
