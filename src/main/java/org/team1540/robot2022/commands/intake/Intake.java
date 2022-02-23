@@ -40,4 +40,13 @@ public class Intake extends SubsystemBase {
     public Command commandStop() {
         return new InstantCommand(this::stop);
     }
+
+    /**
+     * Returns a command to set the fold state of the indexer
+     * @param isUp if the indexer is folded up
+     * @return An InstantCommand
+     */
+    public Command commandSetFold(boolean isUp) {
+        return new InstantCommand(() -> this.setFold(isUp));
+    }
 }

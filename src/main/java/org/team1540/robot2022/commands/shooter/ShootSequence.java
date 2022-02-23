@@ -11,25 +11,19 @@ import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.utils.Limelight;
 
 public class ShootSequence extends SequentialCommandGroup {
-    private final Command indexCommand;
     private final Shooter shooter;
     private final Indexer indexer;
     private final Limelight limelight;
     private final InterpolationTable interpolationTable = InterpolationTable.getInstance();
-    private boolean indexCommandScheduled;
 
-    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, Command indexCommand) {
-        this.indexCommand = indexCommand;
+    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
                 sequence(
-                        new InstantCommand(() -> {
-                            indexCommandScheduled = indexCommand.isScheduled();
-                            indexCommand.cancel();
-                        }),
+                        indexer.commandSetStandby(true),
                         parallel(
                                 sequence(
                                         new InstantCommand(() -> limelight.setLeds(true)),
@@ -88,8 +82,6 @@ public class ShootSequence extends SequentialCommandGroup {
         indexer.stop();
         limelight.setLeds(false);
 
-        if (indexCommandScheduled) {
-            indexCommand.schedule();
-        }
+        indexer.standby = false;
     }
 }

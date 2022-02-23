@@ -1,6 +1,5 @@
 package org.team1540.robot2022.commands.drivetrain;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
@@ -12,12 +11,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class Auto3BallSequence extends SequentialCommandGroup {
 
-    public Auto3BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, Limelight limelight, Command indexCommand) {
+    public Auto3BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, Limelight limelight) {
         addCommands(
                 AutoSequenceWrapper.runPath(drivetrain, intake, indexer, "2ball.posA.path1.wpilib.json"), // Follow path to collect first ball
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, indexCommand),                       // Shoot the 2 indexed balls (starts with one, collects one)
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight),                       // Shoot the 2 indexed balls (starts with one, collects one)
                 AutoSequenceWrapper.runPath(drivetrain, intake, indexer, "3ball.posA.path2.wpilib.json"), // Follow path to collect second ball
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, indexCommand)                        // Shoot the 2 indexed balls (starts with one, collects one)
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight)                        // Shoot the 2 indexed balls (starts with one, collects one)
         );
     }
 }

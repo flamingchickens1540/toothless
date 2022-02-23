@@ -13,9 +13,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.util.function.BiConsumer;
 
 public class Indexer extends SubsystemBase {
     private final TalonFX bottomMotor = new TalonFX(IndexerMotors.bottomMotor);
@@ -25,14 +25,14 @@ public class Indexer extends SubsystemBase {
     private final DigitalInput topSensor = new DigitalInput(BeamBreaks.topIndexerSensor);
     private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.bottomIndexerSensor);
 
+    public boolean standby = false;
+
     private final AsynchronousInterrupt topInterrupt = new AsynchronousInterrupt(topSensor, (rising, falling) -> {
         // These rising/falling booleans are both reporting false, and I don't know why
         // System.out.println("Top sensor: " + rising + " falling " + falling);
 
-        if (getTopSensor()) { // Stop top indexer if ball is there
+        if (getTopSensor() && !standby) { // Stop top indexer if ball is there
             set(IndexerState.OFF, IndexerState.UNCHANGED);
-        } else {
-            set(IndexerState.FORWARD, IndexerState.OFF);
         }
     });
 
@@ -40,10 +40,8 @@ public class Indexer extends SubsystemBase {
         // These rising/falling booleans are both reporting false, and I don't know why
         // System.out.println("Bottom sensor: " + rising + " falling " + falling);
 
-        if (getBottomSensor()) { // Stop bottom indexer if ball is there
+        if (isFull() && !standby) { // Stop bottom indexer if ball is there
             set(IndexerState.UNCHANGED, IndexerState.OFF);
-        } else {
-            set(IndexerState.OFF, IndexerState.FORWARD);
         }
     });
 
@@ -187,6 +185,7 @@ public class Indexer extends SubsystemBase {
      */
     public void stop() {
         this.set(IndexerState.OFF, IndexerState.OFF);
+        this.standby = true;
     }
 
     /**
@@ -196,6 +195,29 @@ public class Indexer extends SubsystemBase {
      */
     public Command commandStop() {
         return new InstantCommand(this::stop);
+    }
+
+    /**
+     * Returns a command to set the standby mode for the indexer
+     *
+     * @param on If the indexer should be on standby
+     * @return an InstantCommand to set the standby mode
+     */
+    public Command commandSetStandby(boolean on) {
+        return new InstantCommand(() -> this.standby = on);
+    }
+
+    /**
+     * Returns a command to set the standby mode for the indexer
+     *
+     * @param on If the indexer should be on standby
+     * @return an InstantCommand to set the standby mode
+     */
+    public Command commandStart() {
+        return new SequentialCommandGroup(
+            this.commandSetStandby(false),
+            this.commandSet(IndexerState.FORWARD, IndexerState.FORWARD)
+        );
     }
 
     /**
