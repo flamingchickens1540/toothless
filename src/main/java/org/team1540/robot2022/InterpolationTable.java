@@ -11,8 +11,8 @@ public class InterpolationTable {
     public static final double tarmacFront = 2100;
     public static final double tarmacRear = 2950;
 
-    public static final double copilotSpinupFront = 2100;
-    public static final double copilotSpinupRear = 3100;
+    public static final double copilotSpinupFront = 2000;
+    public static final double copilotSpinupRear = 2000;
     // {98, }
 
     // Interpolation values for the hood up
