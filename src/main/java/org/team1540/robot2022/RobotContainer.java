@@ -162,7 +162,8 @@ public class RobotContainer {
                 .and(new Trigger(() -> !shootSequence.isScheduled()))
                 .whenActive(shooter.commandSetVelocity(InterpolationTable.copilotSpinupFront, InterpolationTable.copilotSpinupRear));
         new JoystickButton(copilotController, Button.kY.value)
-                .whenPressed(shooter.commandStop());
+                .and(new Trigger(() -> !shootSequence.isScheduled()))
+                .whenActive(shooter.commandStop());
 
         // coop:button(LBumper,Manual intake [hold],copilot)
         new JoystickButton(copilotController, Button.kLeftBumper.value)
