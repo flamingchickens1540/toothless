@@ -42,11 +42,11 @@ public class PointToTarget extends CommandBase {
     public void execute() {
         Vector2d lmAngles = limelight.getTargetAngles();
         if (Math.abs(lmAngles.x) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
-            
+
             double distanceToTarget = getHorizontalDistanceToTarget();
             double pidOutput = pid.getOutput(getError(distanceToTarget));
             double multiplier = lmAngles.x > 0 ? 1 : -1;
-            
+
             SmartDashboard.putNumber("pointToTarget/pidOutput", pidOutput);
             SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", distanceToTarget);
 
