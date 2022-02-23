@@ -19,12 +19,10 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team1540.robot2022.commands.drivetrain.*;
 import org.team1540.robot2022.commands.hood.Hood;
-import org.team1540.robot2022.commands.hood.HoodSetCommand;
 import org.team1540.robot2022.commands.indexer.IndexCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
 import org.team1540.robot2022.commands.intake.Intake;
-import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
@@ -114,10 +112,10 @@ public class RobotContainer {
 
         // coop:button(DPadUp,Hood up [press],pilot)
         new POVButton(driverController, 0) // D-pad up
-                .whenPressed(new HoodSetCommand(hood, true));
+                .whenPressed(new InstantCommand(() -> hood.set(true)));
         // coop:button(DPadDown,Hood down [press],pilot)
         new POVButton(driverController, 180) // D-pad down
-                .whenPressed(new HoodSetCommand(hood, false));
+                .whenPressed(new InstantCommand(() -> hood.set(false)));
 
         // Intake/indexer
 
@@ -187,17 +185,9 @@ public class RobotContainer {
         var teleop = new Trigger(DriverStation::isTeleopEnabled);
         var disabled = new Trigger(DriverStation::isDisabled);
 
-        teleop.whenActive(() -> {
-            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP);
-        });
-
-        autonomous.whenActive(() -> {
-            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.AUTONOMOUS);
-        });
-
-        disabled.whenActive(() -> {
-            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.DISABLE);
-        });
+        teleop.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP));
+        autonomous.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.AUTONOMOUS));
+        disabled.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.DISABLE));
     }
 
     private void initSmartDashboard() {
