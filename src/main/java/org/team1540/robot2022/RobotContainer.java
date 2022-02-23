@@ -79,6 +79,7 @@ public class RobotContainer {
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer);
+    public final Command shooterSpinup = shooter.commandSetVelocity(InterpolationTable.copilotSpinupFront, InterpolationTable.copilotSpinupRear);
 
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
@@ -152,19 +153,6 @@ public class RobotContainer {
 
         // Copilot
 
-        // coop:button(X,Start intake and indexer [press],copilot)
-        new JoystickButton(copilotController, Button.kX.value)
-                .cancelWhenPressed(indexerEjectCommand)
-                .whenPressed(intakeSequence);
-        // coop:button(Y,Eject intake and indexer [press],copilot)
-        new JoystickButton(copilotController, Button.kY.value)
-                .cancelWhenPressed(intakeSequence)
-                .whenPressed(indexerEjectCommand);
-        // coop:button(A,Stop indexer and intake [press],copilot)
-        new JoystickButton(copilotController, Button.kA.value)
-                .cancelWhenPressed(indexerEjectCommand)
-                .cancelWhenPressed(intakeSequence);
-
         // coop:button(B,Toggle intake fold [press],copilot)
         new JoystickButton(copilotController, Button.kB.value)
                 .whenPressed(new InstantCommand(() -> intake.setFold(!intake.getFold())));
@@ -176,15 +164,21 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
 
-        // coop:button(DPadUp,Mark last shot as ok [press],copilot)
-        new POVButton(copilotController, 0) // D-pad up
-                .whenPressed(new InstantCommand(() -> shooter.setLastShotResult(ShotResult.OK)));
+        // coop:button(DPadLeft,stop intake and indexer [press],copilot)
+        new POVButton(copilotController, 90) // D-pad right
+                .cancelWhenPressed(indexerEjectCommand)
+                .cancelWhenPressed(intakeSequence);
         // coop:button(DPadDown,Mark last shot as missed [press],copilot)
         new POVButton(copilotController, 180) // D-pad down
                 .whenPressed(new InstantCommand(() -> shooter.setLastShotResult(ShotResult.MISS)));
-        // coop:button(DPadLeft,Mark last shot as bounced [press],copilot)
+        // coop:button(DPadLeft,Eject balls from intake,copilot)
         new POVButton(copilotController, 270) // D-pad left
-                .whenPressed(new InstantCommand(() -> shooter.setLastShotResult(ShotResult.BOUNCED)));
+                .cancelWhenPressed(intakeSequence)
+                .whenPressed(indexerEjectCommand);
+
+        // coop:button(LTrigger,Spin up shooter [hold],copilot)
+        new Trigger(() -> copilotController.getLeftTriggerAxis() == 1)
+                .whenActive(shooterSpinup);
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)

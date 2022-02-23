@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
 
@@ -143,6 +144,8 @@ public class Shooter extends SubsystemBase {
             shooterMotorRear.set(TalonFXControlMode.Velocity, rear);
         }, this);
     }
+
+
 
     /**
      * Check if the shooter is spun up close enough to target velocity
