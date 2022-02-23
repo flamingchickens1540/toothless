@@ -32,20 +32,29 @@ public class ShootSequence extends SequentialCommandGroup {
                                             double distanceFromTarget = limelight.getCalculatedDistance();
                                             double frontVelocity;
                                             double rearVelocity;
+                                            boolean hoodState; // New state to set the hood to
+
                                             if (distanceFromTarget > 98) { // Far shot, 98 inches TODO: needs tuning and LIDAR
-                                                hood.set(true);
+                                                hoodState = true;
                                                 intake.setFold(true);
                                                 frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(distanceFromTarget);
                                                 rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(distanceFromTarget);
                                             } else { // Tarmac shot
-                                                hood.set(false);
+                                                hoodState = false;
                                                 frontVelocity = InterpolationTable.tarmacFront;
                                                 rearVelocity = InterpolationTable.tarmacRear;
                                             }
+                                            hood.set(hoodState);
 
 //                                            frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
 //                                            double rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
 //                                            System.out.println("Setting output with distance " + distanceFromTarget + " front " + frontVelocity + " rear " + rearVelocity);
+                                            SmartDashboard.putNumber("shooter/lastShot/frontRPM", frontVelocity);
+                                            SmartDashboard.putNumber("shooter/lastShot/rearRPM", rearVelocity);
+                                            SmartDashboard.putNumber("shooter/lastShot/distanceFromTarget", distanceFromTarget);
+                                            SmartDashboard.putBoolean("shooter/lastShot/hoodState", hoodState);
+                                            shooter.recordShot(frontVelocity, rearVelocity, distanceFromTarget, hoodState);
+
                                             shooter.setVelocityRPM(shooter.shooterMotorFront, frontVelocity);
                                             shooter.setVelocityRPM(shooter.shooterMotorRear, rearVelocity);
                                         }, shooter)

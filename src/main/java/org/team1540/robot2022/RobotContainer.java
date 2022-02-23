@@ -15,13 +15,13 @@ import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.hood.HoodSetCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
-import org.team1540.robot2022.commands.indexer.Indexer.IndexerState;
 import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.commands.shooter.ShotResult;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
@@ -147,12 +147,9 @@ public class RobotContainer {
                 .cancelWhenPressed(indexerEjectCommand)
                 .cancelWhenPressed(intakeSequence);
 
-        // coop:button(DPadDown,Intake up [press],pilot)
-        new POVButton(copilotController, 270) // D-pad left
-                .whenPressed(intake.commandSetFold(true));
-        // coop:button(DPadRight,Intake down [press],pilot)
-        new POVButton(copilotController, 90) // D-pad right
-                .whenPressed(intake.commandSetFold(false));
+        // coop:button(B,Toggle intake fold [press],pilot)
+        new JoystickButton(driverController, Button.kB.value)
+                .whenPressed(new InstantCommand(() -> intake.setFold(!intake.getFold())));
 
         // Copilot
 
@@ -169,6 +166,10 @@ public class RobotContainer {
                 .cancelWhenPressed(indexerEjectCommand)
                 .cancelWhenPressed(intakeSequence);
 
+        // coop:button(B,Toggle intake fold [press],copilot)
+        new JoystickButton(copilotController, Button.kB.value)
+                .whenPressed(new InstantCommand(() -> intake.setFold(!intake.getFold())));
+
         // coop:button(LBumper,Manual intake [hold],copilot)
         new JoystickButton(copilotController, Button.kLeftBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.speed));
@@ -176,16 +177,15 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
 
-        // coop:button(DPadUp,Intake up [press],copilot)
+        // coop:button(DPadUp,Mark last shot as ok [press],copilot)
         new POVButton(copilotController, 0) // D-pad up
-                .whenPressed(intake.commandSetFold(true));
-        // coop:button(DPadDown,Intake down [press],copilot)
+                .whenPressed(new InstantCommand(() -> shooter.setLastShotResult(ShotResult.OK)));
+        // coop:button(DPadDown,Mark last shot as missed [press],copilot)
         new POVButton(copilotController, 180) // D-pad down
-                .whenPressed(intake.commandSetFold(true));
-
-        // coop:button(B,Start indexer [Press],copilot)
-        new JoystickButton(copilotController, Button.kB.value) // D-pad down
-                .whenPressed(indexer.commandSet(IndexerState.FORWARD, IndexerState.FORWARD));
+                .whenPressed(new InstantCommand(() -> shooter.setLastShotResult(ShotResult.MISS)));
+        // coop:button(DPadLeft,Mark last shot as bounced [press],copilot)
+        new POVButton(copilotController, 270) // D-pad left
+                .whenPressed(new InstantCommand(() -> shooter.setLastShotResult(ShotResult.BOUNCED)));
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
@@ -248,10 +248,6 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxVelocity", 1);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxAcceleration", 0.5);
-
-        // Shooter values
-        SmartDashboard.putNumber("shooter/tarmacDefaultFrontRPM", 1000);
-        SmartDashboard.putNumber("shooter/tarmacDefaultRearRPM", 1000);
 
         SmartDashboard.putNumber("shooter/tuning/frontRPM", -1000);
         SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);

@@ -1,4 +1,4 @@
-area_max:20.759414062500007
+area_max:10.408624537599996
 area_min:0.0003418800999999999
 area_similarity:0
 aspect_max:15.285387012499996
@@ -9,7 +9,7 @@ calibration_type:0
 contour_grouping:3
 contour_sort_final:6
 convexity_max:95.4
-convexity_min:10.4
+convexity_min:9.2
 corner_approx:5.000000
 cross_a_a:1
 cross_a_x:0
@@ -22,11 +22,11 @@ desired_contour_region:0
 dilation_steps:0
 direction_filter:0
 dual_close_sort_origin:0
-erosion_steps:1
+erosion_steps:0
 exposure:480
 force_convex:1
 hue_max:122
-hue_min:38
+hue_min:43
 image_flip:0
 image_source:0
 img_to_show:0
