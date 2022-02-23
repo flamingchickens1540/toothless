@@ -23,7 +23,7 @@ public class ShootSequence extends SequentialCommandGroup {
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
                 sequence(
-                        indexer.commandSetStandby(true),
+                        indexer.commandStop(),
                         parallel(
                                 sequence(
                                         new InstantCommand(() -> limelight.setLeds(true)),
@@ -81,7 +81,5 @@ public class ShootSequence extends SequentialCommandGroup {
         shooter.stop();
         indexer.stop();
         limelight.setLeds(false);
-
-        indexer.standby = false;
     }
 }

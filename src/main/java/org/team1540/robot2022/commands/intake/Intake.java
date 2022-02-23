@@ -21,12 +21,20 @@ public class Intake extends SubsystemBase {
     public void periodic() {
     }
 
+    /**
+     * Checks if the intake is retracted
+     * @return whether the intake is retracted
+     */
     public boolean getFold() {
-        return solenoid.get();
+        return !solenoid.get();
     }
 
-    public void setFold(boolean state) {
-        solenoid.set(!state);
+    /**
+     * Retracts or lowers the intake
+     * @param isUp whether the intake should be retracted
+     */
+    public void setFold(boolean isUp) {
+        solenoid.set(!isUp);
     }
 
     public void setPercent(double percent) {

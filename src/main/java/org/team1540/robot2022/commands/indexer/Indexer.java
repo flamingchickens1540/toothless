@@ -3,17 +3,14 @@ package org.team1540.robot2022.commands.indexer;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
-import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import org.team1540.robot2022.Constants.IndexerConstants;
 import org.team1540.robot2022.Constants.IndexerConstants.BeamBreaks;
 import org.team1540.robot2022.Constants.IndexerConstants.IndexerMotors;
-
+import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -25,22 +22,18 @@ public class Indexer extends SubsystemBase {
     private final DigitalInput topSensor = new DigitalInput(BeamBreaks.topIndexerSensor);
     private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.bottomIndexerSensor);
 
-    public boolean standby = false;
+    private boolean standby = false;
 
     private final AsynchronousInterrupt topInterrupt = new AsynchronousInterrupt(topSensor, (rising, falling) -> {
         // These rising/falling booleans are both reporting false, and I don't know why
-        // System.out.println("Top sensor: " + rising + " falling " + falling);
-
-        if (getTopSensor() && !standby) { // Stop top indexer if ball is there
+        if (getTopSensor() && !standby) { // Stop top indexer if ball is there and not in standby
             set(IndexerState.OFF, IndexerState.UNCHANGED);
         }
     });
 
     private final AsynchronousInterrupt bottomInterrupt = new AsynchronousInterrupt(bottomSensor, (rising, falling) -> {
         // These rising/falling booleans are both reporting false, and I don't know why
-        // System.out.println("Bottom sensor: " + rising + " falling " + falling);
-
-        if (isFull() && !standby) { // Stop bottom indexer if ball is there
+        if (isFull() && !standby) { // Stop bottom indexer if indexer is full and not in standby
             set(IndexerState.UNCHANGED, IndexerState.OFF);
         }
     });
@@ -198,26 +191,25 @@ public class Indexer extends SubsystemBase {
     }
 
     /**
-     * Returns a command to set the standby mode for the indexer
-     *
-     * @param on If the indexer should be on standby
-     * @return an InstantCommand to set the standby mode
+     * Sets indexer listeners to run and starts the indexer running
      */
-    public Command commandSetStandby(boolean on) {
-        return new InstantCommand(() -> this.standby = on);
+    public void start() {
+        this.standby = false;
+        if (isFull()) {
+            this.set(IndexerState.OFF, IndexerState.OFF);
+        } else if (getTopSensor()) {
+            this.set(IndexerState.OFF, IndexerState.FORWARD);
+        } else {
+            this.set(IndexerState.FORWARD, IndexerState.FORWARD);
+        }
     }
-
     /**
-     * Returns a command to set the standby mode for the indexer
+     * Returns a command to start the indexing listeners and motors
      *
-     * @param on If the indexer should be on standby
      * @return an InstantCommand to set the standby mode
      */
     public Command commandStart() {
-        return new SequentialCommandGroup(
-            this.commandSetStandby(false),
-            this.commandSet(IndexerState.FORWARD, IndexerState.FORWARD)
-        );
+        return new InstantCommand(this::start);
     }
 
     /**

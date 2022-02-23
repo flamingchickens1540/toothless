@@ -16,7 +16,7 @@ public class IndexerEjectCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        indexer.standby = true;
+        indexer.stop();
     }
 
     @Override
@@ -27,8 +27,7 @@ public class IndexerEjectCommand extends CommandBase {
 
     @Override
     public void end(boolean isInterrupted) {
-        indexer.set(IndexerState.OFF, IndexerState.OFF);
-        indexer.standby = false;
+        indexer.stop();
         intake.stop();
     }
 }

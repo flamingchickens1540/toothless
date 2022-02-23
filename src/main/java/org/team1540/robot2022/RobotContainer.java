@@ -18,7 +18,6 @@ import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.indexer.Indexer.IndexerState;
 import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
 import org.team1540.robot2022.commands.intake.Intake;
-import org.team1540.robot2022.commands.intake.IntakeFoldCommand;
 import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
@@ -150,10 +149,10 @@ public class RobotContainer {
 
         // coop:button(DPadDown,Intake up [press],pilot)
         new POVButton(copilotController, 270) // D-pad left
-                .whenPressed(new IntakeFoldCommand(intake, true));
+                .whenPressed(intake.commandSetFold(true));
         // coop:button(DPadRight,Intake down [press],pilot)
         new POVButton(copilotController, 90) // D-pad right
-                .whenPressed(new IntakeFoldCommand(intake, false));
+                .whenPressed(intake.commandSetFold(false));
 
         // Copilot
 
@@ -179,10 +178,10 @@ public class RobotContainer {
 
         // coop:button(DPadUp,Intake up [press],copilot)
         new POVButton(copilotController, 0) // D-pad up
-                .whenPressed(new IntakeFoldCommand(intake, true));
+                .whenPressed(intake.commandSetFold(true));
         // coop:button(DPadDown,Intake down [press],copilot)
         new POVButton(copilotController, 180) // D-pad down
-                .whenPressed(new IntakeFoldCommand(intake, false));
+                .whenPressed(intake.commandSetFold(true));
 
         // coop:button(B,Start indexer [Press],copilot)
         new JoystickButton(copilotController, Button.kB.value) // D-pad down

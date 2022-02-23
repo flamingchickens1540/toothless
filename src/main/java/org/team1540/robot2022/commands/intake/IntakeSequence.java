@@ -2,7 +2,6 @@ package org.team1540.robot2022.commands.intake;
 
 import org.team1540.robot2022.Constants;
 import org.team1540.robot2022.commands.indexer.Indexer;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class IntakeSequence extends SequentialCommandGroup {
@@ -12,10 +11,9 @@ public class IntakeSequence extends SequentialCommandGroup {
     public IntakeSequence(Intake intake, Indexer indexer) {
         this.intake = intake;
         this.indexer = indexer;
-        // addRequirements(intake, indexer);
+        addRequirements(intake, indexer);
         addCommands(
                 indexer.commandStart(),
-                intake.commandSetFold(false),
                 new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.speed)
                 
         );
