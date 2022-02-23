@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-
 import org.team1540.robot2022.RamseteConfig;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -19,10 +18,9 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class AutoTest extends SequentialCommandGroup {
-    private String trajectoryJSON = "paths/test.path2.wpilib.json";
+    private final String trajectoryJSON = "paths/test.path2.wpilib.json";
+    private final Drivetrain drivetrain;
     private Trajectory trajectory = new Trajectory();
-
-    private Drivetrain drivetrain;
 
     public AutoTest(Drivetrain drivetrain) {
         Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);

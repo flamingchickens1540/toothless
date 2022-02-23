@@ -13,7 +13,6 @@ import org.team1540.robot2022.commands.drivetrain.OdometryResetSequence;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
 import org.team1540.robot2022.commands.hood.Hood;
-import org.team1540.robot2022.commands.hood.HoodSetCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
 import org.team1540.robot2022.commands.intake.Intake;
@@ -127,10 +126,10 @@ public class RobotContainer {
 
         // coop:button(DPadUp,Hood up [press],pilot)
         new POVButton(driverController, 0) // D-pad up
-                .whenPressed(new HoodSetCommand(hood, true));
+                .whenPressed(new InstantCommand(() -> hood.set(true)));
         // coop:button(DPadDown,Hood down [press],pilot)
         new POVButton(driverController, 180) // D-pad down
-                .whenPressed(new HoodSetCommand(hood, false));
+                .whenPressed(new InstantCommand(() -> hood.set(false)));
 
         // Intake/indexer
 
@@ -200,17 +199,9 @@ public class RobotContainer {
         var teleop = new Trigger(DriverStation::isTeleopEnabled);
         var disabled = new Trigger(DriverStation::isDisabled);
 
-        teleop.whenActive(() -> {
-            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP);
-        });
-
-        autonomous.whenActive(() -> {
-            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.AUTONOMOUS);
-        });
-
-        disabled.whenActive(() -> {
-            robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.DISABLE);
-        });
+        teleop.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP));
+        autonomous.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.AUTONOMOUS));
+        disabled.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.DISABLE));
     }
 
     private void initSmartDashboard() {
