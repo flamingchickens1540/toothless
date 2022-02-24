@@ -5,6 +5,7 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import org.team1540.robot2022.commands.climber.Climber;
 import org.team1540.robot2022.commands.drivetrain.Auto2BallSequence;
 import org.team1540.robot2022.commands.drivetrain.Auto3BallSequence;
 import org.team1540.robot2022.commands.drivetrain.Auto4BallSequence;
@@ -20,7 +21,6 @@ import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
-import org.team1540.robot2022.commands.shooter.ShotResult;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
@@ -68,6 +68,7 @@ public class RobotContainer {
     public final Intake intake = new Intake();
     public final Indexer indexer = new Indexer(NeutralMode.Brake);
     public final Shooter shooter = new Shooter();
+    public final Climber climber = new Climber();
 
     // Controllers
     public final XboxController driverController = new XboxController(0);
@@ -241,6 +242,9 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxVelocity", 1);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxAcceleration", 0.5);
+
+        // Climber values
+        ChickenSmartDashboard.putDefaultNumber("climber/PID/kP", 0.3);
 
         SmartDashboard.putNumber("shooter/tuning/frontRPM", -1000);
         SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);
