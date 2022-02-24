@@ -69,6 +69,16 @@ public final class Constants {
         public static final double bottomPercent = 0.5;
     }
 
+    public static final class ClimberConstants {
+        public static final class Motors {
+            public static final int right = 10;
+            public static final int left = 11;
+        }
+        public static final class Solenoids {
+            public static final int right = 12;
+            public static final int left = 13;
+        }
+    }
     public static final class LightConstants {
         public static final ColorPattern disable = ColorPattern.FIRE_LARGE;
 

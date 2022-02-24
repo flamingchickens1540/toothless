@@ -5,6 +5,7 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import org.team1540.robot2022.commands.climber.Climber;
 import org.team1540.robot2022.commands.drivetrain.Auto2BallSequence;
 import org.team1540.robot2022.commands.drivetrain.Auto3BallSequence;
 import org.team1540.robot2022.commands.drivetrain.Auto4BallSequence;
@@ -20,7 +21,6 @@ import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
-import org.team1540.robot2022.commands.shooter.ShotResult;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
@@ -68,6 +68,7 @@ public class RobotContainer {
     public final Intake intake = new Intake();
     public final Indexer indexer = new Indexer(NeutralMode.Brake);
     public final Shooter shooter = new Shooter();
+    public final Climber climber = new Climber();
 
     // Controllers
     public final XboxController driverController = new XboxController(0);
@@ -157,10 +158,11 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kB.value)
                 .whenPressed(new InstantCommand(() -> intake.setFold(!intake.getFold())));
         
-        // coop:button(B,Spin up shooter [press],copilot)
+        // coop:button(X,Spin up shooter [press],copilot)
         new JoystickButton(copilotController, Button.kX.value)
                 .and(new Trigger(() -> !shootSequence.isScheduled()))
                 .whenActive(shooter.commandSetVelocity(InterpolationTable.copilotSpinupFront, InterpolationTable.copilotSpinupRear));
+        // coop:button(Y,Stop shooter spinup shooter [press],copilot)
         new JoystickButton(copilotController, Button.kY.value)
                 .and(new Trigger(() -> !shootSequence.isScheduled()))
                 .whenActive(shooter.commandStop());
@@ -172,11 +174,11 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
 
-        // coop:button(DPadLeft,stop intake and indexer [press],copilot)
+        // coop:button(DPadRight,stop intake and indexer [press],copilot)
         new POVButton(copilotController, 90) // D-pad right
                 .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(intakeSequence);
-        // coop:button(DPadDown,Mark last shot as missed [press],copilot)
+        // coop:button(DPadDown,Stop indexer and intake [press],copilot)
         new POVButton(copilotController, 180) // D-pad down
                 .cancelWhenPressed(indexerEjectCommand)
                 .cancelWhenPressed(intakeSequence);
@@ -240,6 +242,9 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxVelocity", 1);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxAcceleration", 0.5);
+
+        // Climber values
+        ChickenSmartDashboard.putDefaultNumber("climber/PID/kP", 0.3);
 
         SmartDashboard.putNumber("shooter/tuning/frontRPM", -1000);
         SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);
