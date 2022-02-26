@@ -126,12 +126,12 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kLeftBumper.value)
                 .whenHeld(shootSequence);
 
-        // coop:button(DPadUp,Hood up [press],pilot)
+        // coop:button(DPadUp,Shoot from HUB [press],pilot)
         new POVButton(driverController, 0) // D-pad up
-                .whenPressed(new InstantCommand(() -> hood.set(true)));
-        // coop:button(DPadDown,Hood down [press],pilot)
+                .whenPressed(new InstantCommand(() -> shootSequence.shootFromHub = true));
+        // coop:button(DPadDown,Shoot from not hub [press],pilot)
         new POVButton(driverController, 180) // D-pad down
-                .whenPressed(new InstantCommand(() -> hood.set(false)));
+                .whenPressed(new InstantCommand(() -> shootSequence.shootFromHub = false));
 
         // Intake/indexer
 
@@ -157,7 +157,7 @@ public class RobotContainer {
         // coop:button(B,Toggle intake fold [press],copilot)
         new JoystickButton(copilotController, Button.kB.value)
                 .whenPressed(new InstantCommand(() -> intake.setFold(!intake.getFold())));
-        
+
         // coop:button(X,Spin up shooter [press],copilot)
         new JoystickButton(copilotController, Button.kX.value)
                 .and(new Trigger(() -> !shootSequence.isScheduled()))
@@ -187,7 +187,7 @@ public class RobotContainer {
                 .cancelWhenPressed(intakeSequence)
                 .whenPressed(indexerEjectCommand);
 
-        
+
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)

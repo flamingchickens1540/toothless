@@ -16,6 +16,8 @@ public class ShootSequence extends SequentialCommandGroup {
     private final Limelight limelight;
     private final InterpolationTable interpolationTable = InterpolationTable.getInstance();
 
+    public boolean shootFromHub = false;
+
     public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight) {
         this.shooter = shooter;
         this.indexer = indexer;
@@ -34,15 +36,15 @@ public class ShootSequence extends SequentialCommandGroup {
                                             double rearVelocity;
                                             boolean hoodState; // New state to set the hood to
 
-                                            if (distanceFromTarget > 98) { // Far shot, 98 inches TODO: needs tuning and LIDAR
+                                            if (!shootFromHub) {
                                                 hoodState = true;
                                                 intake.setFold(true);
                                                 frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(distanceFromTarget);
                                                 rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(distanceFromTarget);
                                             } else { // Tarmac shot
                                                 hoodState = false;
-                                                frontVelocity = InterpolationTable.tarmacFront;
-                                                rearVelocity = InterpolationTable.tarmacRear;
+                                                frontVelocity = InterpolationTable.hubFront;
+                                                rearVelocity = InterpolationTable.hubRear;
                                             }
                                             hood.set(hoodState);
 
