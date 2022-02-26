@@ -7,28 +7,22 @@ public class InterpolationTable {
 
     // Hood down
     public static final double hubFront = 2100;
-    public static final double hubRear = 2100;
+    public static final double hubRear = 2200;
     public static final double tarmacFront = 2100;
     public static final double tarmacRear = 2950;
 
     public static final double copilotSpinupFront = 2000;
     public static final double copilotSpinupRear = 2000;
-    // {98, }
 
     // Interpolation values for the hood up
     public static final double[][] hoodUp = {
             // {distance (inches), frontSpeed, backSpeed}
-            {97,  1950, 2700},
-            {110, 1950, 2850},
-            {120, 1950, 2900},
-            {131, 1950, 2950},
-            {142, 2050, 3050},
-            {151, 2050, 3050},
-            {160, 2100, 3250},
-            {170, 2100, 3450},
-            {183, 2200, 3600},
-//            {192, 3000, 3400},
-//            {199, 3000, 3550},
+            {101, 2200, 2500},
+            {113, 2300, 2400},
+            {127, 2300, 2500},
+            {138, 2400, 2600},
+            {146, 2400, 2700},
+
     };
 
     private static InterpolationTable instance = null;

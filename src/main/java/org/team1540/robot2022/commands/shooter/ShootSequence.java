@@ -8,6 +8,7 @@ import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
+import org.team1540.robot2022.utils.FeatherClient;
 import org.team1540.robot2022.utils.Limelight;
 
 public class ShootSequence extends SequentialCommandGroup {
@@ -25,7 +26,6 @@ public class ShootSequence extends SequentialCommandGroup {
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
                 sequence(
-                        indexer.commandStop(),
                         parallel(
                                 sequence(
                                         new InstantCommand(() -> limelight.setLeds(true)),
@@ -48,27 +48,29 @@ public class ShootSequence extends SequentialCommandGroup {
                                             }
                                             hood.set(hoodState);
 
-//                                            frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
-//                                            double rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
-//                                            System.out.println("Setting output with distance " + distanceFromTarget + " front " + frontVelocity + " rear " + rearVelocity);
+                                            // frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
+                                            // rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
+                                            // System.out.println("Setting output with distance " + distanceFromTarget + " front " + frontVelocity + " rear " + rearVelocity);
                                             SmartDashboard.putNumber("shooter/lastShot/frontRPM", frontVelocity);
                                             SmartDashboard.putNumber("shooter/lastShot/rearRPM", rearVelocity);
                                             SmartDashboard.putNumber("shooter/lastShot/distanceFromTarget", distanceFromTarget);
                                             SmartDashboard.putBoolean("shooter/lastShot/hoodState", hoodState);
-                                            shooter.recordShot(frontVelocity, rearVelocity, distanceFromTarget, hoodState);
 
                                             shooter.setVelocityRPM(shooter.shooterMotorFront, frontVelocity);
                                             shooter.setVelocityRPM(shooter.shooterMotorRear, rearVelocity);
+                                            FeatherClient.recordShot(distanceFromTarget, frontVelocity, rearVelocity, hoodState);
                                         }, shooter)
                                 ),
                                 new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
-                                        new PointToTarget(drivetrain, limelight),
+                                        new PointToTarget(drivetrain, limelight).withTimeout(2),
                                         new InstantCommand(),
                                         limelight::isTargetFound
                                 )
                         ),
+
                         new WaitCommand(1),
                         new WaitUntilCommand(shooter::isSpunUp),
+                        indexer.commandStop(),
                         new InstantCommand(() -> indexer.set(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF)), // Run top indexer
                         new WaitUntilCommand(() -> !indexer.getTopSensor()),
                         new WaitCommand(SmartDashboard.getNumber("shooter/tuning/waitAfterFirstBall", 1)), // Wait for top ball to leave and shooter to recover

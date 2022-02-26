@@ -9,6 +9,7 @@ import org.team1540.robot2022.utils.NavX;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -24,6 +25,8 @@ public class Drivetrain extends SubsystemBase {
     private final ChickenTalonFX[] driveMotors = {driveLFront, driveLRear, driveRFront, driveRRear};
     private final NavX navx;
     private final DifferentialDriveOdometry driveOdometry;
+    
+    public final Field2d dashboardField = new Field2d();
 
     public static final double motorToMPS = 26.0349916751;
 
@@ -42,6 +45,7 @@ public class Drivetrain extends SubsystemBase {
         driveLRear.follow(driveLFront);
         driveRRear.follow(driveRFront);
         updatePIDs();
+        SmartDashboard.putData("drivetrain/field", dashboardField);
     }
 
     @Override
@@ -55,6 +59,7 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("drivetrain/rightEncoderMeters", driveRFront.getDistanceMeters());
         SmartDashboard.putNumber("drivetrain/PID/errorL", driveLFront.getClosedLoopError());
         SmartDashboard.putNumber("drivetrain/PID/errorR", driveRFront.getClosedLoopError());
+        dashboardField.setRobotPose(driveOdometry.getPoseMeters());
     }
 
     /**

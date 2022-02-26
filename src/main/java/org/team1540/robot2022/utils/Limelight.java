@@ -91,7 +91,7 @@ public class Limelight {
      */
     public void setLeds(boolean isOn) {
         if (getLeds() != isOn) {
-            limelightTable.getEntry("ledMode").setNumber(isOn ? 0 : 1);
+            limelightTable.getEntry("ledMode").setNumber(0);
             NetworkTableInstance.getDefault().flush();
         }
     }
