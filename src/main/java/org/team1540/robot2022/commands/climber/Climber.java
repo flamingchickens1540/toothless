@@ -2,7 +2,6 @@ package org.team1540.robot2022.commands.climber;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import org.team1540.robot2022.Constants;
 import org.team1540.robot2022.Constants.ClimberConstants;

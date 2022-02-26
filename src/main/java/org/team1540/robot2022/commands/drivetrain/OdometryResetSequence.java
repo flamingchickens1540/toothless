@@ -1,14 +1,10 @@
 package org.team1540.robot2022.commands.drivetrain;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import org.team1540.robot2022.RamseteConfig;
 import org.team1540.robot2022.utils.AutoHelper;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;

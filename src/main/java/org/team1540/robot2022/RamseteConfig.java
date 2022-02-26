@@ -1,22 +1,11 @@
 package org.team1540.robot2022;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-
-import org.team1540.robot2022.commands.drivetrain.Drivetrain;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 public class RamseteConfig {
     // Calculated in frc-characterization
