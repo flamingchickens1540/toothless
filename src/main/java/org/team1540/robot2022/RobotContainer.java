@@ -174,7 +174,7 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
 
-        // coop:button(DPadRight,stop intake and indexer [press],copilot)
+        // coop:button(DPadRight,Run intake and indexer [press],copilot)
         new POVButton(copilotController, 90) // D-pad right
                 .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(intakeSequence);
