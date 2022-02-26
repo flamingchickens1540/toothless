@@ -35,6 +35,9 @@ public class Intake extends SubsystemBase {
      */
     public void setFold(boolean isUp) {
         solenoid.set(!isUp);
+        if (isUp) { // Stop spinning intake if folded up
+            this.stop();
+        }
     }
 
     public void setPercent(double percent) {
