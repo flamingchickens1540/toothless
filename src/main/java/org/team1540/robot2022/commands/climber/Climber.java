@@ -12,11 +12,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
+
     private TalonFX motorLeft = new TalonFX(ClimberConstants.Motors.left);
     private TalonFX motorRight = new TalonFX(ClimberConstants.Motors.right);
     
     private final Solenoid solenoidLeft = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.left);
     private final Solenoid solenoidRight = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.right);
+
+    public static enum ArmSide {
+
+        LEFT, RIGHT;
+
+        public TalonFX getMotor(Climber climber) {
+            if(this.equals(LEFT)) {
+                return climber.motorLeft;
+            } else {
+                return climber.motorRight;
+            }
+        }
+    }
 
     public Climber() {
         motorRight.follow(motorLeft);
@@ -44,11 +58,22 @@ public class Climber extends SubsystemBase {
         motorLeft.set(ControlMode.Position, position);
     }
 
+
+    public void setClimberVelocity(ArmSide side, double velocity) {
+        side.getMotor(this).set(ControlMode.Velocity,velocity);
+    }
+
+    public double getArmVoltage(ArmSide side) {
+        return side.getMotor(this).getMotorOutputVoltage();
+    }
+
     /**
      * Updates the PIDs on the climber motors from SmartDashboard
      */
     private void updatePIDs() {
         motorLeft.config_kP(0, SmartDashboard.getNumber("climber/PID/kP", 0.3));
     }
+
+    
 
 }
