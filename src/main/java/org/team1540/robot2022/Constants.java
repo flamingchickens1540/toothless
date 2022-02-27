@@ -60,6 +60,7 @@ public final class Constants {
 
             public static final CurrentLimitConfig currentLimitConfig = new CurrentLimitConfig(20, 25, 1, 10, 15, 0.5);
         }
+
         public static final class BeamBreaks {
             public static final int topIndexerSensor = 8;
             public static final int bottomIndexerSensor = 9;
@@ -74,11 +75,13 @@ public final class Constants {
             public static final int right = 10;
             public static final int left = 11;
         }
+
         public static final class Solenoids {
-            public static final int right = 12;
-            public static final int left = 13;
+            public static final int solenoidA = 0;
+            public static final int solenoidB = 1;
         }
     }
+
     public static final class LightConstants {
         public static final ColorPattern disable = ColorPattern.FIRE_LARGE;
 

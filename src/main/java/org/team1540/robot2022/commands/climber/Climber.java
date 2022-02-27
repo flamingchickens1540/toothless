@@ -15,13 +15,15 @@ public class Climber extends SubsystemBase {
     private final ChickenTalonFX motorLeft = new ChickenTalonFX(ClimberConstants.Motors.left);
     private final ChickenTalonFX motorRight = new ChickenTalonFX(ClimberConstants.Motors.right);
 
-    private final Solenoid solenoidLeft = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.left);
-    private final Solenoid solenoidRight = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.right);
+    private final Solenoid solenoidA = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.solenoidA);
+    private final Solenoid solenoidB = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.solenoidB);
 
     public Climber() {
         Constants.ShooterConstants.currentLimitConfig.applyTo(new TalonFX[]{motorLeft, motorRight});
         motorLeft.setNeutralMode(NeutralMode.Brake);
         motorRight.setNeutralMode(NeutralMode.Brake);
+        motorLeft.setInverted(true);
+        motorRight.setInverted(true);
     }
 
     /**
@@ -30,17 +32,8 @@ public class Climber extends SubsystemBase {
      * @param forward If the solenoids should be extended forward
      */
     public void setSolenoids(boolean forward) {
-        // TODO: Make sure this isn't inverted
-        solenoidLeft.set(forward);
-        solenoidRight.set(forward);
-    }
-
-    /**
-     * Return the status of both solenoids. Returns true if either solenoid is true.
-     * @return AND result of both solenoids
-     */
-    public boolean getSolenoids() {
-        return solenoidLeft.get() && solenoidRight.get();
+        solenoidA.set(forward);
+        solenoidB.set(!forward);
     }
 
     public void setLeftPercent(double percent) {

@@ -186,12 +186,10 @@ public class RobotContainer {
                 .cancelWhenPressed(intakeSequence);
         // coop:button(DPadLeft,Eject balls from intake,copilot)
         new POVButton(copilotController, 270) // D-pad left
-                .cancelWhenPressed(intakeSequence)
-                .whenPressed(indexerEjectCommand);
+                .whenPressed(new InstantCommand(() -> climber.setSolenoids(false)));
         // coop:button(DPadUp,Toggle climber solenoids [press],copilot)
         new POVButton(copilotController, 0)
-                .whenPressed(new InstantCommand(() -> climber.setSolenoids(!climber.getSolenoids())));
-
+                .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
         // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
