@@ -7,9 +7,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -164,13 +162,38 @@ public class RobotContainer {
     }
 
     private void initModeTransitionBindings() {
+        var enabled = new Trigger(RobotState::isEnabled);
+        var disabled = new Trigger(DriverStation::isDisabled);
+
         var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
         var teleop = new Trigger(DriverStation::isTeleopEnabled);
-        var disabled = new Trigger(DriverStation::isDisabled);
 
         teleop.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP));
         autonomous.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.AUTONOMOUS));
         disabled.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.DISABLE));
+
+        // Enable break mode when enabled
+        enabled.whenActive(() -> {
+            drivetrain.setNeutralMode(NeutralMode.Brake);
+            intake.setNeutralMode(NeutralMode.Brake);
+            indexer.setNeutralMode(NeutralMode.Brake);
+            climber.setNeutralMode(NeutralMode.Brake);
+        });
+
+        // Disable break mode 2 seconds after disabling
+        disabled.whenActive(new WaitCommand(2)
+                .andThen(
+                        new ConditionalCommand( // Check if the robot is still disabled to prevent enabling coast mode when the robot is enabled
+                                new InstantCommand(),
+                                new InstantCommand(() -> {
+                                    drivetrain.setNeutralMode(NeutralMode.Coast);
+                                    intake.setNeutralMode(NeutralMode.Coast);
+                                    indexer.setNeutralMode(NeutralMode.Coast);
+                                    climber.setNeutralMode(NeutralMode.Coast);
+                                }),
+                                RobotState::isEnabled)
+                )
+        );
     }
 
     private void initSmartDashboard() {

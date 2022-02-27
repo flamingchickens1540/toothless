@@ -2,7 +2,6 @@ package org.team1540.robot2022.commands.indexer;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import org.team1540.robot2022.Constants.IndexerConstants;
 import org.team1540.robot2022.Constants.IndexerConstants.BeamBreaks;
 import org.team1540.robot2022.Constants.IndexerConstants.IndexerMotors;
@@ -12,12 +11,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2022.utils.ChickenTalonFX;
 
 
 public class Indexer extends SubsystemBase {
-    private final TalonFX bottomMotor = new TalonFX(IndexerMotors.BOTTOM_MOTOR);
-    private final TalonFX topMotor = new TalonFX(IndexerMotors.TOP_MOTOR);
-    private final TalonFX[] motors = {topMotor, bottomMotor};
+    private final ChickenTalonFX bottomMotor = new ChickenTalonFX(IndexerMotors.BOTTOM_MOTOR);
+    private final ChickenTalonFX topMotor = new ChickenTalonFX(IndexerMotors.TOP_MOTOR);
+    private final ChickenTalonFX[] motors = {topMotor, bottomMotor};
 
     private final DigitalInput topSensor = new DigitalInput(BeamBreaks.TOP_INDEXER_SENSOR);
     private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.BOTTOM_INDEXER_SENSOR);
@@ -45,7 +45,7 @@ public class Indexer extends SubsystemBase {
         bottomInterrupt.enable();
 
         IndexerMotors.CURRENT_LIMIT_CONFIG.applyTo(motors);
-        for (TalonFX motor : motors) {
+        for (ChickenTalonFX motor : motors) {
             motor.setNeutralMode(brakeType);
             motor.setInverted(true);
         }
@@ -116,7 +116,7 @@ public class Indexer extends SubsystemBase {
      * @param mode      The mode to set it to
      * @param onPercent the speed to use for running forward and reverse
      */
-    private void setMotor(TalonFX motor, IndexerState mode, double onPercent) {
+    private void setMotor(ChickenTalonFX motor, IndexerState mode, double onPercent) {
         switch (mode) {
             case FORWARD_FULL:
                 motor.set(ControlMode.PercentOutput, 1);
@@ -213,6 +213,14 @@ public class Indexer extends SubsystemBase {
     }
 
     /**
+     * Sets the NeutralMode for the drivetrain (either coast or brake)
+     * @param mode The mode to set the wheels to
+     */
+    public void setNeutralMode(NeutralMode mode) {
+        for (ChickenTalonFX motor : motors) { motor.setNeutralMode(mode); }
+    }
+
+    /**
      * States to set an indexer motor to
      */
     public enum IndexerState {
@@ -237,5 +245,4 @@ public class Indexer extends SubsystemBase {
          */
         UNCHANGED
     }
-
 }

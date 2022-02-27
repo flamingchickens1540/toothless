@@ -1,6 +1,7 @@
 package org.team1540.robot2022.commands.intake;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -8,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
+import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Intake extends SubsystemBase {
     private final Solenoid solenoid = new Solenoid(Constants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Constants.IntakeConstants.SOLENOID);
@@ -59,5 +61,13 @@ public class Intake extends SubsystemBase {
      */
     public Command commandSetFold(boolean isUp) {
         return new InstantCommand(() -> this.setFold(isUp));
+    }
+
+    /**
+     * Sets the NeutralMode for the drivetrain (either coast or brake)
+     * @param mode The mode to set the wheels to
+     */
+    public void setNeutralMode(NeutralMode mode) {
+        motor.setNeutralMode(mode);
     }
 }

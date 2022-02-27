@@ -14,6 +14,7 @@ import org.team1540.robot2022.utils.ChickenTalonFX;
 public class Climber extends SubsystemBase {
     private final ChickenTalonFX motorLeft = new ChickenTalonFX(ClimberConstants.Motors.LEFT);
     private final ChickenTalonFX motorRight = new ChickenTalonFX(ClimberConstants.Motors.RIGHT);
+    private final ChickenTalonFX[] motors = new ChickenTalonFX[]{motorLeft, motorRight};
 
     private final Solenoid solenoidA = new Solenoid(Constants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.SOLENOID_A);
     private final Solenoid solenoidB = new Solenoid(Constants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.SOLENOID_B);
@@ -58,5 +59,13 @@ public class Climber extends SubsystemBase {
      */
     private void updatePIDs() {
         motorLeft.config_kP(0, SmartDashboard.getNumber("climber/PID/kP", 0.3));
+    }
+
+    /**
+     * Sets the NeutralMode for the drivetrain (either coast or brake)
+     * @param mode The mode to set the wheels to
+     */
+    public void setNeutralMode(NeutralMode mode) {
+        for (ChickenTalonFX motor : motors) { motor.setNeutralMode(mode); }
     }
 }
