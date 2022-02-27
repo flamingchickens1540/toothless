@@ -10,6 +10,8 @@ import org.team1540.robot2022.utils.RevBlinken.ColorPattern;
 public final class Constants {
     public static final int PNEUMATIC_HUB = 20;
 
+    public static final double MOTOR_VOLTAGE = 12;
+
     public static final class DriveConstants {
         public static final double ENCODER_TICKS_PER_METER = 49866;
 

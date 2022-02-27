@@ -13,4 +13,18 @@ public class MathUtils {
         else
             return value;
     }
+
+    /**
+     * Scale a value between range [outMin, outMax]. All thresholds are inclusive.
+     *
+     * @param input  value to scale
+     * @param inMin  minimum input value
+     * @param inMax  maximum input value
+     * @param outMin minimum output value
+     * @param outMax maximum output value
+     * @return normalized value
+     */
+    public static double normalize(double input, double inMin, double inMax, double outMin, double outMax) {
+        return (outMax - outMin) * ((input - inMin) / (inMax - inMin)) + outMin;
+    }
 }
