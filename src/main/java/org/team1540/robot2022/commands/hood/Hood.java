@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
 
 public class Hood extends SubsystemBase {
-    private final Solenoid solenoid = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, Constants.HoodConstants.solenoidChannel);
+    private final Solenoid solenoid = new Solenoid(Constants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Constants.HoodConstants.SOLENOID_CHANNEL);
 
     public Hood() {
     }

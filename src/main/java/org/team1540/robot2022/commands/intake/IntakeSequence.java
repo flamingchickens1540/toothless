@@ -14,7 +14,7 @@ public class IntakeSequence extends SequentialCommandGroup {
         addRequirements(intake, indexer);
         addCommands(
                 indexer.commandStart(),
-                new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.speed)
+                new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.SPEED)
                 
         );
     }

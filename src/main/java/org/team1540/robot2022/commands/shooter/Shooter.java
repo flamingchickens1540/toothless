@@ -31,11 +31,11 @@ public class Shooter extends SubsystemBase {
     // Result of the last shot
     public ShootingState lastShot;
 
-    public TalonFX shooterMotorFront = new TalonFX(Constants.ShooterConstants.front);
-    public TalonFX shooterMotorRear = new TalonFX(Constants.ShooterConstants.rear);
+    public TalonFX shooterMotorFront = new TalonFX(Constants.ShooterConstants.FRONT);
+    public TalonFX shooterMotorRear = new TalonFX(Constants.ShooterConstants.REAR);
 
     public Shooter() {
-        Constants.ShooterConstants.currentLimitConfig.applyTo(new TalonFX[]{shooterMotorFront, shooterMotorRear});
+        Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(new TalonFX[]{shooterMotorFront, shooterMotorRear});
         shooterMotorFront.setNeutralMode(NeutralMode.Coast);
         shooterMotorRear.setNeutralMode(NeutralMode.Coast);
         shooterMotorFront.setInverted(true);

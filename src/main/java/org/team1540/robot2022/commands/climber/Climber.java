@@ -12,14 +12,14 @@ import org.team1540.robot2022.Constants.ClimberConstants;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Climber extends SubsystemBase {
-    private final ChickenTalonFX motorLeft = new ChickenTalonFX(ClimberConstants.Motors.left);
-    private final ChickenTalonFX motorRight = new ChickenTalonFX(ClimberConstants.Motors.right);
+    private final ChickenTalonFX motorLeft = new ChickenTalonFX(ClimberConstants.Motors.LEFT);
+    private final ChickenTalonFX motorRight = new ChickenTalonFX(ClimberConstants.Motors.RIGHT);
 
-    private final Solenoid solenoidA = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.solenoidA);
-    private final Solenoid solenoidB = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.solenoidB);
+    private final Solenoid solenoidA = new Solenoid(Constants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.SOLENOID_A);
+    private final Solenoid solenoidB = new Solenoid(Constants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, ClimberConstants.Solenoids.SOLENOID_B);
 
     public Climber() {
-        Constants.ShooterConstants.currentLimitConfig.applyTo(new TalonFX[]{motorLeft, motorRight});
+        Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(new TalonFX[]{motorLeft, motorRight});
         motorLeft.setNeutralMode(NeutralMode.Brake);
         motorRight.setNeutralMode(NeutralMode.Brake);
         motorLeft.setInverted(true);

@@ -15,12 +15,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class Indexer extends SubsystemBase {
-    private final TalonFX bottomMotor = new TalonFX(IndexerMotors.bottomMotor);
-    private final TalonFX topMotor = new TalonFX(IndexerMotors.topMotor);
+    private final TalonFX bottomMotor = new TalonFX(IndexerMotors.BOTTOM_MOTOR);
+    private final TalonFX topMotor = new TalonFX(IndexerMotors.TOP_MOTOR);
     private final TalonFX[] motors = {topMotor, bottomMotor};
 
-    private final DigitalInput topSensor = new DigitalInput(BeamBreaks.topIndexerSensor);
-    private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.bottomIndexerSensor);
+    private final DigitalInput topSensor = new DigitalInput(BeamBreaks.TOP_INDEXER_SENSOR);
+    private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.BOTTOM_INDEXER_SENSOR);
 
     private boolean standby = false;
 
@@ -44,7 +44,7 @@ public class Indexer extends SubsystemBase {
         topInterrupt.enable();
         bottomInterrupt.enable();
 
-        IndexerMotors.currentLimitConfig.applyTo(motors);
+        IndexerMotors.CURRENT_LIMIT_CONFIG.applyTo(motors);
         for (TalonFX motor : motors) {
             motor.setNeutralMode(brakeType);
             motor.setInverted(true);
@@ -97,7 +97,7 @@ public class Indexer extends SubsystemBase {
      * @param mode The mode to set the motor to
      */
     public void setTop(IndexerState mode) {
-        this.setMotor(topMotor, mode, IndexerConstants.topPercent);
+        this.setMotor(topMotor, mode, IndexerConstants.TOP_PERCENT);
     }
 
     /**
@@ -106,7 +106,7 @@ public class Indexer extends SubsystemBase {
      * @param mode The mode to set the motor to
      */
     public void setBottom(IndexerState mode) {
-        this.setMotor(bottomMotor, mode, IndexerConstants.bottomPercent);
+        this.setMotor(bottomMotor, mode, IndexerConstants.BOTTOM_PERCENT);
     }
 
     /**

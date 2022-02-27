@@ -37,7 +37,7 @@ public class RobotContainer {
     public final RevBlinken robotLEDs = new RevBlinken(0);
     public final Limelight limelight = new Limelight("limelight");
     public final NavX navx = new NavX(SPI.Port.kMXP);
-    public final PneumaticHub ph = new PneumaticHub(Constants.ph);
+    public final PneumaticHub ph = new PneumaticHub(Constants.PNEUMATIC_HUB);
 
     // Subsystems
     public final Drivetrain drivetrain = new Drivetrain(NeutralMode.Brake, navx);
@@ -136,10 +136,10 @@ public class RobotContainer {
 
         // coop:button(LBumper,Manual intake [hold],copilot)
         new JoystickButton(copilotController, Button.kLeftBumper.value)
-                .whileHeld(new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.speed));
+                .whileHeld(new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.SPEED));
         // coop:button(RBumper,Manual reverse intake [hold],copilot)
         new JoystickButton(copilotController, Button.kRightBumper.value)
-                .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
+                .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.SPEED));
 
         // coop:button(DPadRight,Run intake and indexer [press],copilot)
         new POVButton(copilotController, 90) // D-pad right

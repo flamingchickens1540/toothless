@@ -26,17 +26,17 @@ public class RevBlinken extends Spark {
     public RevBlinken(int channel) {
         super(channel);
 
-        mappings.put(Alliance.Blue + "" + GameStage.DISABLE, LightConstants.disable);
-        mappings.put(Alliance.Red + "" + GameStage.DISABLE, LightConstants.disable);
+        mappings.put(Alliance.Blue + "" + GameStage.DISABLE, LightConstants.DISABLED);
+        mappings.put(Alliance.Red + "" + GameStage.DISABLE, LightConstants.DISABLED);
 
-        mappings.put(Alliance.Red + "" + GameStage.AUTONOMOUS, LightConstants.redAuto);
-        mappings.put(Alliance.Blue + "" + GameStage.AUTONOMOUS, LightConstants.blueAuto);
+        mappings.put(Alliance.Red + "" + GameStage.AUTONOMOUS, LightConstants.RED_AUTO);
+        mappings.put(Alliance.Blue + "" + GameStage.AUTONOMOUS, LightConstants.BLUE_AUTO);
 
-        mappings.put(Alliance.Red + "" + GameStage.TELEOP, LightConstants.redTeleop);
-        mappings.put(Alliance.Blue + "" + GameStage.TELEOP, LightConstants.blueTeleop);
+        mappings.put(Alliance.Red + "" + GameStage.TELEOP, LightConstants.RED_TELEOP);
+        mappings.put(Alliance.Blue + "" + GameStage.TELEOP, LightConstants.BLUE_TELEOP);
 
-        mappings.put(Alliance.Red + "" + GameStage.ENDGAME, LightConstants.redEndgame);
-        mappings.put(Alliance.Blue + "" + GameStage.ENDGAME, LightConstants.blueEndgame);
+        mappings.put(Alliance.Red + "" + GameStage.ENDGAME, LightConstants.RED_ENDGAME);
+        mappings.put(Alliance.Blue + "" + GameStage.ENDGAME, LightConstants.BLUE_ENDGAME);
     }
 
     /**

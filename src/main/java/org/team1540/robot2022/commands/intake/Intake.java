@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
 
 public class Intake extends SubsystemBase {
-    private final Solenoid solenoid = new Solenoid(Constants.ph, PneumaticsModuleType.REVPH, Constants.IntakeConstants.solenoid);
-    private final TalonFX motor = new TalonFX(Constants.IntakeConstants.falcon);
+    private final Solenoid solenoid = new Solenoid(Constants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Constants.IntakeConstants.SOLENOID);
+    private final TalonFX motor = new TalonFX(Constants.IntakeConstants.FALCON);
 
     public Intake() {
-        Constants.IntakeConstants.currentLimitConfig.applyTo(motor);
+        Constants.IntakeConstants.CURRENT_LIMIT_CONFIG.applyTo(motor);
     }
 
     @Override
