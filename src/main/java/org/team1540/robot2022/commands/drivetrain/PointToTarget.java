@@ -1,5 +1,6 @@
 package org.team1540.robot2022.commands.drivetrain;
 
+import java.util.LinkedList;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.MiniPID;
 
@@ -11,6 +12,7 @@ public class PointToTarget extends CommandBase {
     private final double LIMELIGHT_HORIZONTAL_FOV = 29.8;
     private final Drivetrain drivetrain;
     private final Limelight limelight;
+    private LinkedList<Vector2d> pastPoses = new LinkedList<Vector2d>();
 
     // A little testing says kP=0.7 and kD=0.4 are fairly strong.
     private final MiniPID pid = new MiniPID(1, 0, 0);
@@ -41,10 +43,19 @@ public class PointToTarget extends CommandBase {
 
     public void execute() {
         Vector2d lmAngles = limelight.getTargetAngles();
-        if (Math.abs(lmAngles.x) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
+        pastPoses.add(lmAngles);
+        if (pastPoses.size() > 10) {
+            pastPoses.remove(0);
+        }
+        double avgX = 0;
+        for (Vector2d pose : pastPoses) {
+            avgX += pose.x;
+        }
+        avgX /= pastPoses.size();
+        if (Math.abs(avgX) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
 
             double distanceToTarget = getHorizontalDistanceToTarget();
-            double pidOutput = pid.getOutput(getError(distanceToTarget));
+            double pidOutput = pid.getOutput(getError(avgX));
             double multiplier = lmAngles.x > 0 ? 1 : -1;
 
             SmartDashboard.putNumber("pointToTarget/pidOutput", pidOutput);
