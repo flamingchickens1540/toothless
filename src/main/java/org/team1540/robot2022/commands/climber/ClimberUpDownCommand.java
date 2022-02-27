@@ -2,6 +2,7 @@ package org.team1540.robot2022.commands.climber;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import org.team1540.robot2022.utils.MathUtils;
 
 public class ClimberUpDownCommand extends CommandBase {
     private final Climber climber;
@@ -14,21 +15,8 @@ public class ClimberUpDownCommand extends CommandBase {
         addRequirements(climber);
     }
 
-    /**
-     * Returns 0 if the input is within the deadzone, else the value
-     *
-     * @param value The joystick input
-     * @return The value after deadzone is checked
-     */
-    private double applyDeadzone(double value) {
-        if (Math.abs(value) <= deadzone)
-            return 0;
-        else
-            return value;
-    }
-
     public void execute() {
-        climber.setLeftPercent(applyDeadzone(controller.getLeftY()));
-        climber.setRightPercent(applyDeadzone(controller.getRightY()));
+        climber.setLeftPercent(MathUtils.deadzone(controller.getLeftY(), deadzone));
+        climber.setRightPercent(MathUtils.deadzone(controller.getRightY(), deadzone));
     }
 }
