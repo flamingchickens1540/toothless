@@ -19,10 +19,16 @@ public class ShootSequence extends SequentialCommandGroup {
 
     public boolean shootFromHub = false;
 
+    private double distanceFromTarget;
+    private double frontVelocity;
+    private double rearVelocity;
+    private boolean hoodState; // New state to set the hood to
+
     public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
+
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
                 sequence(
@@ -31,11 +37,7 @@ public class ShootSequence extends SequentialCommandGroup {
                                         new InstantCommand(() -> limelight.setLeds(true)),
                                         new WaitCommand(0.2),
                                         new InstantCommand(() -> {
-                                            double distanceFromTarget = limelight.getCalculatedDistance();
-                                            double frontVelocity;
-                                            double rearVelocity;
-                                            boolean hoodState; // New state to set the hood to
-
+                                            distanceFromTarget = limelight.getCalculatedDistance();
                                             if (!shootFromHub) {
                                                 hoodState = true;
                                                 intake.setFold(true);
@@ -48,17 +50,11 @@ public class ShootSequence extends SequentialCommandGroup {
                                             }
                                             hood.set(hoodState);
 
+                                            // Used for tuning:
                                             // frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
                                             // rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
-                                            // System.out.println("Setting output with distance " + distanceFromTarget + " front " + frontVelocity + " rear " + rearVelocity);
-                                            SmartDashboard.putNumber("shooter/lastShot/frontRPM", frontVelocity);
-                                            SmartDashboard.putNumber("shooter/lastShot/rearRPM", rearVelocity);
-                                            SmartDashboard.putNumber("shooter/lastShot/distanceFromTarget", distanceFromTarget);
-                                            SmartDashboard.putBoolean("shooter/lastShot/hoodState", hoodState);
-
                                             shooter.setVelocityRPM(shooter.shooterMotorFront, frontVelocity);
                                             shooter.setVelocityRPM(shooter.shooterMotorRear, rearVelocity);
-                                            FeatherClient.recordShot(distanceFromTarget, frontVelocity, rearVelocity, hoodState);
                                         }, shooter)
                                 ),
                                 new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
@@ -83,6 +79,7 @@ public class ShootSequence extends SequentialCommandGroup {
                             indexer.set(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF);
                             shooter.setVelocityRPM(shooter.shooterMotorFront, 0);
                             shooter.setVelocityRPM(shooter.shooterMotorRear, 0);
+                            FeatherClient.recordShot(distanceFromTarget, frontVelocity, rearVelocity, hoodState);
                         })
                 )
         );
