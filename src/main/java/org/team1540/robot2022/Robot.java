@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import org.team1540.robot2022.commands.drivetrain.Drivetrain;
-import org.team1540.robot2022.utils.Limelight;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,9 +23,6 @@ public class Robot extends TimedRobot {
 
     private RobotContainer robotContainer;
 
-    private Drivetrain drivetrain;
-    private Limelight limelight;
-
     private Command autonomousCommand;
 
     /**
@@ -41,8 +36,6 @@ public class Robot extends TimedRobot {
         // and put our
         // autonomous chooser on the dashboard.
         this.robotContainer = new RobotContainer();
-        this.drivetrain = robotContainer.drivetrain;
-        this.limelight = robotContainer.limelight;
     }
 
     /**
@@ -67,16 +60,18 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
-        // Update the limelight's custom SmartDashboard values
-        limelight.updateSmartDashboardValues();
+        // Update the robotContainer.limelight's custom SmartDashboard values
+        robotContainer.limelight.updateSmartDashboardValues();
 
         SmartDashboard.putBoolean("pneumatics/pressureSwitch", robotContainer.ph.getPressureSwitch());
     }
 
-    /** This function is called once each time the robot enters Disabled mode. */
+    /**
+     * This function is called once each time the robot enters Disabled mode.
+     */
     @Override
     public void disabledInit() {
-        limelight.setLeds(false);
+        robotContainer.limelight.setLeds(false);
     }
 
     @Override
@@ -85,7 +80,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        drivetrain.setNeutralMode(NeutralMode.Brake);
+        robotContainer.drivetrain.setNeutralMode(NeutralMode.Brake);
         autonomousCommand = robotContainer.getAutonomousCommand();
 
         if (autonomousCommand != null) {
@@ -93,7 +88,9 @@ public class Robot extends TimedRobot {
         }
     }
 
-    /** This function is called periodically during autonomous. */
+    /**
+     * This function is called periodically during autonomous.
+     */
     @Override
     public void autonomousPeriodic() {
     }
@@ -104,10 +101,13 @@ public class Robot extends TimedRobot {
             autonomousCommand.cancel();
         }
 
-        drivetrain.setDefaultCommand(robotContainer.tankDriveCommand);
+        robotContainer.drivetrain.setDefaultCommand(robotContainer.tankDriveCommand);
+        robotContainer.climber.setDefaultCommand(robotContainer.climberUpDownCommand);
     }
 
-    /** This function is called periodically during operator control. */
+    /**
+     * This function is called periodically during operator control.
+     */
     @Override
     public void teleopPeriodic() {
     }
@@ -116,7 +116,9 @@ public class Robot extends TimedRobot {
     public void testInit() {
     }
 
-    /** This function is called periodically during test mode. */
+    /**
+     * This function is called periodically during test mode.
+     */
     @Override
     public void testPeriodic() {
     }

@@ -6,6 +6,7 @@ package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import org.team1540.robot2022.commands.climber.Climber;
+import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.drivetrain.Auto2BallSequence;
 import org.team1540.robot2022.commands.drivetrain.Auto3BallSequence;
 import org.team1540.robot2022.commands.drivetrain.Auto4BallSequence;
@@ -81,6 +82,7 @@ public class RobotContainer {
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer);
     public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight);
+    public final ClimberUpDownCommand climberUpDownCommand = new ClimberUpDownCommand(climber, copilotController);
 
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
@@ -186,8 +188,9 @@ public class RobotContainer {
         new POVButton(copilotController, 270) // D-pad left
                 .cancelWhenPressed(intakeSequence)
                 .whenPressed(indexerEjectCommand);
-
-
+        // coop:button(DPadUp,Toggle climber solenoids [press],copilot)
+        new POVButton(copilotController, 0)
+                .whenPressed(new InstantCommand(() -> climber.setSolenoids(!climber.getSolenoids())));
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
