@@ -19,6 +19,16 @@ public final class Constants {
             public static final int RIGHT_FRONT = 1;
             public static final int RIGHT_REAR = 2;
         }
+
+        // Calculated in frc-characterization
+        public static final double KS_VOLTS = 0.650;
+        public static final double KV_VOLT_SECONDS_PER_METER = 2.81;
+        public static final double KA_VOLT_SECONDS_SQUARED_PER_METER = 0.224;
+
+        // Ramsete PID controllers
+        public static final double KP_DRIVE_VEL = 3.2925;
+
+        public static final double K_TRACKWIDTH_METERS = 0.6604;
     }
 
     public static final class HoodConstants {
