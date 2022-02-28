@@ -1,8 +1,9 @@
 package org.team1540.robot2022.commands.intake;
 
-import java.util.function.Supplier;
-import org.team1540.robot2022.commands.indexer.Indexer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import org.team1540.robot2022.commands.indexer.Indexer;
+
+import java.util.function.Supplier;
 
 public class IntakeSpinCommand extends CommandBase {
     private final double speed;

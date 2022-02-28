@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
-import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Intake extends SubsystemBase {
     private final Solenoid solenoid = new Solenoid(Constants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Constants.IntakeConstants.SOLENOID);
@@ -25,6 +24,7 @@ public class Intake extends SubsystemBase {
 
     /**
      * Checks if the intake is retracted
+     *
      * @return whether the intake is retracted
      */
     public boolean getFold() {
@@ -33,6 +33,7 @@ public class Intake extends SubsystemBase {
 
     /**
      * Retracts or lowers the intake
+     *
      * @param isUp whether the intake should be retracted
      */
     public void setFold(boolean isUp) {
@@ -56,6 +57,7 @@ public class Intake extends SubsystemBase {
 
     /**
      * Returns a command to set the fold state of the indexer
+     *
      * @param isUp if the indexer is folded up
      * @return An InstantCommand
      */
@@ -65,6 +67,7 @@ public class Intake extends SubsystemBase {
 
     /**
      * Sets the NeutralMode for the drivetrain (either coast or brake)
+     *
      * @param mode The mode to set the wheels to
      */
     public void setNeutralMode(NeutralMode mode) {
