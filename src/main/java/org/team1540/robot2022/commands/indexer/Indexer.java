@@ -2,17 +2,16 @@ package org.team1540.robot2022.commands.indexer;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import org.team1540.robot2022.Constants.IndexerConstants;
-import org.team1540.robot2022.Constants.IndexerConstants.BeamBreaks;
-import org.team1540.robot2022.Constants.IndexerConstants.IndexerMotors;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2022.Constants.IndexerConstants;
+import org.team1540.robot2022.Constants.IndexerConstants.BeamBreaks;
+import org.team1540.robot2022.Constants.IndexerConstants.IndexerMotors;
 import org.team1540.robot2022.utils.ChickenTalonFX;
-
 
 public class Indexer extends SubsystemBase {
     private final ChickenTalonFX bottomMotor = new ChickenTalonFX(IndexerMotors.BOTTOM_MOTOR);
@@ -78,6 +77,10 @@ public class Indexer extends SubsystemBase {
 
     public boolean isFull() {
         return (this.getBottomSensor() && this.getTopSensor());
+    }
+
+    public void setStandby(boolean standby) {
+        this.standby = standby;
     }
 
     /**
@@ -191,33 +194,14 @@ public class Indexer extends SubsystemBase {
     }
 
     /**
-     * Sets indexer listeners to run and starts the indexer running
-     */
-    public void start() {
-        this.standby = false;
-        if (isFull()) {
-            this.set(IndexerState.OFF, IndexerState.OFF);
-        } else if (getTopSensor()) {
-            this.set(IndexerState.OFF, IndexerState.FORWARD);
-        } else {
-            this.set(IndexerState.FORWARD, IndexerState.FORWARD);
-        }
-    }
-    /**
-     * Returns a command to start the indexing listeners and motors
-     *
-     * @return an InstantCommand to set the standby mode
-     */
-    public Command commandStart() {
-        return new InstantCommand(this::start);
-    }
-
-    /**
      * Sets the NeutralMode for the drivetrain (either coast or brake)
+     *
      * @param mode The mode to set the wheels to
      */
     public void setNeutralMode(NeutralMode mode) {
-        for (ChickenTalonFX motor : motors) { motor.setNeutralMode(mode); }
+        for (ChickenTalonFX motor : motors) {
+            motor.setNeutralMode(mode);
+        }
     }
 
     /**

@@ -54,7 +54,7 @@ public class RobotContainer {
 
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
-    public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer);
+    public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
     public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight);
     public final ClimberUpDownCommand climberUpDownCommand = new ClimberUpDownCommand(climber, copilotController);
 
@@ -122,15 +122,6 @@ public class RobotContainer {
         // coop:button(B,Toggle intake fold [press],copilot)
         new JoystickButton(copilotController, Button.kB.value)
                 .whenPressed(new InstantCommand(() -> intake.setFold(!intake.getFold())));
-
-        // coop:button(X,Spin up shooter [press],copilot)
-        new JoystickButton(copilotController, Button.kX.value)
-                .and(new Trigger(() -> !shootSequence.isScheduled()))
-                .whenActive(shooter.commandSetVelocity(InterpolationTable.copilotSpinupFront, InterpolationTable.copilotSpinupRear));
-        // coop:button(Y,Stop shooter spinup shooter [press],copilot)
-        new JoystickButton(copilotController, Button.kY.value)
-                .and(new Trigger(() -> !shootSequence.isScheduled()))
-                .whenActive(shooter.commandStop());
 
         // coop:button(LBumper,Manual intake [hold],copilot)
         new JoystickButton(copilotController, Button.kLeftBumper.value)

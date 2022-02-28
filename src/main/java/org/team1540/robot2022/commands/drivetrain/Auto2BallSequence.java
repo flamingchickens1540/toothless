@@ -24,7 +24,7 @@ public class Auto2BallSequence extends SequentialCommandGroup {
     public Auto2BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, Limelight limelight, boolean isPosA) {
         String trajectoryFile = "2ball.pos" + (isPosA ? "A" : "B") + ".path1.wpilib.json";
         addCommands(
-                AutoHelper.runPath(drivetrain, intake, indexer, trajectoryFile),  // Follow the path to collect the first ball
+                AutoHelper.runPath(drivetrain, intake, indexer, shooter, trajectoryFile),  // Follow the path to collect the first ball
                 new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight)         // Shoot the 2 indexed balls (starts with one, collects one)
         );
     }

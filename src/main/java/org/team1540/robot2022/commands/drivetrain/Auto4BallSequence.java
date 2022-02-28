@@ -13,9 +13,9 @@ public class Auto4BallSequence extends SequentialCommandGroup {
 
     public Auto4BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, Limelight limelight) {
         addCommands(
-                AutoHelper.runPath(drivetrain, intake, indexer, "2ball.posA.path1.wpilib.json"), // Path follow to collect first ball
+                AutoHelper.runPath(drivetrain, intake, indexer, shooter,"2ball.posA.path1.wpilib.json"), // Path follow to collect first ball
                 new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight),                       // Shoot the 2 indexed balls (starts with one, collects one)
-                AutoHelper.runPath(drivetrain, intake, indexer, "4ball.posA.path2.wpilib.json"), // Path follow to collect second ball
+                AutoHelper.runPath(drivetrain, intake, indexer, shooter,"4ball.posA.path2.wpilib.json"), // Path follow to collect second ball
                 new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight)                        // Shoot the 2 indexed balls (starts with one, collects one)
         );
     }

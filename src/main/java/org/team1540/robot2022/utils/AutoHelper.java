@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import org.team1540.robot2022.commands.shooter.Shooter;
 
 public class AutoHelper {
 
@@ -28,11 +29,11 @@ public class AutoHelper {
      * @param trajectoryName the path of the trajectory file relative to `deploy/paths`
      * @return The SequentialCommandGroup
      */
-    public static ParallelDeadlineGroup runPath(Drivetrain drivetrain, Intake intake, Indexer indexer, String trajectoryName) {
+    public static ParallelDeadlineGroup runPath(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, String trajectoryName) {
         System.out.println(trajectoryName);
         return new ParallelDeadlineGroup(
                 getRamseteCommand(drivetrain, trajectoryName),             // Path follow to collect first bal
-                new IntakeSequence(intake, indexer)
+                new IntakeSequence(intake, indexer, shooter)
         );
     }
 
