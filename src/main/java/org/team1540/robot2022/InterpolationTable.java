@@ -3,13 +3,9 @@ package org.team1540.robot2022;
 import org.team1540.robot2022.utils.LinearInterpolator;
 
 public class InterpolationTable {
-    // Interpolation values for the hood down
-
     // Hood down
     public static final double hubFront = 2100;
     public static final double hubRear = 2200;
-    public static final double tarmacFront = 2100;
-    public static final double tarmacRear = 2950;
 
     public static final double copilotSpinupFront = 2000;
     public static final double copilotSpinupRear = 2000;
@@ -22,7 +18,6 @@ public class InterpolationTable {
             {127, 2300, 2500},
             {138, 2400, 2600},
             {146, 2400, 2700},
-
     };
 
     private static InterpolationTable instance = null;

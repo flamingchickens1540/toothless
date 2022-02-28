@@ -74,7 +74,7 @@ public class ShootSequence extends SequentialCommandGroup {
                         new WaitUntilCommand(shooter::isSpunUp),
                         new InstantCommand(() -> indexer.set(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL)), // Run bottom indexer to shoot bottom ball
                         new WaitUntilCommand(() -> !indexer.getTopSensor()),
-                        new WaitCommand(2), // Wait for bottom ball to leave
+                        new WaitCommand(2), // Wait for bottom ball to leave TODO: Can we decrease this?
                         new InstantCommand(() -> {
                             indexer.set(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF);
                             shooter.setVelocityRPM(shooter.shooterMotorFront, 0);
