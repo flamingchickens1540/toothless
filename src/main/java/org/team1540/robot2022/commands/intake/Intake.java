@@ -66,7 +66,7 @@ public class Intake extends SubsystemBase {
     }
 
     /**
-     * Sets the NeutralMode for the drivetrain (either coast or brake)
+     * Sets the NeutralMode for the indexer (either coast or brake)
      *
      * @param mode The mode to set the wheels to
      */
