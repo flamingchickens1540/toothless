@@ -176,7 +176,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     /**
-     * Set motor voltages from velocity setpoints
+     * Sets motor voltages from velocity setpoints
      *
      * @param leftVelocity  left motor velocity RPM setpoint
      * @param rightVelocity right motor velocity RPM setpoint
