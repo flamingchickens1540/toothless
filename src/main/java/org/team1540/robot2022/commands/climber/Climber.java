@@ -62,7 +62,7 @@ public class Climber extends SubsystemBase {
     }
 
     /**
-     * Sets the NeutralMode for the drivetrain (either coast or brake)
+     * Sets the NeutralMode for the climber (either coast or brake)
      * @param mode The mode to set the wheels to
      */
     public void setNeutralMode(NeutralMode mode) {
