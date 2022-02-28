@@ -22,10 +22,9 @@ public class OdometryResetSequence extends ParallelCommandGroup {
                 new InstantCommand(() -> limelight.setLeds(initialLightState))
             ),
             sequence(
-                new InstantCommand(navx::zeroYaw), // Reset odometry to known starting pose
+                new InstantCommand(navx::zeroYaw),
                 new InstantCommand(() -> drivetrain.resetOdometry(zeroPose)) // Reset odometry to known starting pose
-            ),
-            new InstantCommand(() -> drivetrain.setNeutralMode(NeutralMode.Coast)) // Reset odometry to known starting pose
+            )
         );
     }
 
