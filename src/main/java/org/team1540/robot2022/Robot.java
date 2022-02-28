@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
-        // Update the robotContainer.limelight's custom SmartDashboard values
+        // Update the limelight's custom SmartDashboard values
         robotContainer.limelight.updateSmartDashboardValues();
 
         SmartDashboard.putBoolean("pneumatics/pressureSwitch", robotContainer.ph.getPressureSwitch());
