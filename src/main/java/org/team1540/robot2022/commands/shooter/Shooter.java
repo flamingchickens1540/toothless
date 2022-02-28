@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
+import org.team1540.robot2022.utils.ChickenTalonFX;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,11 +32,11 @@ public class Shooter extends SubsystemBase {
     // Result of the last shot
     public ShootingState lastShot;
 
-    public TalonFX shooterMotorFront = new TalonFX(Constants.ShooterConstants.FRONT);
-    public TalonFX shooterMotorRear = new TalonFX(Constants.ShooterConstants.REAR);
+    public ChickenTalonFX shooterMotorFront = new ChickenTalonFX(Constants.ShooterConstants.FRONT);
+    public ChickenTalonFX shooterMotorRear = new ChickenTalonFX(Constants.ShooterConstants.REAR);
 
     public Shooter() {
-        Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(new TalonFX[]{shooterMotorFront, shooterMotorRear});
+        Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(new ChickenTalonFX[]{shooterMotorFront, shooterMotorRear});
         shooterMotorFront.setNeutralMode(NeutralMode.Coast);
         shooterMotorRear.setNeutralMode(NeutralMode.Coast);
         shooterMotorFront.setInverted(true);
