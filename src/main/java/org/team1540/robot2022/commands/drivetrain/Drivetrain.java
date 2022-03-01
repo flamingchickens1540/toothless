@@ -28,8 +28,7 @@ public class Drivetrain extends SubsystemBase {
     private final NavX navx;
     private final DifferentialDriveOdometry driveOdometry;
 
-    private final SimpleMotorFeedforward ffLeft = new SimpleMotorFeedforward(Constants.DriveConstants.KS_VOLTS, Constants.DriveConstants.KV_VOLT_SECONDS_PER_METER, Constants.DriveConstants.KA_VOLT_SECONDS_SQUARED_PER_METER);
-    private final SimpleMotorFeedforward ffRight = new SimpleMotorFeedforward(Constants.DriveConstants.KS_VOLTS, Constants.DriveConstants.KV_VOLT_SECONDS_PER_METER, Constants.DriveConstants.KA_VOLT_SECONDS_SQUARED_PER_METER);
+    private final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Constants.DriveConstants.KS_VOLTS, Constants.DriveConstants.KV_VOLT_SECONDS_PER_METER, Constants.DriveConstants.KA_VOLT_SECONDS_SQUARED_PER_METER);
 
     public final Field2d dashboardField = new Field2d();
 
@@ -182,15 +181,15 @@ public class Drivetrain extends SubsystemBase {
      * @param rightVelocity right motor velocity RPM setpoint
      */
     public void setFFVelocity(double leftVelocity, double rightVelocity) {
-        setVolts(ffLeft.calculate(leftVelocity), ffRight.calculate(rightVelocity));
+        setVolts(feedForward.calculate(leftVelocity), feedForward.calculate(rightVelocity));
     }
 
     public double getMaxVelocity() {
-        return ffLeft.maxAchievableVelocity(Constants.MOTOR_VOLTAGE, 0);
+        return feedForward.maxAchievableVelocity(Constants.MOTOR_VOLTAGE, 0);
     }
 
     public double getMinVelocity() {
-        return ffLeft.minAchievableVelocity(Constants.MOTOR_VOLTAGE, 0);
+        return feedForward.minAchievableVelocity(Constants.MOTOR_VOLTAGE, 0);
     }
 
     /**
