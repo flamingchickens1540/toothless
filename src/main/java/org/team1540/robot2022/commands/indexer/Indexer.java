@@ -2,25 +2,24 @@ package org.team1540.robot2022.commands.indexer;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import org.team1540.robot2022.Constants.IndexerConstants;
-import org.team1540.robot2022.Constants.IndexerConstants.BeamBreaks;
-import org.team1540.robot2022.Constants.IndexerConstants.IndexerMotors;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import org.team1540.robot2022.Constants.IndexerConstants;
+import org.team1540.robot2022.Constants.IndexerConstants.BeamBreaks;
+import org.team1540.robot2022.Constants.IndexerConstants.IndexerMotors;
+import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Indexer extends SubsystemBase {
-    private final TalonFX bottomMotor = new TalonFX(IndexerMotors.bottomMotor);
-    private final TalonFX topMotor = new TalonFX(IndexerMotors.topMotor);
-    private final TalonFX[] motors = {topMotor, bottomMotor};
+    private final ChickenTalonFX bottomMotor = new ChickenTalonFX(IndexerMotors.BOTTOM_MOTOR);
+    private final ChickenTalonFX topMotor = new ChickenTalonFX(IndexerMotors.TOP_MOTOR);
+    private final ChickenTalonFX[] motors = {topMotor, bottomMotor};
 
-    private final DigitalInput topSensor = new DigitalInput(BeamBreaks.topIndexerSensor);
-    private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.bottomIndexerSensor);
+    private final DigitalInput topSensor = new DigitalInput(BeamBreaks.TOP_INDEXER_SENSOR);
+    private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.BOTTOM_INDEXER_SENSOR);
 
     private boolean standby = false;
 
@@ -44,8 +43,8 @@ public class Indexer extends SubsystemBase {
         topInterrupt.enable();
         bottomInterrupt.enable();
 
-        IndexerMotors.currentLimitConfig.applyTo(motors);
-        for (TalonFX motor : motors) {
+        IndexerMotors.CURRENT_LIMIT_CONFIG.applyTo(motors);
+        for (ChickenTalonFX motor : motors) {
             motor.setNeutralMode(brakeType);
             motor.setInverted(true);
         }
@@ -80,6 +79,10 @@ public class Indexer extends SubsystemBase {
         return (this.getBottomSensor() && this.getTopSensor());
     }
 
+    public void setStandby(boolean standby) {
+        this.standby = standby;
+    }
+
     /**
      * Sets the top and bottom indexer motors to an IndexerMode
      *
@@ -97,7 +100,7 @@ public class Indexer extends SubsystemBase {
      * @param mode The mode to set the motor to
      */
     public void setTop(IndexerState mode) {
-        this.setMotor(topMotor, mode, IndexerConstants.topPercent);
+        this.setMotor(topMotor, mode, IndexerConstants.TOP_PERCENT);
     }
 
     /**
@@ -106,7 +109,7 @@ public class Indexer extends SubsystemBase {
      * @param mode The mode to set the motor to
      */
     public void setBottom(IndexerState mode) {
-        this.setMotor(bottomMotor, mode, IndexerConstants.bottomPercent);
+        this.setMotor(bottomMotor, mode, IndexerConstants.BOTTOM_PERCENT);
     }
 
     /**
@@ -116,7 +119,7 @@ public class Indexer extends SubsystemBase {
      * @param mode      The mode to set it to
      * @param onPercent the speed to use for running forward and reverse
      */
-    private void setMotor(TalonFX motor, IndexerState mode, double onPercent) {
+    private void setMotor(ChickenTalonFX motor, IndexerState mode, double onPercent) {
         switch (mode) {
             case FORWARD_FULL:
                 motor.set(ControlMode.PercentOutput, 1);
@@ -191,25 +194,14 @@ public class Indexer extends SubsystemBase {
     }
 
     /**
-     * Sets indexer listeners to run and starts the indexer running
-     */
-    public void start() {
-        this.standby = false;
-        if (isFull()) {
-            this.set(IndexerState.OFF, IndexerState.OFF);
-        } else if (getTopSensor()) {
-            this.set(IndexerState.OFF, IndexerState.FORWARD);
-        } else {
-            this.set(IndexerState.FORWARD, IndexerState.FORWARD);
-        }
-    }
-    /**
-     * Returns a command to start the indexing listeners and motors
+     * Sets the NeutralMode for the drivetrain (either coast or brake)
      *
-     * @return an InstantCommand to set the standby mode
+     * @param mode The mode to set the wheels to
      */
-    public Command commandStart() {
-        return new InstantCommand(this::start);
+    public void setNeutralMode(NeutralMode mode) {
+        for (ChickenTalonFX motor : motors) {
+            motor.setNeutralMode(mode);
+        }
     }
 
     /**
@@ -237,5 +229,4 @@ public class Indexer extends SubsystemBase {
          */
         UNCHANGED
     }
-
 }

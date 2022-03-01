@@ -3,45 +3,57 @@ package org.team1540.robot2022.commands.drivetrain;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import org.team1540.robot2022.Constants.DriveConstants.Motors;
-import org.team1540.robot2022.utils.ChickenTalonFX;
-import org.team1540.robot2022.utils.NavX;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2022.Constants;
+import org.team1540.robot2022.Constants.DriveConstants.Motors;
+import org.team1540.robot2022.utils.ChickenTalonFX;
+import org.team1540.robot2022.utils.NavX;
 
 public class Drivetrain extends SubsystemBase {
-    private final ChickenTalonFX driveLFront = new ChickenTalonFX(Motors.leftFront);
-    private final ChickenTalonFX driveLRear = new ChickenTalonFX(Motors.leftRear);
-    private final ChickenTalonFX driveRFront = new ChickenTalonFX(Motors.rightFront);
-    private final ChickenTalonFX driveRRear = new ChickenTalonFX(Motors.rightRear);
+    private final ChickenTalonFX driveLFront = new ChickenTalonFX(Motors.LEFT_FRONT);
+    private final ChickenTalonFX driveLRear = new ChickenTalonFX(Motors.LEFT_REAR);
+    private final ChickenTalonFX driveRFront = new ChickenTalonFX(Motors.RIGHT_FRONT);
+    private final ChickenTalonFX driveRRear = new ChickenTalonFX(Motors.RIGHT_REAR);
     private final ChickenTalonFX[] driveL = {driveLFront, driveLRear};
     private final ChickenTalonFX[] driveR = {driveRFront, driveRRear};
     private final ChickenTalonFX[] driveMotors = {driveLFront, driveLRear, driveRFront, driveRRear};
     private final NavX navx;
     private final DifferentialDriveOdometry driveOdometry;
 
+    private final SimpleMotorFeedforward ffLeft = new SimpleMotorFeedforward(Constants.DriveConstants.KS_VOLTS, Constants.DriveConstants.KV_VOLT_SECONDS_PER_METER, Constants.DriveConstants.KA_VOLT_SECONDS_SQUARED_PER_METER);
+    private final SimpleMotorFeedforward ffRight = new SimpleMotorFeedforward(Constants.DriveConstants.KS_VOLTS, Constants.DriveConstants.KV_VOLT_SECONDS_PER_METER, Constants.DriveConstants.KA_VOLT_SECONDS_SQUARED_PER_METER);
+
+    public final Field2d dashboardField = new Field2d();
+
     public static final double motorToMPS = 26.0349916751;
 
     public Drivetrain(NeutralMode brakeType, NavX navx) {
-
         driveOdometry = new DifferentialDriveOdometry(navx.getRotation2d());
         this.navx = navx;
+
         for (ChickenTalonFX motor : driveMotors) {
             motor.configFactoryDefault();
             motor.setNeutralMode(brakeType);
         }
-        // Set configuration for left motors
-        for (ChickenTalonFX motor : driveL) { motor.setInverted(false); }
-        // Set configuration for right motors
-        for (ChickenTalonFX motor : driveR) { motor.setInverted(true); }
+        for (ChickenTalonFX motor : driveL) {
+            motor.setInverted(false);
+        }
+        for (ChickenTalonFX motor : driveR) {
+            motor.setInverted(true);
+        }
         driveLRear.follow(driveLFront);
         driveRRear.follow(driveRFront);
+
         updatePIDs();
+        SmartDashboard.putData("drivetrain/field", dashboardField);
     }
 
     @Override
@@ -55,12 +67,13 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("drivetrain/rightEncoderMeters", driveRFront.getDistanceMeters());
         SmartDashboard.putNumber("drivetrain/PID/errorL", driveLFront.getClosedLoopError());
         SmartDashboard.putNumber("drivetrain/PID/errorR", driveRFront.getClosedLoopError());
+        dashboardField.setRobotPose(driveOdometry.getPoseMeters());
     }
 
     /**
      * Sets the velocity of the motors in meters per second
-     * 
-     * @param leftVelocity The velocity to set the right motors to
+     *
+     * @param leftVelocity  The velocity to set the right motors to
      * @param rightVelocity The velocity to set the left motors to
      */
     public void setVelocity(double leftVelocity, double rightVelocity) {
@@ -69,7 +82,9 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void resetEncoders() {
-        for (ChickenTalonFX motor : driveMotors) { motor.setSelectedSensorPosition(0); }
+        for (ChickenTalonFX motor : driveMotors) {
+            motor.setSelectedSensorPosition(0);
+        }
     }
 
     /**
@@ -111,7 +126,8 @@ public class Drivetrain extends SubsystemBase {
 
     /**
      * Sets the percent output for the drivetrain motors
-     * @param leftPercent the percent to run the left side at
+     *
+     * @param leftPercent  the percent to run the left side at
      * @param rightPercent the percent to run the right side at
      */
     public void setPercent(double leftPercent, double rightPercent) {
@@ -120,7 +136,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     /**
-     * Stops both sides of the drivetrain 
+     * Stops both sides of the drivetrain
      */
     public void stopMotors() {
         this.setPercent(0, 0);
@@ -128,6 +144,7 @@ public class Drivetrain extends SubsystemBase {
 
     /**
      * Returns an {@link InstantCommand} to stop the drivetrain
+     *
      * @return the InstantCommand
      */
     public Command commandStop() {
@@ -136,15 +153,19 @@ public class Drivetrain extends SubsystemBase {
 
     /**
      * Sets the NeutralMode for the drivetrain (either coast or brake)
+     *
      * @param mode The mode to set the wheels to
      */
     public void setNeutralMode(NeutralMode mode) {
-        for (ChickenTalonFX motor : driveMotors) { motor.setNeutralMode(mode); }
+        for (ChickenTalonFX motor : driveMotors) {
+            motor.setNeutralMode(mode);
+        }
     }
 
     /**
      * Sets the voltage for both sides of the drivetrain
-     * @param leftVolts The voltage for the left side
+     *
+     * @param leftVolts  The voltage for the left side
      * @param rightVolts The voltage for the right side
      */
     public void setVolts(double leftVolts, double rightVolts) {
@@ -152,6 +173,24 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("drivetrain/auto/rightVolts", rightVolts);
         driveLFront.setVoltage(leftVolts);
         driveRFront.setVoltage(rightVolts);
+    }
+
+    /**
+     * Sets motor voltages from velocity setpoints
+     *
+     * @param leftVelocity  left motor velocity RPM setpoint
+     * @param rightVelocity right motor velocity RPM setpoint
+     */
+    public void setFFVelocity(double leftVelocity, double rightVelocity) {
+        setVolts(ffLeft.calculate(leftVelocity), ffRight.calculate(rightVelocity));
+    }
+
+    public double getMaxVelocity() {
+        return ffLeft.maxAchievableVelocity(Constants.MOTOR_VOLTAGE, 0);
+    }
+
+    public double getMinVelocity() {
+        return ffLeft.minAchievableVelocity(Constants.MOTOR_VOLTAGE, 0);
     }
 
     /**

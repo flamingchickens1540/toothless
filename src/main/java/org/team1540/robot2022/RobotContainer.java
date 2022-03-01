@@ -1,18 +1,19 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team1540.robot2022.commands.climber.Climber;
-import org.team1540.robot2022.commands.drivetrain.Auto2BallSequence;
-import org.team1540.robot2022.commands.drivetrain.Auto3BallSequence;
-import org.team1540.robot2022.commands.drivetrain.Auto4BallSequence;
-import org.team1540.robot2022.commands.drivetrain.Drivetrain;
-import org.team1540.robot2022.commands.drivetrain.OdometryResetSequence;
-import org.team1540.robot2022.commands.drivetrain.PointToTarget;
-import org.team1540.robot2022.commands.drivetrain.TankDriveCommand;
+import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
+import org.team1540.robot2022.commands.drivetrain.*;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
@@ -26,33 +27,7 @@ import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinken;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-/**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
     private final boolean ENABLE_COMPRESSOR = true;
 
@@ -60,7 +35,7 @@ public class RobotContainer {
     public final RevBlinken robotLEDs = new RevBlinken(0);
     public final Limelight limelight = new Limelight("limelight");
     public final NavX navx = new NavX(SPI.Port.kMXP);
-    public final PneumaticHub ph = new PneumaticHub(Constants.ph);
+    public final PneumaticHub ph = new PneumaticHub(Constants.PNEUMATIC_HUB);
 
     // Subsystems
     public final Drivetrain drivetrain = new Drivetrain(NeutralMode.Brake, navx);
@@ -79,8 +54,9 @@ public class RobotContainer {
 
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
-    public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer);
+    public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
     public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight);
+    public final ClimberUpDownCommand climberUpDownCommand = new ClimberUpDownCommand(climber, copilotController);
 
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
@@ -91,9 +67,6 @@ public class RobotContainer {
     // Misc
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
     public RobotContainer() {
         initSmartDashboard();
         configureButtonBindings();
@@ -107,14 +80,6 @@ public class RobotContainer {
         }
     }
 
-    /**
-     * Use this method to define your button->command mappings. Buttons can be
-     * created by
-     * instantiating a {@link GenericHID} or one of its subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-     * it to a {@link
-     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
     private void configureButtonBindings() {
         // Driver
 
@@ -126,12 +91,12 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kLeftBumper.value)
                 .whenHeld(shootSequence);
 
-        // coop:button(DPadUp,Hood up [press],pilot)
+        // coop:button(DPadUp,Shoot from HUB [press],pilot)
         new POVButton(driverController, 0) // D-pad up
-                .whenPressed(new InstantCommand(() -> hood.set(true)));
-        // coop:button(DPadDown,Hood down [press],pilot)
+                .whenPressed(new InstantCommand(() -> shootSequence.shootFromHub = true));
+        // coop:button(DPadDown,Shoot from not hub [press],pilot)
         new POVButton(driverController, 180) // D-pad down
-                .whenPressed(new InstantCommand(() -> hood.set(false)));
+                .whenPressed(new InstantCommand(() -> shootSequence.shootFromHub = false));
 
         // Intake/indexer
 
@@ -157,24 +122,15 @@ public class RobotContainer {
         // coop:button(B,Toggle intake fold [press],copilot)
         new JoystickButton(copilotController, Button.kB.value)
                 .whenPressed(new InstantCommand(() -> intake.setFold(!intake.getFold())));
-        
-        // coop:button(X,Spin up shooter [press],copilot)
-        new JoystickButton(copilotController, Button.kX.value)
-                .and(new Trigger(() -> !shootSequence.isScheduled()))
-                .whenActive(shooter.commandSetVelocity(InterpolationTable.copilotSpinupFront, InterpolationTable.copilotSpinupRear));
-        // coop:button(Y,Stop shooter spinup shooter [press],copilot)
-        new JoystickButton(copilotController, Button.kY.value)
-                .and(new Trigger(() -> !shootSequence.isScheduled()))
-                .whenActive(shooter.commandStop());
 
         // coop:button(LBumper,Manual intake [hold],copilot)
         new JoystickButton(copilotController, Button.kLeftBumper.value)
-                .whileHeld(new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.speed));
+                .whileHeld(new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.SPEED));
         // coop:button(RBumper,Manual reverse intake [hold],copilot)
         new JoystickButton(copilotController, Button.kRightBumper.value)
-                .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.speed));
+                .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.SPEED));
 
-        // coop:button(DPadRight,stop intake and indexer [press],copilot)
+        // coop:button(DPadRight,Run intake and indexer [press],copilot)
         new POVButton(copilotController, 90) // D-pad right
                 .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(intakeSequence);
@@ -184,11 +140,10 @@ public class RobotContainer {
                 .cancelWhenPressed(intakeSequence);
         // coop:button(DPadLeft,Eject balls from intake,copilot)
         new POVButton(copilotController, 270) // D-pad left
-                .cancelWhenPressed(intakeSequence)
-                .whenPressed(indexerEjectCommand);
-
-        
-
+                .whenPressed(new InstantCommand(() -> climber.setSolenoids(false)));
+        // coop:button(DPadUp,Toggle climber solenoids [press],copilot)
+        new POVButton(copilotController, 0)
+                .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
         // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
@@ -198,18 +153,43 @@ public class RobotContainer {
     }
 
     private void initModeTransitionBindings() {
+        var enabled = new Trigger(RobotState::isEnabled);
+        var disabled = new Trigger(DriverStation::isDisabled);
+
         var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
         var teleop = new Trigger(DriverStation::isTeleopEnabled);
-        var disabled = new Trigger(DriverStation::isDisabled);
 
         teleop.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP));
         autonomous.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.AUTONOMOUS));
         disabled.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.DISABLE));
+
+        // Enable break mode when enabled
+        enabled.whenActive(() -> {
+            drivetrain.setNeutralMode(NeutralMode.Brake);
+            intake.setNeutralMode(NeutralMode.Brake);
+            indexer.setNeutralMode(NeutralMode.Brake);
+            climber.setNeutralMode(NeutralMode.Brake);
+        });
+
+        // Disable break mode 2 seconds after disabling
+        disabled.whenActive(new WaitCommand(2)
+                .andThen(
+                        new ConditionalCommand( // Check if the robot is still disabled to prevent enabling coast mode when the robot is enabled
+                                new InstantCommand(),
+                                new InstantCommand(() -> {
+                                    drivetrain.setNeutralMode(NeutralMode.Coast);
+                                    intake.setNeutralMode(NeutralMode.Coast);
+                                    indexer.setNeutralMode(NeutralMode.Coast);
+                                    climber.setNeutralMode(NeutralMode.Coast);
+                                }),
+                                RobotState::isEnabled)
+                )
+        );
     }
 
     private void initSmartDashboard() {
-        autoChooser.addOption("1 Ball", new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight));
-        autoChooser.addOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, true));
+        // autoChooser.addOption("1 Ball", new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight));
+        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, true));
         autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, false));
         autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight));
         autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood, limelight));

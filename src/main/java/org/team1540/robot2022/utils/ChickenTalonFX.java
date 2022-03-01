@@ -8,7 +8,7 @@ import org.team1540.robot2022.Constants.DriveConstants;
 
 public class ChickenTalonFX extends TalonFX {
     private final double decisecondsPerSecond = 10;
-    private double ticksPerMeter = DriveConstants.encoderTicksPerMeter;
+    private double ticksPerMeter = DriveConstants.ENCODER_TICKS_PER_METER;
     private double saturationVoltage = 12;
     private int velocitySlotIdx = 0;
     private int positionSlotIdx = 1;

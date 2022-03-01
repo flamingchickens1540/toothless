@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import org.team1540.robot2022.utils.MathUtils;
 
 public class TankDriveCommand extends CommandBase {
     private final double deadzone = 0.15;
@@ -44,27 +45,8 @@ public class TankDriveCommand extends CommandBase {
         return percent * maximumSpeed;
     }
 
-    /**
-     * Returns 0 if the input is within the deadzone, else the value
-     * 
-     * @param value The joystick input
-     * 
-     * @return The value after deadzone is checked
-     */
-    private double applyDeadzone(double value) {
-        if (Math.abs(value) <= deadzone)
-            return 0;
-        else
-            return value;
-    }
-
     private double applyLimiter(double value) {
-        if (value == 0) {
-            rateLimiter.reset(0);
-            return 0;
-        } else {
-            return rateLimiter.calculate(value);
-        }
+        return rateLimiter.calculate(value);
     }
 
     /**
@@ -75,7 +57,7 @@ public class TankDriveCommand extends CommandBase {
      * @return The value after deadzone is checked and the units are converted
      */
     private double applyJoystickModifiers(double value) {
-        double percentOutput = applyDeadzone(value) - controller.getLeftTriggerAxis()
+        double percentOutput = MathUtils.deadzone(value, deadzone) - controller.getLeftTriggerAxis()
                 + controller.getRightTriggerAxis();
         return calculateMPS(percentOutput);
     }

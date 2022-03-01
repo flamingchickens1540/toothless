@@ -1,11 +1,5 @@
 package org.team1540.robot2022.commands.drivetrain;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-
-import org.team1540.robot2022.RamseteConfig;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -16,6 +10,12 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import org.team1540.robot2022.Constants;
+import org.team1540.robot2022.RamseteConfig;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 public class AutoTest extends SequentialCommandGroup {
     private final String trajectoryJSON = "paths/test.path2.wpilib.json";
@@ -45,9 +45,9 @@ public class AutoTest extends SequentialCommandGroup {
                 drivetrain::getPose,                                                        // A function that supplies the robot pose
                 new RamseteController(RamseteConfig.kRamseteB, RamseteConfig.kRamseteZeta), // The RAMSETE controller used to follow the trajectory.
                 new SimpleMotorFeedforward(                                                 // The feedforward to use for the drive.
-                        RamseteConfig.ksVolts,
-                        RamseteConfig.kvVoltSecondsPerMeter,
-                        RamseteConfig.kaVoltSecondsSquaredPerMeter),
+                        Constants.DriveConstants.KS_VOLTS,
+                        Constants.DriveConstants.KV_VOLT_SECONDS_PER_METER,
+                        Constants.DriveConstants.KA_VOLT_SECONDS_SQUARED_PER_METER),
                 RamseteConfig.kDriveKinematics,                                             // The kinematics for the robot drivetrain.
                 drivetrain::getWheelSpeeds,                                                 // A function that supplies the speeds of the left and right sides of the robot
                 new PIDController(SmartDashboard.getNumber("ramsetePID/kP", 0.5), 0, 0),                          // Left PID controller
