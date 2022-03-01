@@ -1,5 +1,6 @@
 package org.team1540.robot2022.utils;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -23,8 +24,6 @@ public class FeatherClient {
      * @param hoodUp             is the hood up?
      */
     public static void recordShot(double distanceFromTarget, double frontRPM, double rearRPM, boolean hoodUp) {
-        SmartDashboard.putBoolean("feather/shotTaken", false);
-
         SmartDashboard.putNumber("feather/matchTime", DriverStation.getMatchTime());
 
         if (Objects.equals(DriverStation.getEventName(), "")) {
@@ -43,6 +42,6 @@ public class FeatherClient {
         SmartDashboard.putNumber("feather/rearRPM", rearRPM);
         SmartDashboard.putBoolean("feather/hoodUp", hoodUp);
 
-        SmartDashboard.putBoolean("feather/shotTaken", true);
+        NetworkTableInstance.getDefault().flush();
     }
 }
