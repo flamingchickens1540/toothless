@@ -3,6 +3,9 @@ package org.team1540.robot2022.commands.climber;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,6 +32,25 @@ public class Climber extends SubsystemBase {
         motorRight.setNeutralMode(NeutralMode.Brake);
         motorLeft.setInverted(true);
         motorRight.setInverted(true);
+
+        updateLimits();
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/limits").addEntryListener((table, key, entry, value, flags) -> updateLimits(), EntryListenerFlags.kUpdate);
+    }
+
+    public void periodic() {
+        SmartDashboard.putNumber("climber/leftSensorPosition", motorLeft.getSelectedSensorPosition());
+        SmartDashboard.putNumber("climber/rightSensorPosition", motorRight.getSelectedSensorPosition());
+    }
+
+    private void updateLimits() {
+        double forwardSensorLimitLeft = SmartDashboard.getNumber("climber/limits/leftForward", 1.0);
+        double forwardSensorLimitRight = SmartDashboard.getNumber("climber/limits/rightForward", 1.0);
+
+        motorLeft.configForwardSoftLimitEnable(true);
+        motorRight.configForwardSoftLimitEnable(true);
+        
+        motorLeft.configForwardSoftLimitThreshold(forwardSensorLimitLeft);
+        motorRight.configForwardSoftLimitThreshold(forwardSensorLimitRight);
     }
 
     /**
