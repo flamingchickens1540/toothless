@@ -1,9 +1,9 @@
 package org.team1540.robot2022.commands.drivetrain;
 
-import java.util.LinkedList;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.MiniPID;
 
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -12,7 +12,7 @@ public class PointToTarget extends CommandBase {
     private final double LIMELIGHT_HORIZONTAL_FOV = 29.8;
     private final Drivetrain drivetrain;
     private final Limelight limelight;
-    private LinkedList<Vector2d> pastPoses = new LinkedList<Vector2d>();
+    private final MedianFilter medianFilter = new MedianFilter(10);
 
     // A little testing says kP=0.7 and kD=0.4 are fairly strong.
     private final MiniPID pid = new MiniPID(1, 0, 0);
@@ -33,33 +33,24 @@ public class PointToTarget extends CommandBase {
         pid.setSetpoint(0);
     }
 
-    private double getHorizontalDistanceToTarget() {
-        return limelight.getTargetAngles().x;
-    }
-
     private double getError(double distanceToTarget) {
         return Math.abs(distanceToTarget) / LIMELIGHT_HORIZONTAL_FOV;
     }
 
     public void execute() {
+        // Grab angles
         Vector2d lmAngles = limelight.getTargetAngles();
-        pastPoses.add(lmAngles);
-        if (pastPoses.size() > 10) {
-            pastPoses.remove(0);
-        }
-        double avgX = 0;
-        for (Vector2d pose : pastPoses) {
-            avgX += pose.x;
-        }
-        avgX /= pastPoses.size();
-        if (Math.abs(avgX) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
+        // Calculate median
+        double medX = medianFilter.calculate(lmAngles.x);
+        // Run PID calculations to turn
+        if (Math.abs(medX) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
 
-            double distanceToTarget = getHorizontalDistanceToTarget();
-            double pidOutput = pid.getOutput(getError(avgX));
+            double pidOutput = pid.getOutput(getError(medX));
             double multiplier = lmAngles.x > 0 ? 1 : -1;
 
             SmartDashboard.putNumber("pointToTarget/pidOutput", pidOutput);
-            SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", distanceToTarget);
+            SmartDashboard.putNumber("pointToTarget/degreeDistanceToTargetRaw", lmAngles.x);
+            SmartDashboard.putNumber("pointToTarget/degreeDistanceToTargetMedian", medX);
 
             if (pidOutput > SmartDashboard.getNumber("pointToTarget/pidClamp", 0.8)) {
                 pidOutput = 0;
