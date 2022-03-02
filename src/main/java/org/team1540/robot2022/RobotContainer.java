@@ -61,6 +61,7 @@ public class RobotContainer {
     // coop:button(LTrigger,Forward,pilot)
     // coop:button(RTrigger,Reverse,pilot)
     public final TankDriveCommand tankDriveCommand = new TankDriveCommand(drivetrain, driverController);
+    public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
     // Misc
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -156,6 +157,7 @@ public class RobotContainer {
 
         // Enable break mode when enabled
         enabled.whenActive(() -> {
+            System.out.println("Setting brake mode");
             drivetrain.setNeutralMode(NeutralMode.Brake);
             intake.setNeutralMode(NeutralMode.Brake);
             indexer.setNeutralMode(NeutralMode.Brake);
@@ -168,6 +170,7 @@ public class RobotContainer {
                         new ConditionalCommand( // Check if the robot is still disabled to prevent enabling coast mode when the robot is enabled
                                 new InstantCommand(),
                                 new InstantCommand(() -> {
+                                    System.out.println("Setting coast mode");
                                     drivetrain.setNeutralMode(NeutralMode.Coast);
                                     intake.setNeutralMode(NeutralMode.Coast);
                                     indexer.setNeutralMode(NeutralMode.Coast);
