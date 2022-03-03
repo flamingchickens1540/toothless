@@ -121,8 +121,8 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kY.value)
                 .whenPressed(new EjectTopBallCommand(indexer, shooter));
             
-        // coop:button(A,Eject bottom ball [press],copilot)
-        new JoystickButton(copilotController, Button.kA.value)
+        // coop:button(X,Eject bottom ball [press],copilot)
+        new JoystickButton(copilotController, Button.kX.value)
                 .whenPressed(new EjectBottomBallCommand(indexer, intake));
 
 
