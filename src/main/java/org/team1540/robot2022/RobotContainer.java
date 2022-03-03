@@ -15,6 +15,8 @@ import org.team1540.robot2022.commands.climber.Climber;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.drivetrain.*;
 import org.team1540.robot2022.commands.hood.Hood;
+import org.team1540.robot2022.commands.indexer.EjectBottomBallCommand;
+import org.team1540.robot2022.commands.indexer.EjectTopBallCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
 import org.team1540.robot2022.commands.intake.Intake;
@@ -73,7 +75,7 @@ public class RobotContainer {
         initSmartDashboard();
         configureButtonBindings();
         initModeTransitionBindings();
-        DriverStation.silenceJoystickConnectionWarning(false);
+        DriverStation.silenceJoystickConnectionWarning(true);
 
         if (ENABLE_COMPRESSOR) {
             ph.enableCompressorDigital();
@@ -95,6 +97,16 @@ public class RobotContainer {
 
         // Copilot
 
+
+        // coop:button(Y,Eject top ball [press],copilot)
+        new JoystickButton(copilotController, Button.kY.value)
+                .whenPressed(new EjectTopBallCommand(indexer, shooter));
+            
+        // coop:button(X,Eject bottom ball [press],copilot)
+        new JoystickButton(copilotController, Button.kX.value)
+                .whenPressed(new EjectBottomBallCommand(indexer, intake));
+
+      
         // coop:button(DPadUp,Climber solenoids forward [press],copilot)
         new POVButton(copilotController, DPadAxis.UP)
                 .whenPressed(new InstantCommand(() -> climber.setSolenoids(false)));
@@ -118,6 +130,8 @@ public class RobotContainer {
         // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
+
+        
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
@@ -178,6 +192,7 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("intake/speed", 0.5);
         ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/top", 0.2);
         ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/bottom", 0.2);
+        ChickenSmartDashboard.putDefaultNumber("indexer/ballEjectFlywheelRPM", 100);
 
         // PointToTarget values
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);

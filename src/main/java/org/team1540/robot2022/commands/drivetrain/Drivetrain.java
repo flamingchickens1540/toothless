@@ -182,8 +182,8 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("drivetrain/feedforward/leftVelocity", leftVelocity);
         SmartDashboard.putNumber("drivetrain/feedforward/rightVelocity", rightVelocity);
 
-        double leftVolts = ffLeft.calculate(leftVelocity);
-        double rightVolts = ffRight.calculate(rightVelocity);
+        double leftVolts = feedForward.calculate(leftVelocity);
+        double rightVolts = feedForward.calculate(rightVelocity);
         SmartDashboard.putNumber("drivetrain/feedforward/leftVolts", leftVelocity);
         SmartDashboard.putNumber("drivetrain/feedforward/rightVolts", rightVolts);
         setVolts(leftVolts, rightVolts);
