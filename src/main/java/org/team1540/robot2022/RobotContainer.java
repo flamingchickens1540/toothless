@@ -54,7 +54,7 @@ public class RobotContainer {
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, true);
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.AUTOMATIC, true);
 
     // coop:button(LJoystick,Left climber up/down,copilot)
     // coop:button(RJoystick,Right climber up/down,copilot)
@@ -66,7 +66,6 @@ public class RobotContainer {
     // coop:button(RJoystick,Right tank,pilot)
     // coop:button(LTrigger,Forward,pilot)
     // coop:button(RTrigger,Reverse,pilot)
-    public final TankDriveCommand tankDriveCommand = new TankDriveCommand(drivetrain, driverController);
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
     // Misc
@@ -96,18 +95,30 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(drivetrain, limelight));
 
-        // Copilot
+        // coop:button(DPadUp,Shoot from touching hub [press],pilot)
+        new POVButton(driverController, DPadAxis.UP)
+                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.HUB));
+        // coop:button(DPadDown,Shoot from outside tarmac [press],pilot)
+        new POVButton(driverController, DPadAxis.DOWN)
+                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.FAR));
+        // coop:button(DPadLeft,Decide shoot profile automatically [press],pilot)
+        new POVButton(driverController, DPadAxis.LEFT)
+                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.AUTOMATIC));
+        // coop:button(DPadRight,Shoot from low goal [press],pilot)
+        new POVButton(driverController, DPadAxis.RIGHT)
+                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.LOWGOAL));
 
+        // Copilot
 
         // coop:button(Y,Eject top ball [press],copilot)
         new JoystickButton(copilotController, Button.kY.value)
                 .whenPressed(new EjectTopBallCommand(indexer, shooter));
-            
+
         // coop:button(X,Eject bottom ball [press],copilot)
         new JoystickButton(copilotController, Button.kX.value)
                 .whenPressed(new EjectBottomBallCommand(indexer, intake));
 
-      
+
         // coop:button(DPadUp,Climber solenoids forward [press],copilot)
         new POVButton(copilotController, DPadAxis.UP)
                 .whenPressed(new InstantCommand(() -> climber.setSolenoids(false)));
@@ -132,7 +143,6 @@ public class RobotContainer {
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
 
-        
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
@@ -175,7 +185,7 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        autoChooser.addOption("1 Ball", new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, true));
+        autoChooser.addOption("1 Ball", new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.TARMAC, true));
         autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, true));
         autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, false));
         autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar));
