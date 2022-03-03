@@ -2,8 +2,6 @@ name: Generate controls diagram
 
 on:
   push:
-    branches:
-      - main
     paths:
       - src/main/java/org/team1540/robot2022/RobotContainer.java
 
@@ -14,8 +12,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - run: npx chickencoop -i src/main/java/org/team1540/robot2022/RobotContainer.java -o controls.pdf
-      - uses: EndBug/add-and-commit@v8
+      - uses: actions/upload-artifact@v2
         with:
-          add: controls.pdf
-          default_author: github_actions
-          message: "refactor: update controls diagram"
+          name: Controls Diagram
+          path: controls.pdf
