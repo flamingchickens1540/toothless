@@ -92,11 +92,12 @@ public class ShootSequence extends ParallelCommandGroup {
                                             rearVelocity = InterpolationTable.lowGoalRear;
                                     }
 
-                                    hood.set(hoodState);
-
                                     // Used for tuning:
+                                    // hoodState = true;
                                     // frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
                                     // rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
+
+                                    hood.set(hoodState);
                                     shooter.setVelocityRPM(shooter.shooterMotorFront, frontVelocity);
                                     shooter.setVelocityRPM(shooter.shooterMotorRear, rearVelocity);
                                 }, shooter)
