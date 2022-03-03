@@ -9,6 +9,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
 import org.team1540.robot2022.Constants.ClimberConstants;
@@ -33,8 +35,19 @@ public class Climber extends SubsystemBase {
         motorLeft.setInverted(true);
         motorRight.setInverted(true);
 
+        SmartDashboard.putNumber("climber/limits/leftUp", -412000);
+        SmartDashboard.putNumber("climber/limits/rightUp", -412000);
+
         updateLimits();
         NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/limits").addEntryListener((table, key, entry, value, flags) -> updateLimits(), EntryListenerFlags.kUpdate);
+    }
+
+    // TODO: Make this work on a current spike at the start of the match
+    public Command commandZero() {
+        return new InstantCommand(() -> {
+            motorLeft.setSelectedSensorPosition(0);
+            motorRight.setSelectedSensorPosition(0);
+        });
     }
 
     public void periodic() {
@@ -43,14 +56,19 @@ public class Climber extends SubsystemBase {
     }
 
     private void updateLimits() {
-        double forwardSensorLimitLeft = SmartDashboard.getNumber("climber/limits/leftForward", 1.0);
-        double forwardSensorLimitRight = SmartDashboard.getNumber("climber/limits/rightForward", 1.0);
+        double leftUpLimit = SmartDashboard.getNumber("climber/limits/leftUp", -412000);
+        double rightUpLimit = SmartDashboard.getNumber("climber/limits/rightUp", -412000);
+
+        motorLeft.configReverseSoftLimitEnable(true);
+        motorRight.configReverseSoftLimitEnable(true);
 
         motorLeft.configForwardSoftLimitEnable(true);
         motorRight.configForwardSoftLimitEnable(true);
-        
-        motorLeft.configForwardSoftLimitThreshold(forwardSensorLimitLeft);
-        motorRight.configForwardSoftLimitThreshold(forwardSensorLimitRight);
+        motorLeft.configForwardSoftLimitThreshold(0);
+        motorRight.configForwardSoftLimitThreshold(0);
+
+        motorLeft.configReverseSoftLimitThreshold(leftUpLimit);
+        motorRight.configReverseSoftLimitThreshold(rightUpLimit);
     }
 
     /**
