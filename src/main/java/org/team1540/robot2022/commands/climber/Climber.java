@@ -2,7 +2,6 @@ package org.team1540.robot2022.commands.climber;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -42,8 +41,11 @@ public class Climber extends SubsystemBase {
         NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/limits").addEntryListener((table, key, entry, value, flags) -> updateLimits(), EntryListenerFlags.kUpdate);
     }
 
-    // TODO: Make this work on a current spike at the start of the match
-    public Command commandZero() {
+    /**
+     * Factory method zero the encoders
+     * @return InstantCommand to zero
+     */
+    public Command commandZeroEncoders() {
         return new InstantCommand(() -> {
             motorLeft.setSelectedSensorPosition(0);
             motorRight.setSelectedSensorPosition(0);
@@ -100,5 +102,29 @@ public class Climber extends SubsystemBase {
         for (ChickenTalonFX motor : motors) {
             motor.setNeutralMode(mode);
         }
+    }
+
+    /**
+     * Stop climber motors
+     */
+    public void stop() {
+        motorLeft.setPercent(0);
+        motorRight.setPercent(0);
+    }
+
+    public double getLeftCurrent() {
+        return motorLeft.getStatorCurrent();
+    }
+
+    public double getRightCurrent() {
+        return motorRight.getStatorCurrent();
+    }
+
+    public Command commandSetPercentLeft(double percent) {
+        return new InstantCommand(() -> motorLeft.setPercent(percent));
+    }
+
+    public Command commandSetPercentRight(double percent) {
+        return new InstantCommand(() -> motorRight.setPercent(percent));
     }
 }
