@@ -7,11 +7,14 @@ public class InterpolationTable {
     public static final double hubFront = 2100;
     public static final double hubRear = 2200;
 
-    public static final double shooterSpinupFront = 2000;
-    public static final double shooterSpinupRear = 2000;
-
     public static final double lowGoalFront = 1000;
     public static final double lowGoalRear = 1000;
+
+    public static final double tarmacFront = 1000;
+    public static final double tarmacRear = 1000;
+
+    public static final double shooterSpinupFront = 2000;
+    public static final double shooterSpinupRear = 2000;
 
     // Interpolation values for the hood up
     public static final double[][] hoodUp = {

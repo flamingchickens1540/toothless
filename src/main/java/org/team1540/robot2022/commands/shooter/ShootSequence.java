@@ -86,6 +86,10 @@ public class ShootSequence extends ParallelCommandGroup {
                                             hoodState = false;
                                             frontVelocity = InterpolationTable.hubFront;
                                             rearVelocity = InterpolationTable.hubRear;
+                                        case TARMAC:
+                                            hoodState = false;
+                                            frontVelocity = InterpolationTable.tarmacFront;
+                                            rearVelocity = InterpolationTable.tarmacRear;
                                         case LOWGOAL:
                                             hoodState = false;
                                             frontVelocity = InterpolationTable.lowGoalFront;
