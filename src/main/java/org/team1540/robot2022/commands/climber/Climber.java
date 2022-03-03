@@ -1,6 +1,5 @@
 package org.team1540.robot2022.commands.climber;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
@@ -81,29 +80,15 @@ public class Climber extends SubsystemBase {
         solenoid.set(forward ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
 
-    public void setLeftPercent(double percent) {
-        motorLeft.setPercent(percent);
-    }
-
-    public void setRightPercent(double percent) {
-        motorRight.setPercent(percent);
-    }
-
     /**
-     * Sets the climber arms to a specified position
+     * Set climber output percent power
      *
-     * @param position
+     * @param left  percentage
+     * @param right percentage
      */
-    public void setMotors(double position) {
-        // TODO: Allow specifying length instead of position (and figure out units)
-        motorLeft.set(ControlMode.Position, position);
-    }
-
-    /**
-     * Updates the PIDs on the climber motors from SmartDashboard
-     */
-    private void updatePIDs() {
-        motorLeft.config_kP(0, SmartDashboard.getNumber("climber/PID/kP", 0.3));
+    public void setPercent(double left, double right) {
+        motorLeft.setPercent(left);
+        motorRight.setPercent(right);
     }
 
     /**

@@ -59,6 +59,8 @@ public class RobotContainer {
 
     // coop:button(LJoystick,Left climber up/down,copilot)
     // coop:button(RJoystick,Right climber up/down,copilot)
+    // coop:button(LTrigger,Climber up,copilot)
+    // coop:button(RTrigger,Climber down,copilot)
     public final ClimberUpDownCommand climberUpDownCommand = new ClimberUpDownCommand(climber, copilotController);
 
     // coop:button(LJoystick,Left tank,pilot)
