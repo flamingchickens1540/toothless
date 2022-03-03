@@ -66,6 +66,16 @@ public class Intake extends SubsystemBase {
     }
 
     /**
+     * Factory method to set intake speed
+     *
+     * @param percent if the indexer is folded up
+     * @return An InstantCommand
+     */
+    public Command commandSetPercent(double percent) {
+        return new InstantCommand(() -> this.setPercent(percent));
+    }
+
+    /**
      * Sets the NeutralMode for the indexer (either coast or brake)
      *
      * @param mode The mode to set the wheels to
