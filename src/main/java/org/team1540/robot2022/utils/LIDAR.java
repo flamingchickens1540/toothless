@@ -38,7 +38,6 @@ public class LIDAR {
         I2CJNI.i2CWrite(m_port, k_deviceAddress, m_buffer, (byte) 1);
         I2CJNI.i2CRead(m_port, k_deviceAddress, m_buffer, (byte) 2);
         return m_buffer.getShort(0) / 2.54 + 6; // 2.54 to convert to inches and +6 tuning offset
-        // TODO: Calculate tuning offset
     }
 
     private int writeRegister(int address, int value) {

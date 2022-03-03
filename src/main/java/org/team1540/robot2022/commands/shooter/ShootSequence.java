@@ -56,7 +56,7 @@ public class ShootSequence extends ParallelCommandGroup {
                                 new WaitUntilCommand(shooter::isSpunUp),
                                 indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL), // Run bottom indexer to shoot bottom ball
                                 new WaitUntilCommand(() -> !indexer.getTopSensor()),
-                                new WaitCommand(2), // Wait for bottom ball to leave TODO: Can we decrease this?
+                                new WaitCommand(2), // Wait for bottom ball to leave
                                 indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),
                                 shooter.commandStop(),
                                 new InstantCommand(() -> FeatherClient.recordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, profile))
@@ -70,7 +70,6 @@ public class ShootSequence extends ParallelCommandGroup {
 
                                     // Positional argument shooter, not the field
                                     if (profile == Shooter.ShooterProfile.AUTOMATIC) {
-                                        // TODO: Tune these
                                         if (lidarDistance < SmartDashboard.getNumber("shooter/profiles/maxHub", 10)) {
                                             this.profile = Shooter.ShooterProfile.HUB;
                                         } else if (lidarDistance < SmartDashboard.getNumber("shooter/profiles/maxTarmac", 93)) {
