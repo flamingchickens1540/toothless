@@ -1,19 +1,22 @@
 package org.team1540.robot2022.commands.shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
-import java.net.Socket;
 import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
-import org.team1540.robot2022.commands.indexer.Indexer.IndexerState;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.utils.FeatherClient;
 import org.team1540.robot2022.utils.LIDAR;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.RepeatCommand;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 public class ShootSequence extends ParallelCommandGroup {
     private final Shooter shooter;
@@ -34,52 +37,54 @@ public class ShootSequence extends ParallelCommandGroup {
 
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
-            sequence(
-                    new InstantCommand(() -> limelight.setLeds(true)),
-                    new WaitCommand(0.2),
-                    new RepeatCommand(() -> {
-                        limelightDistance = limelight.getCalculatedDistance();
-                        lidarDistance = lidar.getDistance();
+            deadline(
+                    sequence(
+                            new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
+                                    new PointToTarget(drivetrain, limelight).withTimeout(2),
+                                    new InstantCommand(),
+                                    limelight::isTargetFound
+                            ),
+                            new WaitCommand(1),
+                            new WaitUntilCommand(shooter::isSpunUp),
+                            indexer.commandStop(),
+                            indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF), // Run top indexer
+                            new WaitUntilCommand(() -> !indexer.getTopSensor()),
+                            new WaitCommand(SmartDashboard.getNumber("shooter/tuning/waitAfterFirstBall", 1)), // Wait for top ball to leave and shooter to recover
 
-                        if (lidarDistance < SmartDashboard.getNumber("shooter/minFarDistance", 93)) {
-                            hoodState = true;
-                            intake.setFold(true);
-                            frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(limelightDistance);
-                            rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(limelightDistance);
-                        } else { // Tarmac shot
-                            hoodState = false;
-                            frontVelocity = InterpolationTable.hubFront;
-                            rearVelocity = InterpolationTable.hubRear;
-                        }
-                        hood.set(hoodState);
-
-                        // Used for tuning:
-                        // frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
-                        // rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
-                        shooter.setVelocityRPM(shooter.shooterMotorFront, frontVelocity);
-                        shooter.setVelocityRPM(shooter.shooterMotorRear, rearVelocity);
-                    }, shooter)
-            ),
-            sequence(
-                    new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
-                            new PointToTarget(drivetrain, limelight).withTimeout(2),
-                            new InstantCommand(),
-                            limelight::isTargetFound
+                            new WaitUntilCommand(shooter::isSpunUp),
+                            indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL), // Run bottom indexer to shoot bottom ball
+                            new WaitUntilCommand(() -> !indexer.getTopSensor()),
+                            new WaitCommand(2), // Wait for bottom ball to leave TODO: Can we decrease this?
+                            indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),
+                            shooter.commandStop(),
+                            new InstantCommand(() -> FeatherClient.recordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState))
                     ),
-                    new WaitCommand(1),
-                    new WaitUntilCommand(shooter::isSpunUp),
-                    indexer.commandStop(),
-                    indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF), // Run top indexer
-                    new WaitUntilCommand(() -> !indexer.getTopSensor()),
-                    new WaitCommand(SmartDashboard.getNumber("shooter/tuning/waitAfterFirstBall", 1)), // Wait for top ball to leave and shooter to recover
+                    sequence(
+                            new InstantCommand(() -> limelight.setLeds(true)),
+                            new WaitCommand(0.2),
+                            new RepeatCommand(() -> {
+                                limelightDistance = limelight.getCalculatedDistance();
+                                lidarDistance = lidar.getDistance();
 
-                    new WaitUntilCommand(shooter::isSpunUp),
-                    indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL), // Run bottom indexer to shoot bottom ball
-                    new WaitUntilCommand(() -> !indexer.getTopSensor()),
-                    new WaitCommand(2), // Wait for bottom ball to leave TODO: Can we decrease this?
-                    indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),
-                    shooter.commandStop(),
-                    new InstantCommand(() -> FeatherClient.recordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState))
+                                if (lidarDistance < SmartDashboard.getNumber("shooter/minFarDistance", 93)) {
+                                    hoodState = true;
+                                    intake.setFold(true);
+                                    frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(limelightDistance);
+                                    rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(limelightDistance);
+                                } else { // Tarmac shot
+                                    hoodState = false;
+                                    frontVelocity = InterpolationTable.hubFront;
+                                    rearVelocity = InterpolationTable.hubRear;
+                                }
+                                hood.set(hoodState);
+
+                                // Used for tuning:
+                                // frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
+                                // rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
+                                shooter.setVelocityRPM(shooter.shooterMotorFront, frontVelocity);
+                                shooter.setVelocityRPM(shooter.shooterMotorRear, rearVelocity);
+                            }, shooter)
+                    )
             )
         );
     }
