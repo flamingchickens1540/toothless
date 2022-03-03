@@ -70,7 +70,7 @@ public class RobotContainer {
         initSmartDashboard();
         configureButtonBindings();
         initModeTransitionBindings();
-        DriverStation.silenceJoystickConnectionWarning(false);
+        DriverStation.silenceJoystickConnectionWarning(true);
 
         if (ENABLE_COMPRESSOR) {
             ph.enableCompressorDigital();
