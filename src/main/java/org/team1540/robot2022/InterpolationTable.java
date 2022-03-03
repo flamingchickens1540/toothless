@@ -10,6 +10,9 @@ public class InterpolationTable {
     public static final double shooterSpinupFront = 2000;
     public static final double shooterSpinupRear = 2000;
 
+    public static final double lowGoalFront = 1000;
+    public static final double lowGoalRear = 1000;
+
     // Interpolation values for the hood up
     public static final double[][] hoodUp = {
             // {distance (inches), frontSpeed, backSpeed}
