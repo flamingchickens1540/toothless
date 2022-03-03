@@ -9,6 +9,7 @@ import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.utils.FeatherClient;
 import org.team1540.robot2022.utils.LIDAR;
 import org.team1540.robot2022.utils.Limelight;
+import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RepeatCommand;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,7 +31,7 @@ public class ShootSequence extends ParallelCommandGroup {
     private double rearVelocity;
     private boolean hoodState; // New state to set the hood to
 
-    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar, boolean shootWithoutTarget) {
+    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar, NavX navx, boolean shootWithoutTarget) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
@@ -40,7 +41,7 @@ public class ShootSequence extends ParallelCommandGroup {
             deadline(
                     sequence(
                             new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
-                                    new PointToTarget(drivetrain, limelight).withTimeout(2),
+                                    new PointToTarget(drivetrain, limelight, navx).withTimeout(2),
                                     new InstantCommand(() -> {
                                         if (!shootWithoutTarget) {
                                             this.end(true);

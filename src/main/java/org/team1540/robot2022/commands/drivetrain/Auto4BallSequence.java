@@ -8,16 +8,17 @@ import org.team1540.robot2022.commands.shooter.Shooter;
 import org.team1540.robot2022.utils.AutoHelper;
 import org.team1540.robot2022.utils.LIDAR;
 import org.team1540.robot2022.utils.Limelight;
+import org.team1540.robot2022.utils.NavX;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class Auto4BallSequence extends SequentialCommandGroup {
 
-    public Auto4BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, Limelight limelight, LIDAR lidar) {
+    public Auto4BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, Limelight limelight, LIDAR lidar, NavX navx) {
         addCommands(
                 AutoHelper.runPath(drivetrain, intake, indexer, shooter,"2ball.posA.path1.wpilib.json"), // Path follow to collect first ball
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, false),                       // Shoot the 2 indexed balls (starts with one, collects one)
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, false),                       // Shoot the 2 indexed balls (starts with one, collects one)
                 AutoHelper.runPath(drivetrain, intake, indexer, shooter,"4ball.posA.path2.wpilib.json"), // Path follow to collect second ball
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, false)                        // Shoot the 2 indexed balls (starts with one, collects one)
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, false)                        // Shoot the 2 indexed balls (starts with one, collects one)
         );
     }
 }
