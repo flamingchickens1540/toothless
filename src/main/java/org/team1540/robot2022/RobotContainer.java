@@ -54,6 +54,9 @@ public class RobotContainer {
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
     public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar);
+
+    // coop:button(LJoystick,Left climber up/down,copilot)
+    // coop:button(RJoystick,Right climber up/down,copilot)
     public final ClimberUpDownCommand climberUpDownCommand = new ClimberUpDownCommand(climber, copilotController);
 
     // coop:button(LJoystick,Left tank,pilot)
@@ -82,60 +85,36 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
 
-        // coop:button(RBumper,Point to target [hold],pilot)
-        new JoystickButton(driverController, Button.kRightBumper.value)
-                .whenHeld(new PointToTarget(drivetrain, limelight));
-
         // coop:button(LBumper,Shoot [hold],pilot)
         new JoystickButton(driverController, Button.kLeftBumper.value)
                 .whenHeld(shootSequence);
 
-        // Intake/indexer
-
-        // coop:button(X,Start intake and indexer [press],pilot)
-        new JoystickButton(driverController, Button.kX.value)
-                .cancelWhenPressed(indexerEjectCommand)
-                .whenPressed(intakeSequence);
-        // coop:button(Y,Eject intake and indexer [press],pilot)
-        new JoystickButton(driverController, Button.kY.value)
-                .whenPressed(indexerEjectCommand)
-                .cancelWhenPressed(intakeSequence);
-        // coop:button(A,Stop indexer and intake [press],pilot)
-        new JoystickButton(driverController, Button.kA.value)
-                .cancelWhenPressed(indexerEjectCommand)
-                .cancelWhenPressed(intakeSequence);
-
-        // coop:button(B,Toggle intake fold [press],pilot)
-        new JoystickButton(driverController, Button.kB.value)
-                .whenPressed(new InstantCommand(() -> intake.setFold(!intake.getFold())));
+        // coop:button(RBumper,Point to target [hold],pilot)
+        new JoystickButton(driverController, Button.kRightBumper.value)
+                .whenHeld(new PointToTarget(drivetrain, limelight));
 
         // Copilot
 
-        // coop:button(B,Toggle intake fold [press],copilot)
-        new JoystickButton(copilotController, Button.kB.value)
-                .whenPressed(new InstantCommand(() -> intake.setFold(!intake.getFold())));
+        // coop:button(DPadUp,Climber solenoids forward [press],copilot)
+        new POVButton(copilotController, DPadAxis.UP)
+                .whenPressed(new InstantCommand(() -> climber.setSolenoids(false)));
+        // coop:button(DPadDown,Climber solenoids backward [press],copilot)
+        new POVButton(copilotController, DPadAxis.DOWN)
+                .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
 
-        // coop:button(LBumper,Manual intake [hold],copilot)
-        new JoystickButton(copilotController, Button.kLeftBumper.value)
-                .whileHeld(new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.SPEED));
-        // coop:button(RBumper,Manual reverse intake [hold],copilot)
-        new JoystickButton(copilotController, Button.kRightBumper.value)
-                .whileHeld(new IntakeSpinCommand(intake, -Constants.IntakeConstants.SPEED));
-
-        // coop:button(DPadRight,Run intake and indexer [press],copilot)
-        new POVButton(copilotController, 90) // D-pad right
+        // coop:button(A,Acquire balls [press],copilot)
+        new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(intakeSequence);
-        // coop:button(DPadDown,Stop indexer and intake [press],copilot)
-        new POVButton(copilotController, 180) // D-pad down
+        // coop:button(RBumper,Outtake all through indexer [hold],copilot)
+        new JoystickButton(copilotController, Button.kRightBumper.value)
+                .cancelWhenPressed(intakeSequence)
+                .whileHeld(indexerEjectCommand);
+        // coop:button(Start,Stop intake and indexer [press],copilot)
+        new JoystickButton(copilotController, Button.kStart.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .cancelWhenPressed(intakeSequence);
-        // coop:button(DPadLeft,Eject balls from intake,copilot)
-        new POVButton(copilotController, 270) // D-pad left
-                .whenPressed(new InstantCommand(() -> climber.setSolenoids(false)));
-        // coop:button(DPadUp,Toggle climber solenoids [press],copilot)
-        new POVButton(copilotController, 0)
-                .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
+
         // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
