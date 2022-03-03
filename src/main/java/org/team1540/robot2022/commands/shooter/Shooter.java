@@ -211,10 +211,29 @@ public class Shooter extends SubsystemBase {
     }
 
     public enum ShooterProfile {
-        LOWGOAL, // Touching the hub, low goal
-        HUB, // Touching the hub, high goal
-        TARMAC, // Within the tarmac
-        FAR, // Behind the tarmac
-        AUTOMATIC, // Choose HUB, TARMAC, or FAR based on LIDAR distance
+        /**
+         * Touching the hub, low goal
+         */
+        LOWGOAL,
+
+        /**
+         * Touching the hub, high goal
+         */
+        HUB,
+
+        /**
+         * Within the tarmac
+         */
+        TARMAC,
+
+        /**
+         * Behind the tarmac
+         */
+        FAR,
+
+        /**
+         * Choose HUB, TARMAC, or FAR based on LIDAR distance
+         */
+        AUTOMATIC,
     }
 }
