@@ -209,4 +209,11 @@ public class Shooter extends SubsystemBase {
             DriverStation.reportError("ERROR: While appending to optimization file: " + e, e.getStackTrace());
         }
     }
+
+    public enum ShooterProfile {
+        LOWGOAL, // Touching the hub, low goal
+        HUB, // Touching the hub, high goal
+        FAR, // Behind the tarmac
+        AUTOMATIC, // Choose HUB or FAR based on LIDAR distance
+    }
 }

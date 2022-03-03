@@ -19,7 +19,7 @@ public class ShootSequence extends ParallelCommandGroup {
     private final Limelight limelight;
     private final InterpolationTable interpolationTable = InterpolationTable.getInstance();
 
-    public ShooterProfile profile;
+    public Shooter.ShooterProfile profile;
 
     private double limelightDistance;
     private double lidarDistance;
@@ -27,14 +27,7 @@ public class ShootSequence extends ParallelCommandGroup {
     private double rearVelocity;
     private boolean hoodState; // New state to set the hood to
 
-    public enum ShooterProfile {
-        LOWGOAL, // Touching the hub, low goal
-        HUB, // Touching the hub, high goal
-        FAR, // Behind the tarmac
-        AUTOMATIC, // Choose HUB or FAR based on LIDAR distance
-    }
-
-    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar, ShooterProfile profile, boolean shootWithoutTarget) {
+    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar, Shooter.ShooterProfile profile, boolean shootWithoutTarget) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
@@ -75,11 +68,11 @@ public class ShootSequence extends ParallelCommandGroup {
                                     limelightDistance = limelight.getCalculatedDistance();
                                     lidarDistance = lidar.getDistance();
 
-                                    if (this.profile == ShooterProfile.AUTOMATIC) {
+                                    if (this.profile == Shooter.ShooterProfile.AUTOMATIC) {
                                         if (lidarDistance < SmartDashboard.getNumber("shooter/minFarDistance", 93)) {
-                                            this.profile = ShooterProfile.HUB;
+                                            this.profile = Shooter.ShooterProfile.HUB;
                                         } else {
-                                            this.profile = ShooterProfile.FAR;
+                                            this.profile = Shooter.ShooterProfile.FAR;
                                         }
                                     }
 

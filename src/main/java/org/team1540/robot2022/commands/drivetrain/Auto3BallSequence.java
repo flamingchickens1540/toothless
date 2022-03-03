@@ -15,9 +15,9 @@ public class Auto3BallSequence extends SequentialCommandGroup {
     public Auto3BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, Limelight limelight, LIDAR lidar) {
         addCommands(
                 AutoHelper.runPath(drivetrain, intake, indexer, shooter, "2ball.posA.path1.wpilib.json"), // Follow path to collect first ball
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, ShootSequence.ShooterProfile.FAR, false),                       // Shoot the 2 indexed balls (starts with one, collects one)
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.FAR, false),                       // Shoot the 2 indexed balls (starts with one, collects one)
                 AutoHelper.runPath(drivetrain, intake, indexer, shooter, "3ball.posA.path2.wpilib.json"), // Follow path to collect second ball
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, ShootSequence.ShooterProfile.FAR, false)                        // Shoot the 2 indexed balls (starts with one, collects one)
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.FAR, false)                        // Shoot the 2 indexed balls (starts with one, collects one)
         );
     }
 }
