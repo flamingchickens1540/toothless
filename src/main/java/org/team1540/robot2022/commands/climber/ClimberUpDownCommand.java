@@ -16,7 +16,8 @@ public class ClimberUpDownCommand extends CommandBase {
     }
 
     public void execute() {
-        climber.setLeftPercent(MathUtils.deadzone(controller.getLeftY(), deadzone));
-        climber.setRightPercent(MathUtils.deadzone(controller.getRightY(), deadzone));
+        double triggers = MathUtils.deadzone(controller.getLeftTriggerAxis(), deadzone) - MathUtils.deadzone(controller.getRightTriggerAxis(), deadzone);
+        climber.setLeftPercent(MathUtils.deadzone(controller.getLeftY(), deadzone) + triggers);
+        climber.setRightPercent(MathUtils.deadzone(controller.getRightY(), deadzone) + triggers);
     }
 }
