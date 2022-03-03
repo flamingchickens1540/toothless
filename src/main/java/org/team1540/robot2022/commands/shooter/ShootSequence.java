@@ -59,7 +59,7 @@ public class ShootSequence extends ParallelCommandGroup {
                                 new WaitCommand(2), // Wait for bottom ball to leave TODO: Can we decrease this?
                                 indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),
                                 shooter.commandStop(),
-                                new InstantCommand(() -> FeatherClient.recordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState))
+                                new InstantCommand(() -> FeatherClient.recordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, profile))
                         ),
                         sequence(
                                 new InstantCommand(() -> limelight.setLeds(true)),
