@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
 import org.team1540.robot2022.Constants.ClimberConstants;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Climber extends SubsystemBase {
@@ -35,8 +36,8 @@ public class Climber extends SubsystemBase {
         motorLeft.setInverted(true);
         motorRight.setInverted(true);
 
-        SmartDashboard.putNumber("climber/limits/leftUp", -412000);
-        SmartDashboard.putNumber("climber/limits/rightUp", -412000);
+        ChickenSmartDashboard.putDefaultNumber("climber/limits/leftUp", -412000);
+        ChickenSmartDashboard.putDefaultNumber("climber/limits/rightUp", -412000);
 
         updateLimits();
         NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/limits").addEntryListener((table, key, entry, value, flags) -> updateLimits(), EntryListenerFlags.kUpdate);
