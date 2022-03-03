@@ -169,8 +169,6 @@ public class Drivetrain extends SubsystemBase {
      * @param rightVolts The voltage for the right side
      */
     public void setVolts(double leftVolts, double rightVolts) {
-        SmartDashboard.putNumber("drivetrain/auto/leftVolts", leftVolts);
-        SmartDashboard.putNumber("drivetrain/auto/rightVolts", rightVolts);
         driveLFront.setVoltage(leftVolts);
         driveRFront.setVoltage(rightVolts);
     }
@@ -182,7 +180,14 @@ public class Drivetrain extends SubsystemBase {
      * @param rightVelocity right motor velocity RPM setpoint
      */
     public void setFFVelocity(double leftVelocity, double rightVelocity) {
-        setVolts(ffLeft.calculate(leftVelocity), ffRight.calculate(rightVelocity));
+        SmartDashboard.putNumber("drivetrain/feedforward/leftVelocity", leftVelocity);
+        SmartDashboard.putNumber("drivetrain/feedforward/rightVelocity", rightVelocity);
+
+        double leftVolts = ffLeft.calculate(leftVelocity);
+        double rightVolts = ffRight.calculate(rightVelocity);
+        SmartDashboard.putNumber("drivetrain/feedforward/leftVolts", leftVelocity);
+        SmartDashboard.putNumber("drivetrain/feedforward/rightVolts", rightVolts);
+        setVolts(leftVolts, rightVolts);
     }
 
     public double getMaxVelocity() {

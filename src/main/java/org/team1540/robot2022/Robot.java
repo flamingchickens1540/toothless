@@ -99,7 +99,7 @@ public class Robot extends TimedRobot {
             autonomousCommand.cancel();
         }
 
-        robotContainer.drivetrain.setDefaultCommand(robotContainer.tankDriveCommand);
+        robotContainer.drivetrain.setDefaultCommand(robotContainer.ffTankDriveCommand);
         robotContainer.climber.setDefaultCommand(robotContainer.climberUpDownCommand);
     }
 
