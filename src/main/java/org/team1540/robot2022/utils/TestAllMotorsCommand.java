@@ -17,10 +17,7 @@ public class TestAllMotorsCommand extends CommandBase {
     public TestAllMotorsCommand(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, XboxController controller) {
         this.controller = controller;
 
-        addRequirements(drivetrain);
-        addRequirements(intake);
-        addRequirements(indexer);
-        addRequirements(shooter);
+        addRequirements(drivetrain, intake, indexer, shooter);
 
         motorChooser.setDefaultOption("Drive: Left Front", drivetrain.driveLFront);
         motorChooser.addOption("Drive: Left Rear", drivetrain.driveLRear);
@@ -36,8 +33,7 @@ public class TestAllMotorsCommand extends CommandBase {
     }
 
     public void execute() {
-        double percentOutput = MathUtils.deadzone(controller.getLeftTriggerAxis(), 0.15);
-        percentOutput -= MathUtils.deadzone(controller.getRightTriggerAxis(), 0.15);
+        double percentOutput = MathUtils.deadzone(controller.getLeftTriggerAxis(), 0.15) - MathUtils.deadzone(controller.getRightTriggerAxis(), 0.15);
         motorChooser.getSelected().setPercent(percentOutput);
     }
 
