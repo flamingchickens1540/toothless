@@ -12,7 +12,7 @@ import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Intake extends SubsystemBase {
     private final Solenoid solenoid = new Solenoid(Constants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Constants.IntakeConstants.SOLENOID);
-    private final ChickenTalonFX motor = new ChickenTalonFX(Constants.IntakeConstants.FALCON);
+    public final ChickenTalonFX motor = new ChickenTalonFX(Constants.IntakeConstants.FALCON);
 
     public Intake() {
         Constants.IntakeConstants.CURRENT_LIMIT_CONFIG.applyTo(motor);

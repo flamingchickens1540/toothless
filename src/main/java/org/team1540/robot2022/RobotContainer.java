@@ -69,7 +69,7 @@ public class RobotContainer {
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
     // Unsure what buttons to assign to this, currently uses triggers when called.
-    public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(driverController);
+    public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
 
     // Misc
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();

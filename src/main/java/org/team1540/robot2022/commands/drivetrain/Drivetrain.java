@@ -18,10 +18,10 @@ import org.team1540.robot2022.utils.ChickenTalonFX;
 import org.team1540.robot2022.utils.NavX;
 
 public class Drivetrain extends SubsystemBase {
-    private final ChickenTalonFX driveLFront = new ChickenTalonFX(Motors.LEFT_FRONT);
-    private final ChickenTalonFX driveLRear = new ChickenTalonFX(Motors.LEFT_REAR);
-    private final ChickenTalonFX driveRFront = new ChickenTalonFX(Motors.RIGHT_FRONT);
-    private final ChickenTalonFX driveRRear = new ChickenTalonFX(Motors.RIGHT_REAR);
+    public final ChickenTalonFX driveLFront = new ChickenTalonFX(Motors.LEFT_FRONT);
+    public final ChickenTalonFX driveLRear = new ChickenTalonFX(Motors.LEFT_REAR);
+    public final ChickenTalonFX driveRFront = new ChickenTalonFX(Motors.RIGHT_FRONT);
+    public final ChickenTalonFX driveRRear = new ChickenTalonFX(Motors.RIGHT_REAR);
     private final ChickenTalonFX[] driveL = {driveLFront, driveLRear};
     private final ChickenTalonFX[] driveR = {driveRFront, driveRRear};
     private final ChickenTalonFX[] driveMotors = {driveLFront, driveLRear, driveRFront, driveRRear};

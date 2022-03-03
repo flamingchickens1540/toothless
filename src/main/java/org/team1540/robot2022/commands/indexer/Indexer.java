@@ -14,8 +14,8 @@ import org.team1540.robot2022.Constants.IndexerConstants.IndexerMotors;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Indexer extends SubsystemBase {
-    private final ChickenTalonFX bottomMotor = new ChickenTalonFX(IndexerMotors.BOTTOM_MOTOR);
-    private final ChickenTalonFX topMotor = new ChickenTalonFX(IndexerMotors.TOP_MOTOR);
+    public final ChickenTalonFX bottomMotor = new ChickenTalonFX(IndexerMotors.BOTTOM_MOTOR);
+    public final ChickenTalonFX topMotor = new ChickenTalonFX(IndexerMotors.TOP_MOTOR);
     private final ChickenTalonFX[] motors = {topMotor, bottomMotor};
 
     private final DigitalInput topSensor = new DigitalInput(BeamBreaks.TOP_INDEXER_SENSOR);
