@@ -16,8 +16,8 @@ public class ClimberZeroCommand extends SequentialCommandGroup {
                         sequence(
                                 climber.commandSetPercentLeft(Constants.ClimberConstants.ZERO_DOWN_SPEED),
                                 new WaitUntilCommand(() -> climber.getLeftCurrent() > Constants.ClimberConstants.ZERO_SPIKE_CURRENT),
-                                climber.commandSetPercentLeft(0),
-                                ),
+                                climber.commandSetPercentLeft(0)
+                        ),
 
                         // Zero right climber
                         sequence(
@@ -26,7 +26,7 @@ public class ClimberZeroCommand extends SequentialCommandGroup {
                                 climber.commandSetPercentRight(0)
                         )
                 ),
-                climber.commandZero()
+                climber.commandZeroEncoders()
         );
     }
 

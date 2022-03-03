@@ -41,7 +41,11 @@ public class Climber extends SubsystemBase {
         NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/limits").addEntryListener((table, key, entry, value, flags) -> updateLimits(), EntryListenerFlags.kUpdate);
     }
 
-    public Command commandZero() {
+    /**
+     * Factory method zero the encoders
+     * @return InstantCommand to zero
+     */
+    public Command commandZeroEncoders() {
         return new InstantCommand(() -> {
             motorLeft.setSelectedSensorPosition(0);
             motorRight.setSelectedSensorPosition(0);
