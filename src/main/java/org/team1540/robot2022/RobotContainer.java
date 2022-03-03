@@ -22,10 +22,7 @@ import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.intake.IntakeSpinCommand;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
-import org.team1540.robot2022.utils.ChickenSmartDashboard;
-import org.team1540.robot2022.utils.Limelight;
-import org.team1540.robot2022.utils.NavX;
-import org.team1540.robot2022.utils.RevBlinken;
+import org.team1540.robot2022.utils.*;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
 public class RobotContainer {
@@ -36,6 +33,7 @@ public class RobotContainer {
     public final Limelight limelight = new Limelight("limelight");
     public final NavX navx = new NavX(SPI.Port.kMXP);
     public final PneumaticHub ph = new PneumaticHub(Constants.PNEUMATIC_HUB);
+    public final LIDAR lidar = new LIDAR(I2C.Port.kMXP);
 
     // Subsystems
     public final Drivetrain drivetrain = new Drivetrain(NeutralMode.Brake, navx);
@@ -55,7 +53,7 @@ public class RobotContainer {
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight);
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar);
     public final ClimberUpDownCommand climberUpDownCommand = new ClimberUpDownCommand(climber, copilotController);
 
     // coop:button(LJoystick,Left tank,pilot)
@@ -63,6 +61,7 @@ public class RobotContainer {
     // coop:button(LTrigger,Forward,pilot)
     // coop:button(RTrigger,Reverse,pilot)
     public final TankDriveCommand tankDriveCommand = new TankDriveCommand(drivetrain, driverController);
+    public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
     // Misc
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -90,13 +89,6 @@ public class RobotContainer {
         // coop:button(LBumper,Shoot [hold],pilot)
         new JoystickButton(driverController, Button.kLeftBumper.value)
                 .whenHeld(shootSequence);
-
-        // coop:button(DPadUp,Shoot from HUB [press],pilot)
-        new POVButton(driverController, 0) // D-pad up
-                .whenPressed(new InstantCommand(() -> shootSequence.shootFromHub = true));
-        // coop:button(DPadDown,Shoot from not hub [press],pilot)
-        new POVButton(driverController, 180) // D-pad down
-                .whenPressed(new InstantCommand(() -> shootSequence.shootFromHub = false));
 
         // Intake/indexer
 
@@ -165,6 +157,7 @@ public class RobotContainer {
 
         // Enable break mode when enabled
         enabled.whenActive(() -> {
+            System.out.println("Setting brake mode");
             drivetrain.setNeutralMode(NeutralMode.Brake);
             intake.setNeutralMode(NeutralMode.Brake);
             indexer.setNeutralMode(NeutralMode.Brake);
@@ -177,6 +170,7 @@ public class RobotContainer {
                         new ConditionalCommand( // Check if the robot is still disabled to prevent enabling coast mode when the robot is enabled
                                 new InstantCommand(),
                                 new InstantCommand(() -> {
+                                    System.out.println("Setting coast mode");
                                     drivetrain.setNeutralMode(NeutralMode.Coast);
                                     intake.setNeutralMode(NeutralMode.Coast);
                                     indexer.setNeutralMode(NeutralMode.Coast);
@@ -188,11 +182,11 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        // autoChooser.addOption("1 Ball", new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight));
-        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, true));
-        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, false));
-        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight));
-        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood, limelight));
+        // autoChooser.addOption("1 Ball", new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar));
+        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, true));
+        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, false));
+        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar));
+        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar));
 
         SmartDashboard.putData(autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());

@@ -1,5 +1,6 @@
 package org.team1540.robot2022.utils;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -17,14 +18,13 @@ public class FeatherClient {
     /**
      * Record a shot for the feather backend
      *
-     * @param distanceFromTarget distance from target from limelight in inches
-     * @param frontRPM           front flywheel RPM
-     * @param rearRPM            rear flywheel RPM
-     * @param hoodUp             is the hood up?
+     * @param limelightDistance distance reported by limelight
+     * @param lidarDistance     distance reported by lidar
+     * @param frontRPM          front flywheel RPM
+     * @param rearRPM           rear flywheel RPM
+     * @param hoodUp            is the hood up?
      */
-    public static void recordShot(double distanceFromTarget, double frontRPM, double rearRPM, boolean hoodUp) {
-        SmartDashboard.putBoolean("feather/shotTaken", false);
-
+    public static void recordShot(double limelightDistance, double lidarDistance, double frontRPM, double rearRPM, boolean hoodUp) {
         SmartDashboard.putNumber("feather/matchTime", DriverStation.getMatchTime());
 
         if (Objects.equals(DriverStation.getEventName(), "")) {
@@ -38,11 +38,12 @@ public class FeatherClient {
             SmartDashboard.putString("feather/matchId", "practice-" + randomString());
         }
 
-        SmartDashboard.putNumber("feather/distanceFromTarget", distanceFromTarget);
+        SmartDashboard.putNumber("feather/limelightDistance", limelightDistance);
+        SmartDashboard.putNumber("feather/lidarDistance", lidarDistance);
         SmartDashboard.putNumber("feather/frontRPM", frontRPM);
         SmartDashboard.putNumber("feather/rearRPM", rearRPM);
         SmartDashboard.putBoolean("feather/hoodUp", hoodUp);
 
-        SmartDashboard.putBoolean("feather/shotTaken", true);
+        NetworkTableInstance.getDefault().flush();
     }
 }

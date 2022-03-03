@@ -9,6 +9,7 @@ import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.utils.FeatherClient;
+import org.team1540.robot2022.utils.LIDAR;
 import org.team1540.robot2022.utils.Limelight;
 
 public class ShootSequence extends SequentialCommandGroup {
@@ -17,14 +18,13 @@ public class ShootSequence extends SequentialCommandGroup {
     private final Limelight limelight;
     private final InterpolationTable interpolationTable = InterpolationTable.getInstance();
 
-    public boolean shootFromHub = false;
-
-    private double distanceFromTarget;
+    private double limelightDistance;
+    private double lidarDistance;
     private double frontVelocity;
     private double rearVelocity;
     private boolean hoodState; // New state to set the hood to
 
-    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight) {
+    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
@@ -37,12 +37,14 @@ public class ShootSequence extends SequentialCommandGroup {
                                         new InstantCommand(() -> limelight.setLeds(true)),
                                         new WaitCommand(0.2),
                                         new InstantCommand(() -> {
-                                            distanceFromTarget = limelight.getCalculatedDistance();
-                                            if (!shootFromHub) {
+                                            limelightDistance = limelight.getCalculatedDistance();
+                                            lidarDistance = lidar.getDistance();
+
+                                            if (lidarDistance < SmartDashboard.getNumber("shooter/minFarDistance", 93)) {
                                                 hoodState = true;
                                                 intake.setFold(true);
-                                                frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(distanceFromTarget);
-                                                rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(distanceFromTarget);
+                                                frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(limelightDistance);
+                                                rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(limelightDistance);
                                             } else { // Tarmac shot
                                                 hoodState = false;
                                                 frontVelocity = InterpolationTable.hubFront;
@@ -79,7 +81,7 @@ public class ShootSequence extends SequentialCommandGroup {
                             indexer.set(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF);
                             shooter.setVelocityRPM(shooter.shooterMotorFront, 0);
                             shooter.setVelocityRPM(shooter.shooterMotorRear, 0);
-                            FeatherClient.recordShot(distanceFromTarget, frontVelocity, rearVelocity, hoodState);
+                            FeatherClient.recordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState);
                         })
                 )
         );
