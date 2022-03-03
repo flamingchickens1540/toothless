@@ -2,7 +2,8 @@ package org.team1540.robot2022.utils;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import static edu.wpi.first.wpilibj2.command.CommandGroupBase.requireUngrouped;
 
 /**
@@ -28,6 +29,18 @@ public class RepeatCommand extends CommandBase {
         requireUngrouped(command);
         m_command = command;
         m_requirements.addAll(command.getRequirements());
+    }
+
+    /**
+     * Creates a new command that runs the given Runnable with the given requirements and runs command repeatedly, restarting it whenever it
+     * ends, until this command is interrupted.
+     * 
+     * @param toRun the command to run repeatedly
+     * @param requirements the subsystems to require
+     */
+    public RepeatCommand(Runnable toRun, Subsystem...requirements) {
+        m_command = new InstantCommand(toRun, requirements);
+        m_requirements.addAll(m_command.getRequirements());
     }
 
     @Override
