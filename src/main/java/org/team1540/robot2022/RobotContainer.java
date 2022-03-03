@@ -102,14 +102,13 @@ public class RobotContainer {
         new POVButton(copilotController, DPadAxis.DOWN)
                 .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
 
-        // coop:button(A,Acquire ball [press],copilot)
+        // coop:button(A,Acquire balls [press],copilot)
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(intakeSequence);
-        // coop:button(B,Outtake all through indexer [press],copilot)
+        // coop:button(B,Outtake all through indexer [hold],copilot)
         new JoystickButton(copilotController, Button.kB.value)
                 .cancelWhenPressed(intakeSequence)
-                .whenPressed(indexerEjectCommand)
                 .whileHeld(indexerEjectCommand);
         // coop:button(Start,Stop intake and indexer [press],copilot)
         new JoystickButton(copilotController, Button.kStart.value)
