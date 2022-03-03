@@ -30,7 +30,7 @@ public class ShootSequence extends ParallelCommandGroup {
     private double rearVelocity;
     private boolean hoodState; // New state to set the hood to
 
-    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar) {
+    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar, boolean shootWithoutTarget) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
@@ -41,7 +41,11 @@ public class ShootSequence extends ParallelCommandGroup {
                     sequence(
                             new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
                                     new PointToTarget(drivetrain, limelight).withTimeout(2),
-                                    new InstantCommand(),
+                                    new InstantCommand(() -> {
+                                        if (!shootWithoutTarget) {
+                                            this.end(true);
+                                        }
+                                    }),
                                     limelight::isTargetFound
                             ),
                             new WaitCommand(1),
