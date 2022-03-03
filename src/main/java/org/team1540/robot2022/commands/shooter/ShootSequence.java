@@ -68,7 +68,8 @@ public class ShootSequence extends ParallelCommandGroup {
                                     limelightDistance = limelight.getCalculatedDistance();
                                     lidarDistance = lidar.getDistance();
 
-                                    if (this.profile == Shooter.ShooterProfile.AUTOMATIC) {
+                                    // Positional argument shooter, not the field
+                                    if (profile == Shooter.ShooterProfile.AUTOMATIC) {
                                         if (lidarDistance < SmartDashboard.getNumber("shooter/minFarDistance", 93)) {
                                             this.profile = Shooter.ShooterProfile.HUB;
                                         } else {
