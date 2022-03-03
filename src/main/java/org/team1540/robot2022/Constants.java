@@ -81,7 +81,6 @@ public final class Constants {
         }
 
         // Zero sequence
-        // TODO: Tune these
         public static final double ZERO_DOWN_SPEED = -0.3;
         public static final double ZERO_SPIKE_CURRENT = 2;
     }
