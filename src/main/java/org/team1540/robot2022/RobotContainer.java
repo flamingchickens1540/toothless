@@ -15,6 +15,8 @@ import org.team1540.robot2022.commands.climber.Climber;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.drivetrain.*;
 import org.team1540.robot2022.commands.hood.Hood;
+import org.team1540.robot2022.commands.indexer.EjectBottomBallCommand;
+import org.team1540.robot2022.commands.indexer.EjectTopBallCommand;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.indexer.IndexerEjectCommand;
 import org.team1540.robot2022.commands.intake.Intake;
@@ -115,6 +117,15 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kB.value)
                 .whenPressed(new InstantCommand(() -> intake.setFold(!intake.getFold())));
 
+        // coop:button(Y,Eject top ball [press],copilot)
+        new JoystickButton(copilotController, Button.kY.value)
+                .whenPressed(new EjectTopBallCommand(indexer, shooter));
+            
+        // coop:button(A,Eject bottom ball [press],copilot)
+        new JoystickButton(copilotController, Button.kA.value)
+                .whenPressed(new EjectBottomBallCommand(indexer, intake));
+
+
         // coop:button(LBumper,Manual intake [hold],copilot)
         new JoystickButton(copilotController, Button.kLeftBumper.value)
                 .whileHeld(new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.SPEED));
@@ -139,6 +150,8 @@ public class RobotContainer {
         // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
+
+        
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
