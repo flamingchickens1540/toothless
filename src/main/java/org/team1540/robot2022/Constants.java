@@ -79,6 +79,11 @@ public final class Constants {
             public static final int SOLENOID_A = 0;
             public static final int SOLENOID_B = 1;
         }
+
+        // Zero sequence
+        // TODO: Tune these
+        public static final double ZERO_DOWN_SPEED = -0.3;
+        public static final double ZERO_SPIKE_CURRENT = 2;
     }
 
     public static final class LightConstants {
