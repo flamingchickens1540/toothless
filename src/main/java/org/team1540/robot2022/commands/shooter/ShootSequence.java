@@ -70,8 +70,11 @@ public class ShootSequence extends ParallelCommandGroup {
 
                                     // Positional argument shooter, not the field
                                     if (profile == Shooter.ShooterProfile.AUTOMATIC) {
-                                        if (lidarDistance < SmartDashboard.getNumber("shooter/minFarDistance", 93)) {
+                                        // TODO: Tune these
+                                        if (lidarDistance < SmartDashboard.getNumber("shooter/profiles/maxHub", 10)) {
                                             this.profile = Shooter.ShooterProfile.HUB;
+                                        } else if (lidarDistance < SmartDashboard.getNumber("shooter/profiles/maxTarmac", 93)) {
+                                            this.profile = Shooter.ShooterProfile.TARMAC;
                                         } else {
                                             this.profile = Shooter.ShooterProfile.FAR;
                                         }

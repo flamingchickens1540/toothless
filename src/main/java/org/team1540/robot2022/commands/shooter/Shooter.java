@@ -215,6 +215,6 @@ public class Shooter extends SubsystemBase {
         HUB, // Touching the hub, high goal
         TARMAC, // Within the tarmac
         FAR, // Behind the tarmac
-        AUTOMATIC, // Choose HUB or FAR based on LIDAR distance
+        AUTOMATIC, // Choose HUB, TARMAC, or FAR based on LIDAR distance
     }
 }
