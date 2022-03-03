@@ -106,8 +106,8 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(intakeSequence);
-        // coop:button(B,Outtake all through indexer [hold],copilot)
-        new JoystickButton(copilotController, Button.kB.value)
+        // coop:button(RBumper,Outtake all through indexer [hold],copilot)
+        new JoystickButton(copilotController, Button.kRightBumper.value)
                 .cancelWhenPressed(intakeSequence)
                 .whileHeld(indexerEjectCommand);
         // coop:button(Start,Stop intake and indexer [press],copilot)
