@@ -84,17 +84,15 @@ public class Climber extends SubsystemBase {
     private void updateLimits() {
         double leftUpLimit = SmartDashboard.getNumber("climber/limits/leftUp", -412000);
         double rightUpLimit = SmartDashboard.getNumber("climber/limits/rightUp", -412000);
-
         motorLeft.configReverseSoftLimitEnable(true);
         motorRight.configReverseSoftLimitEnable(true);
+        motorLeft.configReverseSoftLimitThreshold(leftUpLimit);
+        motorRight.configReverseSoftLimitThreshold(rightUpLimit);
 
         motorLeft.configForwardSoftLimitEnable(true);
         motorRight.configForwardSoftLimitEnable(true);
         motorLeft.configForwardSoftLimitThreshold(0);
         motorRight.configForwardSoftLimitThreshold(0);
-
-        motorLeft.configReverseSoftLimitThreshold(leftUpLimit);
-        motorRight.configReverseSoftLimitThreshold(rightUpLimit);
     }
 
     /**
