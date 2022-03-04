@@ -43,6 +43,8 @@ public class FeatherClient {
         byte[] array = new byte[8];
         new Random().nextBytes(array);
         return new String(array, StandardCharsets.UTF_8);
+
+        // return new Random().nextInt(1000).toString();
     }
 
     /**
@@ -90,7 +92,7 @@ public class FeatherClient {
             Files.writeString(
                     Paths.get("/home/lvuser/feather.jsonl"),
                     jsonl + System.lineSeparator(),
-                    StandardOpenOption.CREATE, StandardOpenOption.APPEND
+                    StandardOpenOption.APPEND
             );
         } catch (IOException e) {
             DriverStation.reportError("[feather] Unable to append to local file: " + e, true);
