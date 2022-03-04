@@ -11,6 +11,8 @@ public class ClimberZeroCommand extends SequentialCommandGroup {
         this.climber = climber;
         addRequirements(climber);
         addCommands(
+                climber.commandDisableLimits(),
+
                 parallel(
                         // Zero left climber
                         sequence(
@@ -26,7 +28,8 @@ public class ClimberZeroCommand extends SequentialCommandGroup {
                                 climber.commandSetPercentRight(0)
                         )
                 ),
-                climber.commandZeroEncoders()
+                climber.commandZeroEncoders(),
+                climber.commandUpdateLimits()
         );
     }
 

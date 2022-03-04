@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team1540.robot2022.commands.climber.Climber;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
+import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
 import org.team1540.robot2022.commands.drivetrain.*;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.EjectBottomBallCommand;
@@ -138,6 +139,11 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kStart.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .cancelWhenPressed(intakeSequence);
+
+        // coop:button(Back,Zero climber [press],copilot)
+        new JoystickButton(copilotController, Button.kBack.value)
+                .cancelWhenPressed(climberUpDownCommand) // TODO: We're never rescheduling this command
+                .whenPressed(new ClimberZeroCommand(climber));
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)

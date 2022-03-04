@@ -43,6 +43,7 @@ public class Climber extends SubsystemBase {
 
     /**
      * Factory method zero the encoders
+     *
      * @return InstantCommand to zero
      */
     public Command commandZeroEncoders() {
@@ -55,6 +56,29 @@ public class Climber extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("climber/leftSensorPosition", motorLeft.getSelectedSensorPosition());
         SmartDashboard.putNumber("climber/rightSensorPosition", motorRight.getSelectedSensorPosition());
+    }
+
+    /**
+     * Update soft limits
+     *
+     * @return InstantCommand
+     */
+    public Command commandUpdateLimits() {
+        return new InstantCommand(this::updateLimits);
+    }
+
+    /**
+     * Disable soft limits for zeroing
+     *
+     * @return InstantCommand
+     */
+    public Command commandDisableLimits() {
+        return new InstantCommand(() -> {
+            motorLeft.configReverseSoftLimitEnable(false);
+            motorRight.configReverseSoftLimitEnable(false);
+            motorLeft.configForwardSoftLimitEnable(false);
+            motorRight.configForwardSoftLimitEnable(false);
+        });
     }
 
     private void updateLimits() {
