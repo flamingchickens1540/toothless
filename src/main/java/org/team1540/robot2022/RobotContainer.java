@@ -208,7 +208,7 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("intake/speed", 0.5);
         ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/top", 0.2);
         ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/bottom", 0.2);
-        ChickenSmartDashboard.putDefaultNumber("indexer/ballEjectFlywheelRPM", 100);
+        ChickenSmartDashboard.putDefaultNumber("indexer/ballEjectFlywheelRPM", 1000);
 
         // PointToTarget values
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);
