@@ -103,7 +103,7 @@ public class Robot extends TimedRobot {
         }
 
         robotContainer.drivetrain.setDefaultCommand(robotContainer.ffTankDriveCommand);
-        robotContainer.climber.setDefaultCommand(robotContainer.climberUpDownCommand);
+        robotContainer.climberUpDownCommand.schedule();
     }
 
     /**

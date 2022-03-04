@@ -142,8 +142,9 @@ public class RobotContainer {
 
         // coop:button(Back,Zero climber [press],copilot)
         new JoystickButton(copilotController, Button.kBack.value)
-                .cancelWhenPressed(climberUpDownCommand) // TODO: We're never rescheduling this command
-                .whenPressed(new ClimberZeroCommand(climber));
+                .cancelWhenPressed(climberUpDownCommand)
+                .whenPressed(new ClimberZeroCommand(climber)
+                        .andThen(new InstantCommand(climberUpDownCommand::schedule)));
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
