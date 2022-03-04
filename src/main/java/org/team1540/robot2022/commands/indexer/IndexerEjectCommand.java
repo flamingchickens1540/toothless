@@ -22,7 +22,7 @@ public class IndexerEjectCommand extends CommandBase {
     @Override
     public void execute() {
         indexer.set(IndexerState.REVERSE, IndexerState.REVERSE);
-        intake.setPercent(-0.5);
+        intake.setPercent(-0.75);
     }
 
     @Override
