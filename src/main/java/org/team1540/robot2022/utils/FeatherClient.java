@@ -82,7 +82,7 @@ public class FeatherClient {
                 getTimer(),
                 limelightDistance, lidarDistance,
                 frontRPM, rearRPM,
-                hoodUp, profile.toString());
+                hoodUp, profile+"");
         System.out.println(jsonl);
         try {
             Files.writeString(
@@ -114,7 +114,7 @@ public class FeatherClient {
         SmartDashboard.putNumber("feather/frontRPM", frontRPM);
         SmartDashboard.putNumber("feather/rearRPM", rearRPM);
         SmartDashboard.putBoolean("feather/hoodUp", hoodUp);
-        SmartDashboard.putString("feather/profile", profile.toString());
+        SmartDashboard.putString("feather/profile", profile+"");
 
         NetworkTableInstance.getDefault().flush();
     }

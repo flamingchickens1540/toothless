@@ -102,16 +102,16 @@ public class RobotContainer {
 
         // coop:button(DPadUp,Shoot from touching hub [press],pilot)
         new POVButton(driverController, DPadAxis.UP)
-                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.HUB));
+                .whenPressed(new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.HUB)));
         // coop:button(DPadDown,Shoot from outside tarmac [press],pilot)
         new POVButton(driverController, DPadAxis.DOWN)
-                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.FAR));
+                .whenPressed(new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.FAR)));
         // coop:button(DPadLeft,Decide shoot profile automatically [press],pilot)
         new POVButton(driverController, DPadAxis.LEFT)
-                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.AUTOMATIC));
+                .whenPressed(new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.AUTOMATIC)));
         // coop:button(DPadRight,Shoot from low goal [press],pilot)
         new POVButton(driverController, DPadAxis.RIGHT)
-                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.LOWGOAL));
+                .whenPressed(new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.LOWGOAL)));
 
         // Copilot
 
@@ -251,6 +251,14 @@ public class RobotContainer {
 
         // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors, plus or minus)
         SmartDashboard.putNumber("shooter/tuning/targetError", 30);
+
+
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/front", InterpolationTable.hubFront);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/rear", InterpolationTable.hubRear);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/front", InterpolationTable.tarmacFront);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/rear", InterpolationTable.tarmacRear);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
     }
 
     public Command getAutonomousCommand() {
