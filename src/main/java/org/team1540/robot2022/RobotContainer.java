@@ -55,7 +55,7 @@ public class RobotContainer {
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.AUTOMATIC, true);
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.HUB, true);
 
     // coop:button(LJoystick,Left climber up/down,copilot)
     // coop:button(RJoystick,Right climber up/down,copilot)
@@ -142,7 +142,7 @@ public class RobotContainer {
         // coop:button(A,Acquire balls [press],copilot)
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
-                .whenPressed(intakeSequence.andThen(intake.commandSetFold(false)));
+                .whenPressed(intakeSequence);
         // coop:button(RBumper,Outtake all through indexer [hold],copilot)
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .cancelWhenPressed(intakeSequence)
@@ -154,7 +154,7 @@ public class RobotContainer {
 
         // coop:button(Back,Zero climber [press],copilot)
         new JoystickButton(copilotController, Button.kBack.value)
-                .whenPressed(climber.commandZeroEncoders());
+                .whenPressed(new ClimberZeroCommand(climber).andThen(new InstantCommand(climberUpDownCommand::schedule)));
 
         // coop:button(Start, Disable climber limits,copilot)
         new JoystickButton(copilotController, Button.kStart.value)

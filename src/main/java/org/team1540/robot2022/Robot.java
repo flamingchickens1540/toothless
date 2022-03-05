@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
 import org.team1540.robot2022.utils.FeatherClient;
 
@@ -106,7 +107,8 @@ public class Robot extends TimedRobot {
         }
 
         robotContainer.drivetrain.setDefaultCommand(robotContainer.ffTankDriveCommand);
-        robotContainer.climberUpDownCommand.schedule();
+        
+        new ClimberUpDownCommand(robotContainer.climber, robotContainer.copilotController).schedule();
     }
 
     /**
