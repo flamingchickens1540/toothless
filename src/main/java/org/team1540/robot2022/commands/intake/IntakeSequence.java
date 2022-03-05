@@ -28,7 +28,10 @@ public class IntakeSequence extends SequentialCommandGroup {
                     }
                 }),
                 new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.SPEED),
-                shooter.commandSetVelocity(2500, 2500)
+                parallel(
+                    shooter.commandSetVelocity(2500, 2500),
+                    intake.commandSetFold(true)
+                )
         );
     }
 
