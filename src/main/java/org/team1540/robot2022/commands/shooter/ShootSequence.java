@@ -8,6 +8,7 @@ import org.team1540.robot2022.commands.drivetrain.PointToTarget;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
+import org.team1540.robot2022.commands.shooter.Shooter.ShooterProfile;
 import org.team1540.robot2022.utils.FeatherClient;
 import org.team1540.robot2022.utils.LIDAR;
 import org.team1540.robot2022.utils.Limelight;
@@ -36,8 +37,14 @@ public class ShootSequence extends SequentialCommandGroup {
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
                 new PrintCommand("Starting shoot sequence with profile " + this.profile.toString()),
-                new InstantCommand(() -> limelight.setLeds(true)),
-                new WaitCommand(0.2), // Wait for limelight to acquire target after LEDs turn on
+                new ConditionalCommand(
+                    sequence(
+                        new InstantCommand(() -> limelight.setLeds(true)),
+                        new WaitCommand(0.2)
+                    ),
+                    new InstantCommand(), 
+                    () -> !profile.equals(ShooterProfile.HUB)
+                ),
                 new InstantCommand(() -> {
 //                    limelightDistance = limelight.getCalculatedDistance();
 //                    lidarDistance = lidar.getDistance();
@@ -84,19 +91,15 @@ public class ShootSequence extends SequentialCommandGroup {
 
                 new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
                         new PointToTarget(drivetrain, limelight).withTimeout(2),
-                        new InstantCommand(() -> {
-//                            if (!shootWithoutTarget) {
-//                                this.end(true);
-//                            }
-                        }),
-                        limelight::isTargetFound
+                        new InstantCommand(),
+                        () -> limelight.isTargetFound() && !this.profile.equals(ShooterProfile.HUB)
                 ),
                 new WaitCommand(0.25),
                 new WaitUntilCommand(shooter::isSpunUp),
                 indexer.commandStop(),
                 indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF), // Run top indexer
                 new WaitUntilCommand(() -> !indexer.getTopSensor()),
-                new WaitCommand(SmartDashboard.getNumber("shooter/tuning/waitAfterFirstBall", 1)), // Wait for top ball to leave and shooter to recover
+                new WaitCommand(SmartDashboard.getNumber("shooter/tuning/waitAfterFirstBall", 0.5)), // Wait for top ball to leave and shooter to recover
                 indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),
 
                 // Shoot second ball
