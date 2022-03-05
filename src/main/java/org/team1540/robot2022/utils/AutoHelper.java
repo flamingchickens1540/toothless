@@ -36,7 +36,6 @@ public class AutoHelper {
                 new IntakeSequence(intake, indexer, shooter)
         );
     }
-
         /**
      * Returns a new {@link RamseteCommand} with constants pre-filled for
      * convenience

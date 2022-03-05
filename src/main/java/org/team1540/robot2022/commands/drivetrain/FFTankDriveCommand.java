@@ -21,7 +21,8 @@ public class FFTankDriveCommand extends CommandBase {
     }
 
     public void execute() {
-        double triggers = MathUtils.deadzone(controller.getLeftTriggerAxis(), deadzone) - MathUtils.deadzone(controller.getRightTriggerAxis(), deadzone);
+        // double triggers = MathUtils.deadzone(controller.getLeftTriggerAxis(), deadzone) - MathUtils.deadzone(controller.getRightTriggerAxis(), deadzone);
+        double triggers = 0;
         double leftThrottle = MathUtils.deadzone(controller.getLeftY(), deadzone) + triggers;
         double rightThrottle = MathUtils.deadzone(controller.getRightY(), deadzone) + triggers;
 

@@ -100,6 +100,17 @@ public class Shooter extends SubsystemBase {
         motor.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
     }
 
+        /**
+     * Set motor velocity
+     *
+     * @param motor    to set
+     * @param velocity to set in RPM
+     */
+    public void setVelocityRPM(double frontVelocity, double rearVelocity) {
+        shooterMotorFront.set(TalonFXControlMode.Velocity, (frontVelocity * 2048.0) / 600);
+        shooterMotorRear.set(TalonFXControlMode.Velocity, (rearVelocity* 2048.0) / 600);
+    }
+
     public void updatePIDs() {
         shooterMotorFront.config_kP(0, SmartDashboard.getNumber("shooter/tuning/frontP", frontP));
         shooterMotorFront.config_kI(0, SmartDashboard.getNumber("shooter/tuning/frontI", frontI));
@@ -121,7 +132,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getClosedLoopError() {
-        return getFrontClosedLoopError() + getRearClosedLoopError();
+        return (Math.abs(getFrontClosedLoopError()) + Math.abs(getRearClosedLoopError()))/2;
     }
 
     public Command commandStop() {
@@ -137,8 +148,8 @@ public class Shooter extends SubsystemBase {
      */
     public Command commandSetVelocity(double front, double rear) {
         return new InstantCommand(() -> {
-            shooterMotorFront.set(TalonFXControlMode.Velocity, front);
-            shooterMotorRear.set(TalonFXControlMode.Velocity, rear);
+            System.out.println("!!!!!!!!!"+front+" - "+rear);
+            this.setVelocityRPM(front, rear);
         }, this);
     }
 
@@ -148,7 +159,7 @@ public class Shooter extends SubsystemBase {
      * @return if the shooter is spun up
      */
     public boolean isSpunUp() {
-        return Math.abs(getClosedLoopError()) < SmartDashboard.getNumber("shooter/tuning/targetError", 0)
+        return getClosedLoopError() < SmartDashboard.getNumber("shooter/tuning/targetError", 30)
                 && Math.abs(getVelocityRPM(shooterMotorFront) + getVelocityRPM(shooterMotorRear)) > 200; // Make sure the shooter is moving
     }
 

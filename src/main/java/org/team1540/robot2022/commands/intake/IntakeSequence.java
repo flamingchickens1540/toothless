@@ -27,7 +27,8 @@ public class IntakeSequence extends SequentialCommandGroup {
                         indexer.set(Indexer.IndexerState.FORWARD, Indexer.IndexerState.FORWARD);
                     }
                 }),
-                new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.SPEED)
+                new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.SPEED),
+                shooter.commandSetVelocity(2500, 2500)
         );
     }
 

@@ -26,9 +26,7 @@ public class IntakeSpinCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        if (intake.getFold()) {
-            intake.setFold(false);
-        }
+        intake.setFold(false);
         intake.setPercent(this.speed);
     }
 
@@ -42,6 +40,6 @@ public class IntakeSpinCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        intake.setPercent(0);
+        intake.stop();
     }
 }

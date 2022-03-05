@@ -50,7 +50,7 @@ public class Climber extends SubsystemBase {
         return new InstantCommand(() -> {
             motorLeft.setSelectedSensorPosition(0);
             motorRight.setSelectedSensorPosition(0);
-        });
+        }).andThen(this::updateLimits);
     }
 
     public void periodic() {

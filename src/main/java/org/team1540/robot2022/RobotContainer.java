@@ -92,6 +92,10 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kLeftBumper.value)
                 .whenHeld(shootSequence);
 
+        // coop:button(LBumper,Shoot [hold],pilot)
+        new Trigger(() -> driverController.getLeftTriggerAxis() == 1)
+                .whileActiveOnce(shootSequence);
+
         // coop:button(RBumper,Point to target [hold],pilot)
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(drivetrain, limelight));
@@ -127,24 +131,34 @@ public class RobotContainer {
         new POVButton(copilotController, DPadAxis.DOWN)
                 .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
 
+        
+        // coop:button(DPadLeft,Lower intake [press],copilot)
+        new POVButton(copilotController, DPadAxis.LEFT)
+                .whenPressed(intake.commandSetFold(false));
+        // coop:button(DPadRight,Raise intake [press],copilot)
+        new POVButton(copilotController, DPadAxis.RIGHT)
+                .whenPressed(intake.commandSetFold(true));
+
         // coop:button(A,Acquire balls [press],copilot)
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
-                .whenPressed(intakeSequence);
+                .whenPressed(intakeSequence.andThen(intake.commandSetFold(false)));
         // coop:button(RBumper,Outtake all through indexer [hold],copilot)
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .cancelWhenPressed(intakeSequence)
                 .whileHeld(indexerEjectCommand);
-        // coop:button(Start,Stop intake and indexer [press],copilot)
-        new JoystickButton(copilotController, Button.kStart.value)
+        // coop:button(B,Stop intake and indexer [press],copilot)
+        new JoystickButton(copilotController, Button.kB.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .cancelWhenPressed(intakeSequence);
 
         // coop:button(Back,Zero climber [press],copilot)
         new JoystickButton(copilotController, Button.kBack.value)
-                .cancelWhenPressed(climberUpDownCommand)
-                .whenPressed(new ClimberZeroCommand(climber)
-                        .andThen(new InstantCommand(climberUpDownCommand::schedule)));
+                .whenPressed(climber.commandZeroEncoders());
+
+        // coop:button(Start, Disable climber limits,copilot)
+        new JoystickButton(copilotController, Button.kStart.value)
+                .whenPressed(climber.commandDisableLimits());
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
@@ -192,7 +206,8 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        autoChooser.addOption("1 Ball", new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.TARMAC, true));
+        
+        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar));
         autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, true));
         autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, false));
         autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar));

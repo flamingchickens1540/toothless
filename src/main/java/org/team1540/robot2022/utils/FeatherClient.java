@@ -40,11 +40,7 @@ public class FeatherClient {
      * @return random 8 character string
      */
     private static String randomString() {
-        byte[] array = new byte[8];
-        new Random().nextBytes(array);
-        return new String(array, StandardCharsets.UTF_8);
-
-        // return new Random().nextInt(1000).toString();
+        return new Random().nextInt(10000)+"";
     }
 
     /**
@@ -87,7 +83,7 @@ public class FeatherClient {
                 limelightDistance, lidarDistance,
                 frontRPM, rearRPM,
                 hoodUp, profile.toString());
-
+        System.out.println(jsonl);
         try {
             Files.writeString(
                     Paths.get("/home/lvuser/feather.jsonl"),

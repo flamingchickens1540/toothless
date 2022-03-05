@@ -65,6 +65,7 @@ public class Robot extends TimedRobot {
         robotContainer.limelight.updateSmartDashboardValues();
 
         SmartDashboard.putBoolean("pneumatics/pressureSwitch", robotContainer.ph.getPressureSwitch());
+        SmartDashboard.putString("shooter/profile", robotContainer.shootSequence.profile.toString());
     }
 
     /**
