@@ -94,17 +94,20 @@ public class Shooter extends SubsystemBase {
         motor.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
     }
 
-        /**
+    /**
      * Set motor velocity
      *
-     * @param motor    to set
-     * @param velocity to set in RPM
+     * @param frontVelocity front wheel RPM setpoint
+     * @param rearVelocity  front wheel RPM setpoint
      */
     public void setVelocityRPM(double frontVelocity, double rearVelocity) {
         shooterMotorFront.set(TalonFXControlMode.Velocity, (frontVelocity * 2048.0) / 600);
         shooterMotorRear.set(TalonFXControlMode.Velocity, (rearVelocity* 2048.0) / 600);
     }
 
+    /**
+     * Update PID gains from SmartDashboard
+     */
     public void updatePIDs() {
         shooterMotorFront.config_kP(0, SmartDashboard.getNumber("shooter/tuning/frontP", frontP));
         shooterMotorFront.config_kI(0, SmartDashboard.getNumber("shooter/tuning/frontI", frontI));
@@ -117,18 +120,38 @@ public class Shooter extends SubsystemBase {
         shooterMotorRear.config_kF(0, SmartDashboard.getNumber("shooter/tuning/rearF", rearF));
     }
 
+    /**
+     * Get front flywheel PID error
+     *
+     * @return front flywheel PID error
+     */
     public double getFrontClosedLoopError() {
         return shooterMotorFront.getClosedLoopError();
     }
 
+    /**
+     * Get rear flywheel PID error
+     *
+     * @return rear flywheel PID error
+     */
     public double getRearClosedLoopError() {
         return shooterMotorRear.getClosedLoopError();
     }
 
+    /**
+     * Get combined average flywheel PID error
+     *
+     * @return combined average flywheel PID error
+     */
     public double getClosedLoopError() {
         return (Math.abs(getFrontClosedLoopError()) + Math.abs(getRearClosedLoopError()))/2;
     }
 
+    /**
+     * Stop spinning shooter
+     *
+     * @return new InstantCommand
+     */
     public Command commandStop() {
         return new InstantCommand(this::stop, this);
     }

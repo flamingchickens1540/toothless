@@ -3,6 +3,9 @@ package org.team1540.robot2022.commands.intake;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2022.commands.indexer.Indexer;
 
+/**
+ * Deploys and spins the intake
+ */
 public class IntakeSpinCommand extends CommandBase {
     private final double speed;
     private final Intake intake;

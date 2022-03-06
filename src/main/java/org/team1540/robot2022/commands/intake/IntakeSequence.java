@@ -8,6 +8,9 @@ import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.shooter.Shooter;
 
+/**
+ * Acquires a ball and spins the shooter up to get ready to shoot
+ */
 public class IntakeSequence extends SequentialCommandGroup {
     private final Intake intake;
     private final Indexer indexer;

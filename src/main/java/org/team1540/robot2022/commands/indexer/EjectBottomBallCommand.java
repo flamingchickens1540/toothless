@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2022.commands.indexer.Indexer.IndexerState;
 import org.team1540.robot2022.commands.intake.Intake;
 
+/**
+ * Eject the bottom ball out of the intake
+ */
 public class EjectBottomBallCommand extends SequentialCommandGroup {
     private final Intake intake;
     private final Indexer indexer;
@@ -22,7 +25,7 @@ public class EjectBottomBallCommand extends SequentialCommandGroup {
                 intake.commandStop()
             ),
             parallel(
-                indexer.commandSet(IndexerState.UNCHANGED, IndexerState.REVERSE), // Run top of indexer
+                indexer.commandSet(IndexerState.UNCHANGED, IndexerState.REVERSE), // Reverse bottom indexer
                 intake.commandSetPercent(-0.5)
             ),
             new WaitUntilCommand(() -> !indexer.getBottomSensor()), // Wait until ball no longer seen by top sensor
