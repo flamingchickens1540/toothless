@@ -2,7 +2,6 @@ package org.team1540.robot2022.commands.shooter;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,8 +55,8 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("shooter/current", shooterMotorFront.getStatorCurrent() + shooterMotorRear.getStatorCurrent());
-        SmartDashboard.putNumber("shooter/velocityFront", getVelocityRPM(shooterMotorFront));
-        SmartDashboard.putNumber("shooter/velocityRear", getVelocityRPM(shooterMotorRear));
+        SmartDashboard.putNumber("shooter/velocityFront", shooterMotorFront.getVelocityRPM());
+        SmartDashboard.putNumber("shooter/velocityRear", shooterMotorRear.getVelocityRPM());
         SmartDashboard.putNumber("shooter/error", getClosedLoopError());
         SmartDashboard.putNumber("shooter/error/front", getFrontClosedLoopError());
         SmartDashboard.putNumber("shooter/error/rear", getRearClosedLoopError());
@@ -75,28 +74,18 @@ public class Shooter extends SubsystemBase {
     }
 
     /**
-     * Get motor velocity RPM
-     *
-     * @param motor to query
-     * @return velocity in RPM
-     */
-    public double getVelocityRPM(TalonFX motor) {
-        return (motor.getSelectedSensorVelocity() / 2048.0) * 600;
-    }
-
-    /**
      * Set motor velocity
      *
      * @param motor    to set
      * @param velocity to set in RPM
      */
-    public void setVelocityRPM(TalonFX motor, double velocity) {
+    public void setVelocityRPM(ChickenTalonFX motor, double velocity) {
         if (motor == shooterMotorFront) {
             SmartDashboard.putNumber("shooter/frontVelocitySetpoint", velocity);
         } else if (motor == shooterMotorRear) {
             SmartDashboard.putNumber("shooter/rearVelocitySetpoint", velocity);
         }
-        motor.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
+        motor.setVelocityRPM(velocity);
     }
 
     /**
@@ -106,8 +95,8 @@ public class Shooter extends SubsystemBase {
      * @param rearVelocity  front wheel RPM setpoint
      */
     public void setVelocityRPM(double frontVelocity, double rearVelocity) {
-        shooterMotorFront.set(TalonFXControlMode.Velocity, (frontVelocity * 2048.0) / 600);
-        shooterMotorRear.set(TalonFXControlMode.Velocity, (rearVelocity * 2048.0) / 600);
+        shooterMotorFront.setVelocityRPM(frontVelocity);
+        shooterMotorRear.setVelocityRPM(rearVelocity);
     }
 
     /**
@@ -181,7 +170,7 @@ public class Shooter extends SubsystemBase {
      */
     public boolean isSpunUp() {
         return getClosedLoopError() < SmartDashboard.getNumber("shooter/tuning/targetError", 30)
-                && Math.abs(getVelocityRPM(shooterMotorFront) + getVelocityRPM(shooterMotorRear)) > 200; // Make sure the shooter is moving
+                && Math.abs(shooterMotorFront.getVelocityRPM() + shooterMotorRear.getVelocityRPM()) > 200; // Make sure the shooter is moving
     }
 
     public enum ShooterProfile {

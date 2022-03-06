@@ -35,6 +35,23 @@ public class ChickenTalonFX extends TalonFX {
         this.set(ControlMode.PercentOutput, percent);
     }
 
+    /**
+     * Set motor velocity RPM
+     * @param rpm motor velocity setpoint
+     */
+    public void setVelocityRPM(double rpm) {
+        this.set(ControlMode.Velocity, (rpm * 2048.0) / 600);
+    }
+
+    /**
+     * Get motor velocity RPM
+     *
+     * @return velocity in RPM
+     */
+    public double getVelocityRPM() {
+        return (this.getSelectedSensorVelocity() / 2048.0) * 600;
+    }
+
     public void setVelocityMetersPerSecond(double velocityMetersPerSecond) {
         if (lastSlot != velocitySlotIdx)
             selectProfileSlot(velocitySlotIdx, 0);
