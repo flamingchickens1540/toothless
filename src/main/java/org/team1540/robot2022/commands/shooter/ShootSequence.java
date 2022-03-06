@@ -73,7 +73,7 @@ public class ShootSequence extends SequentialCommandGroup {
                     shooter.setVelocityRPM(shooter.shooterMotorFront, frontVelocity);
                     shooter.setVelocityRPM(shooter.shooterMotorRear, rearVelocity);
                 }),
-                new InstantCommand(() -> FeatherClient.recordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile)),
+                FeatherClient.commandRecordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile),
 
                 new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
                         new PointToTarget(drivetrain, limelight).withTimeout(2),
@@ -82,25 +82,10 @@ public class ShootSequence extends SequentialCommandGroup {
                 ),
                 new WaitCommand(0.25),
                 new WaitUntilCommand(shooter::isSpunUp),
-                indexer.commandStop(),
-                indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF), // Run top indexer
-                new WaitUntilCommand(() -> !indexer.getTopSensor()),
-                new WaitCommand(SmartDashboard.getNumber("shooter/tuning/waitAfterFirstBall", 0.5)), // Wait for top ball to leave and shooter to recover
-                indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),
-
-                // Shoot second ball
-                new WaitCommand(0.5),
-                indexer.commandSet(Indexer.IndexerState.FORWARD, Indexer.IndexerState.FORWARD), // Move bottom ball up
-                new WaitUntilCommand(indexer::getTopSensor), // Stop when ball is up high TODO: Standby here?
-                indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),
-
-                new WaitUntilCommand(shooter::isSpunUp),
-                indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL), // Run bottom indexer to shoot bottom ball
-                new WaitUntilCommand(() -> !indexer.getTopSensor()).andThen(new WaitCommand(0.5)), // Wait for bottom ball to leave
-                indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),
-                shooter.commandStop()
+                new ShooterFeedSequence(indexer, shooter)
         );
     }
+
 
     public void setProfile(ShooterProfile profile) {
         System.out.println("Setting profile "+profile);
@@ -112,6 +97,8 @@ public class ShootSequence extends SequentialCommandGroup {
         System.out.println("Stopping ShootSequence");
         shooter.stop();
         indexer.stop();
-        limelight.setLeds(false);
+        if (limelight != null) {
+            limelight.setLeds(false);
+        }
     }
 }

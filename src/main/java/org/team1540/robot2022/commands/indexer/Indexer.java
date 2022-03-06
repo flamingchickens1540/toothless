@@ -149,7 +149,7 @@ public class Indexer extends SubsystemBase {
     public Command commandSet(IndexerState topMode, IndexerState bottomMode) {
         return new InstantCommand(() -> {
             this.set(topMode, bottomMode);
-        });
+        }, this);
     }
 
     /**
@@ -161,7 +161,7 @@ public class Indexer extends SubsystemBase {
     public Command commandSetTop(IndexerState mode) {
         return new InstantCommand(() -> {
             this.setTop(mode);
-        });
+        }, this);
     }
 
     /**
@@ -173,7 +173,7 @@ public class Indexer extends SubsystemBase {
     public Command commandSetBottom(IndexerState mode) {
         return new InstantCommand(() -> {
             this.setBottom(mode);
-        });
+        }, this);
     }
 
     /**
