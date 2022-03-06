@@ -170,3 +170,6 @@ gradle-app.setting
 
 # Control diagram
 controls.pdf
+
+# Simulator
+simgui*.json

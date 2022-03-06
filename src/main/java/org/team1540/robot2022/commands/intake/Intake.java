@@ -72,7 +72,7 @@ public class Intake extends SubsystemBase {
      * @return An InstantCommand
      */
     public Command commandSetPercent(double percent) {
-        return new InstantCommand(() -> this.setPercent(percent));
+        return new InstantCommand(() -> this.setPercent(percent), this);
     }
 
     /**

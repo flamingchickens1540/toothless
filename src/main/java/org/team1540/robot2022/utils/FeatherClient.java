@@ -4,10 +4,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.team1540.robot2022.commands.shooter.Shooter;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -117,5 +118,18 @@ public class FeatherClient {
         SmartDashboard.putString("feather/profile", profile+"");
 
         NetworkTableInstance.getDefault().flush();
+    }
+
+    /**
+     * Return an instant command that records a shot for the feather backend
+     *
+     * @param limelightDistance distance reported by limelight
+     * @param lidarDistance     distance reported by lidar
+     * @param frontRPM          front flywheel RPM
+     * @param rearRPM           rear flywheel RPM
+     * @param hoodUp            is the hood up?
+     */
+    public static Command commandRecordShot(double limelightDistance, double lidarDistance, double frontRPM, double rearRPM, boolean hoodUp, Shooter.ShooterProfile profile) {
+        return new InstantCommand(() -> recordShot(limelightDistance, lidarDistance, frontRPM, rearRPM, hoodUp, profile));
     }
 }

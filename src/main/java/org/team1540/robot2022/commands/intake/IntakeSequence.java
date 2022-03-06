@@ -12,6 +12,12 @@ public class IntakeSequence extends SequentialCommandGroup {
     private final Intake intake;
     private final Indexer indexer;
 
+    /**
+     * Constructs an IntakeSequence that spins up the shooter when full
+     * @param intake
+     * @param indexer
+     * @param shooter
+     */
     public IntakeSequence(Intake intake, Indexer indexer, Shooter shooter) {
         this.intake = intake;
         this.indexer = indexer;
@@ -37,6 +43,35 @@ public class IntakeSequence extends SequentialCommandGroup {
                     shooter.commandSetVelocity(2500, 2500),
                     intake.commandSetFold(true)
                 )
+        );
+    }
+
+    /**
+     * Constructs an IntakeSequence that does not spin up the shooter when full
+     * @param intake
+     * @param indexer
+     */
+    public IntakeSequence(Intake intake, Indexer indexer) {
+        this.intake = intake;
+        this.indexer = indexer;
+        addRequirements(intake, indexer);
+        addCommands(
+                new InstantCommand(() -> {
+                    indexer.setStandby(false);
+                    if (indexer.isFull()) {
+                        indexer.set(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF);
+                    } else if (indexer.getTopSensor()) {
+                        indexer.set(Indexer.IndexerState.OFF, Indexer.IndexerState.FORWARD);
+                    } else {
+                        indexer.set(Indexer.IndexerState.FORWARD, Indexer.IndexerState.FORWARD);
+                    }
+                }),
+                new ConditionalCommand(
+                        new InstantCommand(),
+                        new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.SPEED),
+                        indexer::isFull
+                ),
+                intake.commandSetFold(true)
         );
     }
 

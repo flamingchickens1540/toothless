@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import org.team1540.robot2022.RamseteConfig;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
+import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeSequence;
+import org.team1540.robot2022.commands.shooter.Shooter;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
@@ -15,11 +17,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import org.team1540.robot2022.commands.shooter.Shooter;
 
 public class AutoHelper {
-
-
 
     /**
      * Returns a ParallelDeadlineGroup that runs intake and indexer while following the given trajectory
@@ -29,14 +28,37 @@ public class AutoHelper {
      * @param trajectoryName the path of the trajectory file relative to `deploy/paths`
      * @return The SequentialCommandGroup
      */
-    public static ParallelDeadlineGroup runPath(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, String trajectoryName) {
-        System.out.println(trajectoryName);
+    public static ParallelDeadlineGroup runPath(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, AutoPath path) {
+        System.out.println(path);
         return new ParallelDeadlineGroup(
-                getRamseteCommand(drivetrain, trajectoryName),             // Path follow to collect first bal
+                getRamseteCommand(drivetrain, path),             // Path follow to collect first bal
                 new IntakeSequence(intake, indexer, shooter)
         );
     }
-        /**
+
+    /**
+     * Returns a ParallelDeadlineGroup that runs intake and indexer while following the given trajectory, and spins up the flywheels to a given speed
+     * @param drivetrain The drivetrain subsystem
+     * @param intake The intake subsystem
+     * @param indexer The indexer subsystem
+     * @param path the path to follow and get spinup constants from
+     * @return The SequentialCommandGroup
+     */
+    public static ParallelDeadlineGroup runPathWithSpinup(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, AutoPath path) {
+        System.out.println(path);
+        return new ParallelDeadlineGroup(
+                getRamseteCommand(drivetrain, path),             // Path follow to collect first bal
+                new IntakeSequence(intake, indexer),
+                
+
+                // Prepare to shoot
+                hood.commandSet(path.hoodState),                                  // Set hood
+                shooter.commandSetVelocity(path.frontSetpoint, path.rearSetpoint), // Spin up flywheels
+                FeatherClient.commandRecordShot(0, 0, path.frontSetpoint, path.rearSetpoint, path.hoodState, null) // Record in FEATHER
+        );
+    }
+
+    /**
      * Returns a new {@link RamseteCommand} with constants pre-filled for
      * convenience
      * 
@@ -46,6 +68,19 @@ public class AutoHelper {
      */
     public static RamseteCommand getRamseteCommand(Drivetrain drivetrain, Trajectory trajectory) {
         return getRamseteCommand(drivetrain, trajectory, RamseteConfig.leftPID, RamseteConfig.rightPID);
+    }
+
+    /**
+     * Returns a new {@link RamseteCommand} with constants pre-filled for
+     * convenience
+     * 
+     * @param drivetrain The drivetrain subsystem
+     * @param path the AutoPath to follow
+     * @return A RamseteCommand to follow the trajectory
+     */
+    public static RamseteCommand getRamseteCommand(Drivetrain drivetrain, AutoPath path) {
+        drivetrain.fieldWidget.addPath(path);
+        return getRamseteCommand(drivetrain, path.trajectory);
     }
 
     /**
@@ -84,7 +119,6 @@ public class AutoHelper {
      */
     public static RamseteCommand getRamseteCommand(Drivetrain drivetrain, String trajectoryName) {
         Trajectory trajectory = getTrajectory(trajectoryName);
-        drivetrain.dashboardField.getObject("trajectory/"+trajectoryName).setTrajectory(trajectory);
         return getRamseteCommand(drivetrain, trajectory);
     }
 
@@ -95,15 +129,19 @@ public class AutoHelper {
         try {
             trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
         } catch (IOException ex) {
-
-            File file = trajectoryPath.toFile();
-
-            if (!file.exists()) {
-                DriverStation.reportError("File does not exist! "+ex.getLocalizedMessage(), ex.getStackTrace());
-            } else if (!file.canRead()) {
-                DriverStation.reportError("File can't be read! "+ex.getLocalizedMessage(), ex.getStackTrace());
+            try {
+                trajectory = TrajectoryUtil.fromPathweaverJson(Filesystem.getOperatingDirectory().toPath().resolve("PathWeaver/output").resolve(trajectoryName));
+            } catch (IOException ex1) {
+                File file = trajectoryPath.toFile();
+                if (!file.exists()) {
+                    DriverStation.reportError("File does not exist! "+ex.getLocalizedMessage(), ex.getStackTrace());
+                } else if (!file.canRead()) {
+                    DriverStation.reportError("File can't be read! "+ex.getLocalizedMessage(), ex.getStackTrace());
+                }
+                trajectory = new Trajectory();
             }
-            trajectory = new Trajectory();
+
+            
         }
         if (trajectory.getStates().size() < 2)
             throw new NullPointerException("Trajectory has too few points!");
@@ -112,5 +150,28 @@ public class AutoHelper {
 
     public static Path getTrajectoryPath(String trajectoryName) {
         return Filesystem.getDeployDirectory().toPath().resolve("paths").resolve(trajectoryName);
+    }
+
+    public static class AutoPath {
+        public Trajectory trajectory;
+        public boolean hoodState;
+        public double frontSetpoint, rearSetpoint;
+        public String name;
+        
+        public static AutoPath auto1Ball   = new AutoPath("2ball.posA.path1.wpilib.json", 2200, 2500, true);
+        public static AutoPath auto2Ball1A = new AutoPath("2ball.posA.path1.wpilib.json", 2200, 2500, true);
+        public static AutoPath auto2Ball1B = new AutoPath("2ball.posB.path1.wpilib.json", 2200, 2500, true);
+        public static AutoPath auto3Ball2 = new AutoPath("3ball.posA.path2.wpilib.json", 2500, 2800, true);
+        public static AutoPath auto4Ball2 = new AutoPath("4ball.posA.path2.wpilib.json", 2400, 2800, true);
+        public static AutoPath auto5Ball2 = new AutoPath("5ball.posA.path2.wpilib.json", 2600, 2900, true);
+        public static AutoPath auto5Ball3 = new AutoPath("5ball.posA.path3.wpilib.json", 2400, 2800, true);
+    
+        private AutoPath(String pathName, double frontSetpoint, double rearSetpoint, boolean hoodState) {
+            this.trajectory = AutoHelper.getTrajectory(pathName);
+            this.name = pathName;
+            this.frontSetpoint = frontSetpoint;
+            this.rearSetpoint = rearSetpoint;
+            this.hoodState = hoodState;
+        }
     }
 }
