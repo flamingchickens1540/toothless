@@ -34,8 +34,8 @@ public class Climber extends SubsystemBase {
         motorLeft.setInverted(true);
         motorRight.setInverted(true);
 
-        ChickenSmartDashboard.putDefaultNumber("climber/limits/leftUp", -412000);
-        ChickenSmartDashboard.putDefaultNumber("climber/limits/rightUp", -412000);
+        ChickenSmartDashboard.putDefaultNumber("climber/limits/leftUp", -470000);
+        ChickenSmartDashboard.putDefaultNumber("climber/limits/rightUp", -470000);
 
         updateLimits();
         NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/limits").addEntryListener((table, key, entry, value, flags) -> updateLimits(), EntryListenerFlags.kUpdate);
@@ -43,34 +43,59 @@ public class Climber extends SubsystemBase {
 
     /**
      * Factory method zero the encoders
+     *
      * @return InstantCommand to zero
      */
     public Command commandZeroEncoders() {
         return new InstantCommand(() -> {
             motorLeft.setSelectedSensorPosition(0);
             motorRight.setSelectedSensorPosition(0);
-        });
+        }).andThen(this::updateLimits);
     }
 
     public void periodic() {
-        SmartDashboard.putNumber("climber/leftSensorPosition", motorLeft.getSelectedSensorPosition());
-        SmartDashboard.putNumber("climber/rightSensorPosition", motorRight.getSelectedSensorPosition());
+        SmartDashboard.putNumber("climber/encoders/left", motorLeft.getSelectedSensorPosition());
+        SmartDashboard.putNumber("climber/encoders/right", motorRight.getSelectedSensorPosition());
+
+        SmartDashboard.putNumber("climber/current/left", motorLeft.getStatorCurrent());
+        SmartDashboard.putNumber("climber/current/right", motorRight.getStatorCurrent());
+    }
+
+    /**
+     * Update soft limits
+     *
+     * @return InstantCommand
+     */
+    public Command commandUpdateLimits() {
+        return new InstantCommand(this::updateLimits);
+    }
+
+    /**
+     * Disable soft limits for zeroing
+     *
+     * @return InstantCommand
+     */
+    public Command commandDisableLimits() {
+        return new InstantCommand(() -> {
+            motorLeft.configReverseSoftLimitEnable(false);
+            motorRight.configReverseSoftLimitEnable(false);
+            motorLeft.configForwardSoftLimitEnable(false);
+            motorRight.configForwardSoftLimitEnable(false);
+        });
     }
 
     private void updateLimits() {
-        double leftUpLimit = SmartDashboard.getNumber("climber/limits/leftUp", -412000);
-        double rightUpLimit = SmartDashboard.getNumber("climber/limits/rightUp", -412000);
-
+        double leftUpLimit = SmartDashboard.getNumber("climber/limits/leftUp", -470000);
+        double rightUpLimit = SmartDashboard.getNumber("climber/limits/rightUp", -470000);
         motorLeft.configReverseSoftLimitEnable(true);
         motorRight.configReverseSoftLimitEnable(true);
-
-        motorLeft.configForwardSoftLimitEnable(true);
-        motorRight.configForwardSoftLimitEnable(true);
-        motorLeft.configForwardSoftLimitThreshold(0);
-        motorRight.configForwardSoftLimitThreshold(0);
-
         motorLeft.configReverseSoftLimitThreshold(leftUpLimit);
         motorRight.configReverseSoftLimitThreshold(rightUpLimit);
+
+        motorLeft.configForwardSoftLimitEnable(false);
+        motorRight.configForwardSoftLimitEnable(false);
+        motorLeft.configForwardSoftLimitThreshold(0);
+        motorRight.configForwardSoftLimitThreshold(0);
     }
 
     /**

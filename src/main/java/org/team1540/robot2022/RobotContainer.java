@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team1540.robot2022.commands.climber.Climber;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
+import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
 import org.team1540.robot2022.commands.drivetrain.*;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.EjectBottomBallCommand;
@@ -54,7 +55,7 @@ public class RobotContainer {
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.AUTOMATIC, true);
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.HUB, true);
 
     // coop:button(LJoystick,Left climber up/down,copilot)
     // coop:button(RJoystick,Right climber up/down,copilot)
@@ -91,22 +92,26 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kLeftBumper.value)
                 .whenHeld(shootSequence);
 
+        // coop:button(LBumper,Shoot [hold],pilot)
+        new Trigger(() -> driverController.getLeftTriggerAxis() == 1)
+                .whileActiveOnce(shootSequence);
+
         // coop:button(RBumper,Point to target [hold],pilot)
         new JoystickButton(driverController, Button.kRightBumper.value)
                 .whenHeld(new PointToTarget(drivetrain, limelight));
 
         // coop:button(DPadUp,Shoot from touching hub [press],pilot)
         new POVButton(driverController, DPadAxis.UP)
-                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.HUB));
+                .whenPressed(new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.HUB)));
         // coop:button(DPadDown,Shoot from outside tarmac [press],pilot)
         new POVButton(driverController, DPadAxis.DOWN)
-                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.FAR));
+                .whenPressed(new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.FAR)));
         // coop:button(DPadLeft,Decide shoot profile automatically [press],pilot)
         new POVButton(driverController, DPadAxis.LEFT)
-                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.AUTOMATIC));
+                .whenPressed(new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.AUTOMATIC)));
         // coop:button(DPadRight,Shoot from low goal [press],pilot)
         new POVButton(driverController, DPadAxis.RIGHT)
-                .whenPressed(new InstantCommand(() -> shootSequence.profile = Shooter.ShooterProfile.LOWGOAL));
+                .whenPressed(new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.LOWGOAL)));
 
         // Copilot
 
@@ -126,6 +131,15 @@ public class RobotContainer {
         new POVButton(copilotController, DPadAxis.DOWN)
                 .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
 
+        
+        // coop:button(DPadLeft,Lower intake [press],copilot)
+        new POVButton(copilotController, DPadAxis.LEFT)
+                .whenPressed(intake.commandSetFold(false));
+        // coop:button(DPadRight,Raise intake [press],copilot)
+        new POVButton(copilotController, DPadAxis.RIGHT)
+                .cancelWhenPressed(intakeSequence)
+                .whenPressed(intake.commandSetFold(true));
+
         // coop:button(A,Acquire balls [press],copilot)
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
@@ -134,10 +148,18 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kRightBumper.value)
                 .cancelWhenPressed(intakeSequence)
                 .whileHeld(indexerEjectCommand);
-        // coop:button(Start,Stop intake and indexer [press],copilot)
-        new JoystickButton(copilotController, Button.kStart.value)
+        // coop:button(B,Stop intake and indexer [press],copilot)
+        new JoystickButton(copilotController, Button.kB.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .cancelWhenPressed(intakeSequence);
+
+        // coop:button(Back,Zero climber [press],copilot)
+        new JoystickButton(copilotController, Button.kBack.value)
+                .whenPressed(new ClimberZeroCommand(climber).andThen(new InstantCommand(climberUpDownCommand::schedule)));
+
+        // coop:button(Start, Disable climber limits,copilot)
+        new JoystickButton(copilotController, Button.kStart.value)
+                .whenPressed(climber.commandDisableLimits());
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
@@ -185,7 +207,8 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        autoChooser.addOption("1 Ball", new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.TARMAC, true));
+        
+        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar));
         autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, true));
         autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, false));
         autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar));
@@ -202,7 +225,7 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("intake/speed", 0.5);
         ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/top", 0.2);
         ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/bottom", 0.2);
-        ChickenSmartDashboard.putDefaultNumber("indexer/ballEjectFlywheelRPM", 100);
+        ChickenSmartDashboard.putDefaultNumber("indexer/ballEjectFlywheelRPM", 1000);
 
         // PointToTarget values
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);
@@ -229,6 +252,14 @@ public class RobotContainer {
 
         // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors, plus or minus)
         SmartDashboard.putNumber("shooter/tuning/targetError", 30);
+
+
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/front", InterpolationTable.hubFront);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/rear", InterpolationTable.hubRear);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/front", InterpolationTable.tarmacFront);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/rear", InterpolationTable.tarmacRear);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
     }
 
     public Command getAutonomousCommand() {

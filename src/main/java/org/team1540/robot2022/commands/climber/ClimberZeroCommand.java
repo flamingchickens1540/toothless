@@ -1,5 +1,7 @@
 package org.team1540.robot2022.commands.climber;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2022.Constants;
@@ -11,22 +13,25 @@ public class ClimberZeroCommand extends SequentialCommandGroup {
         this.climber = climber;
         addRequirements(climber);
         addCommands(
+                climber.commandDisableLimits(),
+                new InstantCommand(() -> climber.setPercent(0.2, 0.2)).withTimeout(1),
                 parallel(
                         // Zero left climber
                         sequence(
                                 climber.commandSetPercentLeft(Constants.ClimberConstants.ZERO_DOWN_SPEED),
-                                new WaitUntilCommand(() -> climber.getLeftCurrent() > Constants.ClimberConstants.ZERO_SPIKE_CURRENT),
+                                new WaitUntilCommand(() -> climber.getLeftCurrent() > SmartDashboard.getNumber("climber/currentLimit", Constants.ClimberConstants.ZERO_SPIKE_CURRENT)),
                                 climber.commandSetPercentLeft(0)
                         ),
 
                         // Zero right climber
                         sequence(
                                 climber.commandSetPercentRight(Constants.ClimberConstants.ZERO_DOWN_SPEED),
-                                new WaitUntilCommand(() -> climber.getRightCurrent() > Constants.ClimberConstants.ZERO_SPIKE_CURRENT),
+                                new WaitUntilCommand(() -> climber.getRightCurrent() > SmartDashboard.getNumber("climber/currentLimit", Constants.ClimberConstants.ZERO_SPIKE_CURRENT)),
                                 climber.commandSetPercentRight(0)
                         )
                 ),
-                climber.commandZeroEncoders()
+                climber.commandZeroEncoders(),
+                climber.commandUpdateLimits()
         );
     }
 
