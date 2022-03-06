@@ -76,21 +76,6 @@ public class Shooter extends SubsystemBase {
     /**
      * Set motor velocity
      *
-     * @param motor    to set
-     * @param velocity to set in RPM
-     */
-    public void setVelocityRPM(ChickenTalonFX motor, double velocity) {
-        if (motor == shooterMotorFront) {
-            SmartDashboard.putNumber("shooter/frontVelocitySetpoint", velocity);
-        } else if (motor == shooterMotorRear) {
-            SmartDashboard.putNumber("shooter/rearVelocitySetpoint", velocity);
-        }
-        motor.setVelocityRPM(velocity);
-    }
-
-    /**
-     * Set motor velocity
-     *
      * @param frontVelocity front wheel RPM setpoint
      * @param rearVelocity  front wheel RPM setpoint
      */
