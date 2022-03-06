@@ -70,8 +70,7 @@ public class ShootSequence extends SequentialCommandGroup {
                     // rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
 
                     hood.set(hoodState);
-                    shooter.shooterMotorFront.setVelocityRPM(frontVelocity);
-                    shooter.shooterMotorRear.setVelocityRPM(rearVelocity);
+                    shooter.setVelocityRPM(frontVelocity, rearVelocity);
                 }),
                 new InstantCommand(() -> FeatherClient.recordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile)),
 
