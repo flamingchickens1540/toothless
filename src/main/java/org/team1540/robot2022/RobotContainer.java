@@ -1,9 +1,12 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -70,7 +73,7 @@ public class RobotContainer {
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
     // Misc
-    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+    private final SendableChooser<AutoSequence> autoChooser = new SendableChooser<>();
 
     public RobotContainer() {
         initSmartDashboard();
@@ -208,18 +211,19 @@ public class RobotContainer {
 
     private void initSmartDashboard() {
         
-        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar));
-        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, true));
-        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, false));
-        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar));
-        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar));
+        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, false));
+        autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, true));
+        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, true));
+        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood,  false));
+        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood));
+        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood));
 
-        SmartDashboard.putData(autoChooser);
+        Shuffleboard.getTab("Autonomous")
+            .add("Auto Selector",autoChooser)
+            .withPosition(5, 0)
+            .withSize(5, 1)
+            .withWidget(BuiltInWidgets.kSplitButtonChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
-
-        Shuffleboard.getTab("SmartDashboard")
-                .add("NavX", navx)
-                .withWidget(BuiltInWidgets.kGyro);
 
         // Indexer values
         ChickenSmartDashboard.putDefaultNumber("intake/speed", 0.5);
@@ -260,9 +264,18 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/rear", InterpolationTable.tarmacRear);
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
+        
+
+        // Highlight selected auto path
+        
+        getAutonomousCommand().highlightPaths(drivetrain);
+        
+        NetworkTableInstance.getDefault().getTable("Shuffleboard/Autonomous/Auto Selector").addEntryListener((table, key, entry, value, flags) -> getAutonomousCommand().highlightPaths(drivetrain), EntryListenerFlags.kUpdate);
+
+        
     }
 
-    public Command getAutonomousCommand() {
+    public AutoSequence getAutonomousCommand() {
         return autoChooser.getSelected();
     }
 }
