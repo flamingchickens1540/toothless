@@ -137,6 +137,7 @@ public class RobotContainer {
                 .whenPressed(intake.commandSetFold(false));
         // coop:button(DPadRight,Raise intake [press],copilot)
         new POVButton(copilotController, DPadAxis.RIGHT)
+                .cancelWhenPressed(intakeSequence)
                 .whenPressed(intake.commandSetFold(true));
 
         // coop:button(A,Acquire balls [press],copilot)
