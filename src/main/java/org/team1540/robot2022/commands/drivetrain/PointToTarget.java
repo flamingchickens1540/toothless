@@ -54,9 +54,9 @@ public class PointToTarget extends CommandBase {
      * Uses a basic average to calculate the degree offset of the target.
      * Waits to fill the averaging array before turning.
      *
-     * @param consumer a function that takes the output of our finalized angle
+     * @param turnFunction a function that takes the output of our finalized angle
      */
-    private void calculateWithAverage(DoubleConsumer consumer) {
+    private void calculateWithAverage(DoubleConsumer turnFunction) {
         Vector2d lmAngles = limelight.getTargetAngles();
         pastPoses.add(lmAngles);
         if (pastPoses.size() < 10) {
@@ -69,16 +69,16 @@ public class PointToTarget extends CommandBase {
             avgX += pose.x;
         }
         avgX /= pastPoses.size();
-        consumer.accept(avgX);
+        turnFunction.accept(avgX);
     }
 
     /**
      * Uses a {@link MedianFilter} to calculate the degree offset of the target.
      * Waits to fill the filter's buffer before turning.
      *
-     * @param consumer a function that takes the output of our finalized angle
+     * @param turnFunction a function that takes the output of our finalized angle
      */
-    private void calculateWithMedian(DoubleConsumer consumer) {
+    private void calculateWithMedian(DoubleConsumer turnFunction) {
         Vector2d llAngles = limelight.getTargetAngles();
         if (medianFilterCount < 10) {
             medianFilter.calculate(llAngles.x);
@@ -86,16 +86,16 @@ public class PointToTarget extends CommandBase {
             return;
         }
 
-        consumer.accept(medianFilter.calculate(llAngles.x));
+        turnFunction.accept(medianFilter.calculate(llAngles.x));
     }
 
     /**
      * Discards all contour corners that sit below the average vertical value, then finding the average horizontal value
      * of the remaining corners as the point to turn to.
      *
-     * @param consumer a function that takes the output of our finalized angle
+     * @param turnFunction a function that takes the output of our finalized angle
      */
-    private void calculateWithCorners(DoubleConsumer consumer) {
+    private void calculateWithCorners(DoubleConsumer turnFunction) {
         double[] cornerCoordinates = limelight.getNetworkTable().getEntry("tcornxy").getDoubleArray(new double[]{});
         ArrayList<Vector2d> cornerPoints = new ArrayList<>(cornerCoordinates.length / 2);
         for (int i = 0; i < cornerCoordinates.length; i += 2) {
@@ -127,7 +127,7 @@ public class PointToTarget extends CommandBase {
         double viewportCornerXAvg = Math.tan(limelight.getHorizontalFov() / 2) * normalizedCornerXAvg;
         double degreeOffsetCornerXAvg = Math.atan2(1, viewportCornerXAvg);
 
-        consumer.accept(degreeOffsetCornerXAvg);
+        turnFunction.accept(degreeOffsetCornerXAvg);
     }
 
     /**
