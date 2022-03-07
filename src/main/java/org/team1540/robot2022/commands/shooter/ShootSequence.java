@@ -32,18 +32,17 @@ public class ShootSequence extends SequentialCommandGroup {
         this.indexer = indexer;
         this.limelight = limelight;
         this.profile = m_profile;
-        // this.profile = Shooter.ShooterProfile.FAR;
 
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
                 new PrintCommand("Starting shoot sequence with profile " + this.profile),
                 new ConditionalCommand(
-                    sequence(
-                        new InstantCommand(() -> limelight.setLeds(true)),
-                        new WaitCommand(0.2)
-                    ),
-                    new InstantCommand(), 
-                    () -> !this.profile.equals(ShooterProfile.HUB)
+                        sequence(
+                                new InstantCommand(() -> limelight.setLeds(true)),
+                                new WaitCommand(0.2)
+                        ),
+                        new InstantCommand(),
+                        () -> !this.profile.equals(ShooterProfile.HUB)
                 ),
                 new InstantCommand(() -> {
                     if (this.profile == Shooter.ShooterProfile.FAR) {
@@ -72,7 +71,6 @@ public class ShootSequence extends SequentialCommandGroup {
                     hood.set(hoodState);
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
                 }),
-                FeatherClient.commandRecordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile),
 
                 new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
                         new PointToTarget(drivetrain, limelight).withTimeout(2),
@@ -81,19 +79,17 @@ public class ShootSequence extends SequentialCommandGroup {
                 ),
                 new WaitCommand(0.25),
                 new WaitUntilCommand(shooter::isSpunUp),
+                FeatherClient.commandRecordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile),
                 new ShooterFeedSequence(indexer, shooter)
         );
     }
 
-
     public void setProfile(ShooterProfile profile) {
-        System.out.println("Setting profile "+profile);
         this.profile = profile;
     }
 
     @Override
     public void end(boolean isInterrupted) {
-        System.out.println("Stopping ShootSequence");
         shooter.stop();
         indexer.stop();
         if (limelight != null) {
