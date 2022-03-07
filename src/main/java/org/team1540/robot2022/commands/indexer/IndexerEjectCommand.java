@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2022.commands.indexer.Indexer.IndexerState;
 import org.team1540.robot2022.commands.intake.Intake;
 
+/**
+ * Runs the indexer backwards and reverses the intake
+ */
 public class IndexerEjectCommand extends CommandBase {
     private final Indexer indexer;
     private final Intake intake;

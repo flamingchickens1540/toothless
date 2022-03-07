@@ -43,14 +43,27 @@ public class Intake extends SubsystemBase {
         }
     }
 
+    /**
+     * Set intake roller percent output
+     *
+     * @param intake roller percent output
+     */
     public void setPercent(double percent) {
         motor.set(ControlMode.PercentOutput, percent);
     }
 
+    /**
+     * Stop intake roller
+     */
     public void stop() {
         this.setPercent(0);
     }
 
+    /**
+     * Stop intake roller
+     *
+     * @return new InstantCommand
+     */
     public Command commandStop() {
         return new InstantCommand(this::stop);
     }

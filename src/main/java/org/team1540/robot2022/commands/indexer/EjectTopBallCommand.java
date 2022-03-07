@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2022.commands.indexer.Indexer.IndexerState;
 import org.team1540.robot2022.commands.shooter.Shooter;
 
+/**
+ * Eject the top ball out of the shooter
+ */
 public class EjectTopBallCommand extends SequentialCommandGroup {
     private final Shooter shooter;
     private final Indexer indexer;

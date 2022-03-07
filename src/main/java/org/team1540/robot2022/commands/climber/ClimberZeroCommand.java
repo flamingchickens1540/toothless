@@ -1,11 +1,13 @@
 package org.team1540.robot2022.commands.climber;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2022.Constants;
 
+/**
+ * Moves the climber down until the current spikes, then zeroes it
+ */
 public class ClimberZeroCommand extends SequentialCommandGroup {
     private final Climber climber;
 
@@ -14,7 +16,6 @@ public class ClimberZeroCommand extends SequentialCommandGroup {
         addRequirements(climber);
         addCommands(
                 climber.commandDisableLimits(),
-                new InstantCommand(() -> climber.setPercent(0.2, 0.2)).withTimeout(1),
                 parallel(
                         // Zero left climber
                         sequence(
