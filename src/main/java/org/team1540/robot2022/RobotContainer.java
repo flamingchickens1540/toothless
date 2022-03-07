@@ -68,8 +68,6 @@ public class RobotContainer {
 
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
-    // coop:button(LTrigger,Forward,pilot)
-    // coop:button(RTrigger,Reverse,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
     // Unsure what buttons to assign to this, currently uses triggers when called.
@@ -98,7 +96,7 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kLeftBumper.value)
                 .whenHeld(shootSequence);
 
-        // coop:button(LBumper,Shoot [hold],pilot)
+        // coop:button(LTrigger,Shoot [hold],pilot)
         new Trigger(() -> driverController.getLeftTriggerAxis() == 1)
                 .whileActiveOnce(shootSequence);
 
