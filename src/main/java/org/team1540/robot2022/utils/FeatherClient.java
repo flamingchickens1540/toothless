@@ -107,9 +107,12 @@ public class FeatherClient {
             if (lastShot.firstBall == null) { // If the first ball's result hasn't been recorded yet, record the result
                 isLastShotFirstBall = true;
                 lastShot.firstBall = result;
-            } else if (lastShot.secondBall == null) { // If the second ball's result hasn't been recorded yet, record the result
+            } else if (lastShot.secondBall == null) { // If the second ball's result hasn't been recorded yet, record the result and commit the shot
                 isLastShotFirstBall = false;
                 lastShot.secondBall = result;
+
+                commitShot(lastShot);
+                lastShot = null;
             }
             // If both balls have been recorded already, ignore this shot result
         }
