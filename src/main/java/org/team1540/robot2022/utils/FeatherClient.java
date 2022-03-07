@@ -240,7 +240,7 @@ public class FeatherClient {
         new JoystickButton(controller, XboxController.Button.kStart.value)
                 .whenPressed(new InstantCommand(() -> setLastShotResult(ShotResult.UNKNOWN)));
         // coop:button(Back,Undo,pilot)
-        new JoystickButton(controller, XboxController.Button.kStart.value)
+        new JoystickButton(controller, XboxController.Button.kBack.value)
                 .whenPressed(new InstantCommand(() -> undoSetLastShotResult()));
     }
 }
