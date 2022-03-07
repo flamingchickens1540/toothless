@@ -79,7 +79,7 @@ public class ShootSequence extends SequentialCommandGroup {
                 ),
                 new WaitCommand(0.25),
                 new WaitUntilCommand(shooter::isSpunUp),
-                FeatherClient.commandRecordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile),
+                FeatherClient.commandRecordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile+""),
                 new ShooterFeedSequence(indexer, shooter)
         );
     }

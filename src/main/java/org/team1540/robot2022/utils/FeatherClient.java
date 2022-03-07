@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.team1540.robot2022.commands.shooter.Shooter;
 
 import java.io.File;
 import java.io.IOException;
@@ -142,7 +141,7 @@ public class FeatherClient {
      */
     public static Command commandRecordShot(double limelightDistance, double lidarDistance,
                                             double frontRPM, double rearRPM, boolean hoodUp,
-                                            Shooter.ShooterProfile profile) {
+                                            String profile) {
         return new InstantCommand(() -> recordShot(new ShootingParameters(limelightDistance, lidarDistance, frontRPM, rearRPM, hoodUp, profile)));
     }
 
@@ -185,7 +184,7 @@ public class FeatherClient {
         public double frontRPM;
         public double rearRPM;
         public boolean hoodUp;
-        public Shooter.ShooterProfile profile;
+        public String profile;
 
         public String matchId;
         public double matchSeconds;
@@ -195,7 +194,7 @@ public class FeatherClient {
 
         public ShootingParameters(double limelightDistance, double lidarDistance,
                                   double frontRPM, double rearRPM, boolean hoodUp,
-                                  Shooter.ShooterProfile profile) {
+                                  String profile) {
             this.limelightDistance = limelightDistance;
             this.lidarDistance = lidarDistance;
             this.frontRPM = frontRPM;
