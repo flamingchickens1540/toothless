@@ -221,5 +221,8 @@ public class FeatherClient {
         // coop:button(A,Under,pilot)
         new JoystickButton(controller, XboxController.Button.kA.value)
                 .whenPressed(new InstantCommand(() -> confirmShot(ShotResult.UNDER)));
+        // coop:button(Start,Unknown,pilot)
+        new JoystickButton(controller, XboxController.Button.kStart.value)
+                .whenPressed(new InstantCommand(() -> confirmShot(ShotResult.UNKNOWN)));
     }
 }
