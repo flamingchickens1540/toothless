@@ -2,6 +2,7 @@ package org.team1540.robot2022.commands.drivetrain;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.function.DoubleConsumer;
 
 import edu.wpi.first.math.filter.MedianFilter;
 import org.team1540.robot2022.utils.Limelight;
@@ -52,9 +53,10 @@ public class PointToTarget extends CommandBase {
     /**
      * Uses a basic average to calculate the degree offset of the target.
      * Waits to fill the averaging array before turning.
-     * @param executeType a function that takes the output of our finalized angle
+     *
+     * @param consumer a function that takes the output of our finalized angle
      */
-    private void calculateWithAverage(ExecuteType executeType) {
+    private void calculateWithAverage(DoubleConsumer consumer) {
         Vector2d lmAngles = limelight.getTargetAngles();
         pastPoses.add(lmAngles);
         if (pastPoses.size() < 10) {
@@ -67,15 +69,16 @@ public class PointToTarget extends CommandBase {
             avgX += pose.x;
         }
         avgX /= pastPoses.size();
-        executeType.execute(avgX);
+        consumer.accept(avgX);
     }
 
     /**
      * Uses a {@link MedianFilter} to calculate the degree offset of the target.
      * Waits to fill the filter's buffer before turning.
-     * @param executeType a function that takes the output of our finalized angle
+     *
+     * @param consumer a function that takes the output of our finalized angle
      */
-    private void calculateWithMedian(ExecuteType executeType) {
+    private void calculateWithMedian(DoubleConsumer consumer) {
         Vector2d llAngles = limelight.getTargetAngles();
         if (medianFilterCount < 10) {
             medianFilter.calculate(llAngles.x);
@@ -83,19 +86,20 @@ public class PointToTarget extends CommandBase {
             return;
         }
 
-        executeType.execute(medianFilter.calculate(llAngles.x));
+        consumer.accept(medianFilter.calculate(llAngles.x));
     }
 
     /**
      * Discards all contour corners that sit below the average vertical value, then finding the average horizontal value
      * of the remaining corners as the point to turn to.
-     * @param executeType a function that takes the output of our finalized angle
+     *
+     * @param consumer a function that takes the output of our finalized angle
      */
-    private void calculateWithCorners(ExecuteType executeType) {
+    private void calculateWithCorners(DoubleConsumer consumer) {
         double[] cornerCoordinates = limelight.getNetworkTable().getEntry("tcornxy").getDoubleArray(new double[]{});
         ArrayList<Vector2d> cornerPoints = new ArrayList<>(cornerCoordinates.length / 2);
         for (int i = 0; i < cornerCoordinates.length; i += 2) {
-            cornerPoints.add(new Vector2d(cornerCoordinates[i], cornerCoordinates[i+1]));
+            cornerPoints.add(new Vector2d(cornerCoordinates[i], cornerCoordinates[i + 1]));
         }
 
         double cornerYSum = 0;
@@ -119,18 +123,19 @@ public class PointToTarget extends CommandBase {
         double correctedCornerXAvg = correctedCornerXSum / cornerPoints.size();
 
         // Steps to calculate on-screen coordinate offsets as angles, as given in the Limelight docs.
-        double normalizedCornerXAvg = (2.0 / limelight.getResolution().x) * (correctedCornerXAvg - (limelight.getResolution().x/2 - 0.5));
-        double viewportCornerXAvg = Math.tan(limelight.getHorizontalFov()/2) * normalizedCornerXAvg;
+        double normalizedCornerXAvg = (2.0 / limelight.getResolution().x) * (correctedCornerXAvg - (limelight.getResolution().x / 2 - 0.5));
+        double viewportCornerXAvg = Math.tan(limelight.getHorizontalFov() / 2) * normalizedCornerXAvg;
         double degreeOffsetCornerXAvg = Math.atan2(1, viewportCornerXAvg);
 
-        executeType.execute(degreeOffsetCornerXAvg);
+        consumer.accept(degreeOffsetCornerXAvg);
     }
 
     /**
      * Executes turning to the target using the Limelight as the primary sensor to determine whether we have turned enough.
+     *
      * @param angleXOffset the offset we still need to turn to reach the target
      */
-    private void executeLimelightAsSensor(double angleXOffset) {
+    private void turnWithLimelight(double angleXOffset) {
         if (Math.abs(angleXOffset) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
 
             double distanceToTarget = getHorizontalDistanceToTarget();
@@ -140,7 +145,7 @@ public class PointToTarget extends CommandBase {
             SmartDashboard.putNumber("pointToTarget/pidOutput", pidOutput);
             SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", distanceToTarget);
 
-            pidOutput = pidClamp(pidOutput);
+            pidOutput = clampPID(pidOutput);
             double valueL = multiplier * -pidOutput;
             double valueR = multiplier * pidOutput;
             drivetrain.setPercent(valueL, valueR);
@@ -149,25 +154,27 @@ public class PointToTarget extends CommandBase {
 
     /**
      * Executes turning to the target using the NavX as the primary sensor to determine whether we have turned enough.
+     *
      * @param startAngleXOffset the starting setpoint of where the NavX should attempt to turn to
      */
-    private void executeLimelightWithNavX(double startAngleXOffset) {
+    private void turnWithNavX(double startAngleXOffset) {
         if (!turning) {
             turning = true;
             double degreeSetpoint = navX.getAngle() + startAngleXOffset;
             pid.setSetpoint(degreeSetpoint);
         }
 
-        double pidOutput = pidClamp(pid.getOutput(navX.getAngle()));
+        double pidOutput = clampPID(pid.getOutput(navX.getAngle()));
         drivetrain.setPercent(pidOutput, -pidOutput);
     }
 
     /**
      * Clamps the given PID output based on SmartDashboard values.
+     *
      * @param pidOutput the value to clamp
      * @return the clamped value
      */
-    private double pidClamp(double pidOutput) {
+    private double clampPID(double pidOutput) {
         if (pidOutput > SmartDashboard.getNumber("pointToTarget/pidClamp", 0.8)) {
             SmartDashboard.putBoolean("pointToTarget/isClamping", true);
             this.end(false);
@@ -179,16 +186,12 @@ public class PointToTarget extends CommandBase {
     }
 
     public void execute() {
-        calculateWithAverage(this::executeLimelightAsSensor);
+        calculateWithAverage(this::turnWithLimelight);
     }
 
     public void end(boolean isInterrupted) {
         drivetrain.stopMotors();
         limelight.setLeds(false);
         medianFilterCount = 0;
-    }
-
-    interface ExecuteType {
-        void execute(double angleX);
     }
 }
