@@ -50,7 +50,13 @@ public class FeatherClient {
     private static String getMatchID() {
         DriverStation.waitForData();
         String eventName = DriverStation.getEventName();
-        return String.format("%s-%dr%d-%s%d", !Objects.equals(eventName, "") ? eventName : "unknown", DriverStation.getMatchNumber(), DriverStation.getReplayNumber(), DriverStation.getAlliance().toString(), DriverStation.getLocation());
+        return String.format("%s-%dr%d-%s%d",
+                !Objects.equals(eventName, "") ? eventName : "unknown",
+                DriverStation.getMatchNumber(),
+                DriverStation.getReplayNumber(),
+                DriverStation.getAlliance().toString(),
+                DriverStation.getLocation()
+        );
     }
 
     /**
@@ -61,7 +67,15 @@ public class FeatherClient {
      * @param secondBall what happened to the second ball?
      */
     private static void commitShot(ShootingParameters shot, ShotResult firstBall, ShotResult secondBall) {
-        String jsonString = String.format("{\"matchId\": \"%s\", \"timer\": %f, " + "\"limelightDistance\": %f, \"lidarDistance\": %f, " + "\"frontRPM\": %f, \"rearRPM\": %f, \"hoodUp\": %b, \"profile\": \"%s\", " + "\"firstResult\": %s, \"secondResult\": %s}", shot.matchId, lastShot.matchSeconds, shot.limelightDistance, shot.lidarDistance, shot.frontRPM, shot.rearRPM, shot.hoodUp, shot.profile + "", firstBall + "", secondBall + "");
+        String jsonString = String.format("{\"matchId\": \"%s\", \"timer\": %f, " +
+                        "\"limelightDistance\": %f, \"lidarDistance\": %f, " +
+                        "\"frontRPM\": %f, \"rearRPM\": %f, \"hoodUp\": %b, \"profile\": \"%s\", " +
+                        "\"firstResult\": %s, \"secondResult\": %s}",
+                shot.matchId, lastShot.matchSeconds,
+                shot.limelightDistance, shot.lidarDistance,
+                shot.frontRPM, shot.rearRPM, shot.hoodUp, shot.profile + "",
+                firstBall + "", secondBall + ""
+        );
 
         // Write shot log to file
         try {
@@ -110,7 +124,9 @@ public class FeatherClient {
      * @param profile           shooter profile
      * @return InstantCommand to record a shot
      */
-    public static Command commandRecordShot(double limelightDistance, double lidarDistance, double frontRPM, double rearRPM, boolean hoodUp, Shooter.ShooterProfile profile) {
+    public static Command commandRecordShot(double limelightDistance, double lidarDistance,
+                                            double frontRPM, double rearRPM, boolean hoodUp,
+                                            Shooter.ShooterProfile profile) {
         return new InstantCommand(() -> recordShot(new ShootingParameters(limelightDistance, lidarDistance, frontRPM, rearRPM, hoodUp, profile)));
     }
 
@@ -161,7 +177,9 @@ public class FeatherClient {
         public ShotResult secondBall;
         public String directoryPrefix;
 
-        public ShootingParameters(double limelightDistance, double lidarDistance, double frontRPM, double rearRPM, boolean hoodUp, Shooter.ShooterProfile profile) {
+        public ShootingParameters(double limelightDistance, double lidarDistance,
+                                  double frontRPM, double rearRPM, boolean hoodUp,
+                                  Shooter.ShooterProfile profile) {
             this.limelightDistance = limelightDistance;
             this.lidarDistance = lidarDistance;
             this.frontRPM = frontRPM;
