@@ -24,6 +24,7 @@ public class FeatherClient {
     private static final Mat mat = new Mat();
 
     private static ShootingParameters lastShot;
+    private static boolean isLastShotFirstBall; // else second ball
 
     /**
      * Resets the match timer. This should be called in autonomousInit
@@ -105,11 +106,26 @@ public class FeatherClient {
     private static void confirmShot(ShotResult result) {
         if (lastShot != null) { // If the last shot's shooting parameters have been recorded...
             if (lastShot.firstBall == null) { // If the first ball's result hasn't been recorded yet, record the result
+                isLastShotFirstBall = true;
                 lastShot.firstBall = result;
             } else if (lastShot.secondBall == null) { // If the second ball's result hasn't been recorded yet, record the result
+                isLastShotFirstBall = false;
                 lastShot.secondBall = result;
             }
             // If both balls have been recorded already, ignore this shot result
+        }
+    }
+
+    /**
+     * Undoes the last shot result
+     */
+    private static void undoConfirm() {
+        if (lastShot != null) {
+            if (isLastShotFirstBall) {
+                lastShot.firstBall = null;
+            } else {
+                lastShot.secondBall = null;
+            }
         }
     }
 
@@ -224,5 +240,8 @@ public class FeatherClient {
         // coop:button(Start,Unknown,pilot)
         new JoystickButton(controller, XboxController.Button.kStart.value)
                 .whenPressed(new InstantCommand(() -> confirmShot(ShotResult.UNKNOWN)));
+        // coop:button(Back,Undo,pilot)
+        new JoystickButton(controller, XboxController.Button.kStart.value)
+                .whenPressed(new InstantCommand(() -> undoConfirm()));
     }
 }
