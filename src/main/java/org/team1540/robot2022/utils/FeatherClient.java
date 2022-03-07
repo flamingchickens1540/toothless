@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Objects;
 import java.util.UUID;
 
 public class FeatherClient {
@@ -24,6 +23,26 @@ public class FeatherClient {
 
     private static ShootingParameters lastShot;
     private static boolean isLastShotFirstBall; // else second ball
+
+    private static String matchId = "unknown";
+
+    /**
+     * Attempt to update matchId when the robot receives the FMS matchInfo packet
+     *
+     * @return true if the update was successful
+     */
+    public static boolean updateMatchId() {
+        if (DriverStation.getMatchType() != DriverStation.MatchType.None) {
+            matchId = String.format("%s-%dr%d-%s%d",
+                    DriverStation.getEventName(),
+                    DriverStation.getMatchNumber(),
+                    DriverStation.getReplayNumber(),
+                    DriverStation.getAlliance() + "",
+                    DriverStation.getLocation());
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Resets the match timer. This should be called in autonomousInit
@@ -48,15 +67,7 @@ public class FeatherClient {
      * @return match ID
      */
     private static String getMatchID() {
-        DriverStation.waitForData();
-        String eventName = DriverStation.getEventName();
-        return String.format("%s-%dr%d-%s%d",
-                !Objects.equals(eventName, "") ? eventName : "unknown",
-                DriverStation.getMatchNumber(),
-                DriverStation.getReplayNumber(),
-                DriverStation.getAlliance().toString(),
-                DriverStation.getLocation()
-        );
+        return matchId;
     }
 
     /**

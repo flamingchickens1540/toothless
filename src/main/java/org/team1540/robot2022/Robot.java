@@ -91,6 +91,7 @@ public class Robot extends TimedRobot {
 
         new ClimberZeroCommand(robotContainer.climber).schedule();
         FeatherClient.resetTimer();
+        robotContainer.updateMatchInfo.schedule();
     }
 
     /**

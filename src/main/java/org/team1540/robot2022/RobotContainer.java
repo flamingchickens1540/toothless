@@ -29,6 +29,7 @@ import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.commands.util.UpdateMatchInfo;
 import org.team1540.robot2022.utils.*;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
@@ -62,6 +63,7 @@ public class RobotContainer {
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
     public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.HUB, true);
+    public final UpdateMatchInfo updateMatchInfo = new UpdateMatchInfo();
 
     // coop:button(LJoystick,Left climber up/down,copilot)
     // coop:button(RJoystick,Right climber up/down,copilot)
