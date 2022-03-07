@@ -13,13 +13,14 @@ import org.team1540.robot2022.Constants.IndexerConstants.IndexerMotors;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Indexer extends SubsystemBase {
-    private final ChickenTalonFX bottomMotor = new ChickenTalonFX(IndexerMotors.BOTTOM_MOTOR);
-    private final ChickenTalonFX topMotor = new ChickenTalonFX(IndexerMotors.TOP_MOTOR);
+    public final ChickenTalonFX bottomMotor = new ChickenTalonFX(IndexerMotors.BOTTOM_MOTOR);
+    public final ChickenTalonFX topMotor = new ChickenTalonFX(IndexerMotors.TOP_MOTOR);
     private final ChickenTalonFX[] motors = {topMotor, bottomMotor};
 
     private final DigitalInput topSensor = new DigitalInput(BeamBreaks.TOP_INDEXER_SENSOR);
     private final DigitalInput bottomSensor = new DigitalInput(BeamBreaks.BOTTOM_INDEXER_SENSOR);
 
+    // If standby is false, the indexer will stop when it has both balls
     private boolean standby = false;
 
     private final AsynchronousInterrupt topInterrupt = new AsynchronousInterrupt(topSensor, (rising, falling) -> {
@@ -70,10 +71,19 @@ public class Indexer extends SubsystemBase {
         return !bottomSensor.get();
     }
 
+    /**
+     * Returns true if the top and bottom sensors are blocked
+     *
+     * @return if both sensors are blocked
+     */
     public boolean isFull() {
         return (this.getBottomSensor() && this.getTopSensor());
     }
 
+    /**
+     * Controls indexer standby mode. If standby is disabled, the indexer will stop when it has both balls
+     * @param standby indexer standby state
+     */
     public void setStandby(boolean standby) {
         this.standby = standby;
     }

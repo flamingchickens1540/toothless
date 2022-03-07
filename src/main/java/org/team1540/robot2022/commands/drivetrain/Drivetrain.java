@@ -18,9 +18,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
     public final ChickenTalonFX driveLFront = new ChickenTalonFX(Motors.LEFT_FRONT);
-    private final ChickenTalonFX driveLRear = new ChickenTalonFX(Motors.LEFT_REAR);
+    public final ChickenTalonFX driveLRear = new ChickenTalonFX(Motors.LEFT_REAR);
     public final ChickenTalonFX driveRFront = new ChickenTalonFX(Motors.RIGHT_FRONT);
-    private final ChickenTalonFX driveRRear = new ChickenTalonFX(Motors.RIGHT_REAR);
+    public final ChickenTalonFX driveRRear = new ChickenTalonFX(Motors.RIGHT_REAR);
     private final ChickenTalonFX[] driveL = {driveLFront, driveLRear};
     private final ChickenTalonFX[] driveR = {driveRFront, driveRRear};
     private final ChickenTalonFX[] driveMotors = {driveLFront, driveLRear, driveRFront, driveRRear};

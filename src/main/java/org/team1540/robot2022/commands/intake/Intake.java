@@ -12,7 +12,7 @@ import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Intake extends SubsystemBase {
     private final Solenoid solenoid = new Solenoid(Constants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH, Constants.IntakeConstants.SOLENOID);
-    private final ChickenTalonFX motor = new ChickenTalonFX(Constants.IntakeConstants.FALCON);
+    public final ChickenTalonFX motor = new ChickenTalonFX(Constants.IntakeConstants.FALCON);
 
     public Intake() {
         Constants.IntakeConstants.CURRENT_LIMIT_CONFIG.applyTo(motor);
@@ -43,14 +43,27 @@ public class Intake extends SubsystemBase {
         }
     }
 
+    /**
+     * Set intake roller percent output
+     *
+     * @param intake roller percent output
+     */
     public void setPercent(double percent) {
         motor.set(ControlMode.PercentOutput, percent);
     }
 
+    /**
+     * Stop intake roller
+     */
     public void stop() {
         this.setPercent(0);
     }
 
+    /**
+     * Stop intake roller
+     *
+     * @return new InstantCommand
+     */
     public Command commandStop() {
         return new InstantCommand(this::stop);
     }

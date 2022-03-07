@@ -8,6 +8,9 @@ import org.team1540.robot2022.commands.indexer.Indexer.IndexerState;
 import org.team1540.robot2022.commands.shooter.Shooter;
 import org.team1540.robot2022.utils.ChickenShuffleboard;
 
+/**
+ * Eject the top ball out of the shooter
+ */
 public class EjectTopBallCommand extends SequentialCommandGroup {
     private final Shooter shooter;
     private final Indexer indexer;

@@ -24,6 +24,7 @@ import org.team1540.robot2022.utils.LIDAR;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinken;
+import org.team1540.robot2022.utils.TestAllMotorsCommand;
 import org.team1540.robot2022.utils.RevBlinken.GameStage;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -85,6 +86,9 @@ public class RobotContainer {
     // coop:button(LTrigger,Forward,pilot)
     // coop:button(RTrigger,Reverse,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
+
+    // Unsure what buttons to assign to this, currently uses triggers when called.
+    public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
 
 
     public RobotContainer() {

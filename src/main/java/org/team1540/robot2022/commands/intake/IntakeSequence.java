@@ -8,6 +8,9 @@ import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.shooter.Shooter;
 
+/**
+ * Acquires a ball and spins the shooter up to get ready to shoot
+ */
 public class IntakeSequence extends SequentialCommandGroup {
     private final Intake intake;
     private final Indexer indexer;
@@ -30,18 +33,22 @@ public class IntakeSequence extends SequentialCommandGroup {
                         shooter.commandSetVelocity(InterpolationTable.shooterSpinupFront, InterpolationTable.shooterSpinupRear);
                     } else if (indexer.getTopSensor()) {
                         indexer.set(Indexer.IndexerState.OFF, Indexer.IndexerState.FORWARD);
-                    } else {
+                    } else { // Only bottom sensor blocked or no sensors blocked
                         indexer.set(Indexer.IndexerState.FORWARD, Indexer.IndexerState.FORWARD);
                     }
                 }),
+
+                // Spin the intake unless it's full
                 new ConditionalCommand(
                         new InstantCommand(),
                         new IntakeSpinCommand(intake, indexer, Constants.IntakeConstants.SPEED),
                         indexer::isFull
                 ),
+
+                // Spin up the shooter and fold up for shooting
                 parallel(
-                    shooter.commandSetVelocity(2500, 2500),
-                    intake.commandSetFold(true)
+                        shooter.commandSetVelocity(2500, 2500),
+                        intake.commandSetFold(true)
                 )
         );
     }
