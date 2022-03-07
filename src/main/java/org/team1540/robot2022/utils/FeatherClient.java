@@ -62,11 +62,9 @@ public class FeatherClient {
     /**
      * Record a shot and result to a local file
      *
-     * @param shot       shooting parameters
-     * @param firstBall  what happened to the first ball?
-     * @param secondBall what happened to the second ball?
+     * @param shot shooting parameters
      */
-    private static void commitShot(ShootingParameters shot, ShotResult firstBall, ShotResult secondBall) {
+    private static void commitShot(ShootingParameters shot) {
         String jsonString = String.format("{\"matchId\": \"%s\", \"timer\": %f, " +
                         "\"limelightDistance\": %f, \"lidarDistance\": %f, " +
                         "\"frontRPM\": %f, \"rearRPM\": %f, \"hoodUp\": %b, \"profile\": \"%s\", " +
@@ -74,7 +72,7 @@ public class FeatherClient {
                 shot.matchId, lastShot.matchSeconds,
                 shot.limelightDistance, shot.lidarDistance,
                 shot.frontRPM, shot.rearRPM, shot.hoodUp, shot.profile + "",
-                firstBall + "", secondBall + ""
+                shot.firstBall + "", shot.secondBall + ""
         );
 
         // Write shot log to file
@@ -92,7 +90,9 @@ public class FeatherClient {
      */
     private static void recordShot(ShootingParameters parameters) {
         if (lastShot != null) { // If the last shot hasn't been committed yet, commit it with unknown results
-            commitShot(parameters, ShotResult.UNKNOWN, ShotResult.UNKNOWN);
+            lastShot.firstBall = ShotResult.UNKNOWN;
+            lastShot.secondBall = ShotResult.UNKNOWN;
+            commitShot(lastShot);
         }
         lastShot = parameters;
     }
