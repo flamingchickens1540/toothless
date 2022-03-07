@@ -236,8 +236,8 @@ public final class ChickenShuffleboard {
                     .withProperties(Map.of("labelPosition", "TOP", "numberOfRows", 1, "numberOfColumns", 2));
             
             // Motor RPMs    
-            velocity.addNumber("Front", () -> {return shooter.getVelocityRPM(shooter.shooterMotorFront);}).withPosition(0, 0);
-            velocity.addNumber("Rear", () -> {return shooter.getVelocityRPM(shooter.shooterMotorRear);}).withPosition(1, 0);
+            velocity.addNumber("Front", () -> shooter.shooterMotorFront.getVelocityRPM()).withPosition(0, 0);
+            velocity.addNumber("Rear", () -> shooter.shooterMotorRear.getVelocityRPM()).withPosition(1, 0);
             
             // Errors
             error = tab.getLayout("Error", BuiltInLayouts.kGrid)
