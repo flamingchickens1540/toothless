@@ -98,11 +98,11 @@ public class FeatherClient {
     }
 
     /**
-     * Set the last shot's ball state
+     * Set the last shot's result
      *
      * @param result what happened to the ball?
      */
-    private static void confirmShot(ShotResult result) {
+    private static void setLastShotResult(ShotResult result) {
         if (lastShot != null) { // If the last shot's shooting parameters have been recorded...
             if (lastShot.firstBall == null) { // If the first ball's result hasn't been recorded yet, record the result
                 isLastShotFirstBall = true;
@@ -118,7 +118,7 @@ public class FeatherClient {
     /**
      * Undoes the last shot result
      */
-    private static void undoConfirm() {
+    private static void undoSetLastShotResult() {
         if (lastShot != null) {
             if (isLastShotFirstBall) {
                 lastShot.firstBall = null;
@@ -226,21 +226,21 @@ public class FeatherClient {
     public static void configureController(XboxController controller) {
         // coop:button(Y,Over,pilot)
         new JoystickButton(controller, XboxController.Button.kY.value)
-                .whenPressed(new InstantCommand(() -> confirmShot(ShotResult.OVER)));
+                .whenPressed(new InstantCommand(() -> setLastShotResult(ShotResult.OVER)));
         // coop:button(X,OK,pilot)
         new JoystickButton(controller, XboxController.Button.kX.value)
-                .whenPressed(new InstantCommand(() -> confirmShot(ShotResult.OK)));
+                .whenPressed(new InstantCommand(() -> setLastShotResult(ShotResult.OK)));
         // coop:button(B,Bounced,pilot)
         new JoystickButton(controller, XboxController.Button.kB.value)
-                .whenPressed(new InstantCommand(() -> confirmShot(ShotResult.BOUNCED)));
+                .whenPressed(new InstantCommand(() -> setLastShotResult(ShotResult.BOUNCED)));
         // coop:button(A,Under,pilot)
         new JoystickButton(controller, XboxController.Button.kA.value)
-                .whenPressed(new InstantCommand(() -> confirmShot(ShotResult.UNDER)));
+                .whenPressed(new InstantCommand(() -> setLastShotResult(ShotResult.UNDER)));
         // coop:button(Start,Unknown,pilot)
         new JoystickButton(controller, XboxController.Button.kStart.value)
-                .whenPressed(new InstantCommand(() -> confirmShot(ShotResult.UNKNOWN)));
+                .whenPressed(new InstantCommand(() -> setLastShotResult(ShotResult.UNKNOWN)));
         // coop:button(Back,Undo,pilot)
         new JoystickButton(controller, XboxController.Button.kStart.value)
-                .whenPressed(new InstantCommand(() -> undoConfirm()));
+                .whenPressed(new InstantCommand(() -> undoSetLastShotResult()));
     }
 }
