@@ -1,6 +1,6 @@
 package org.team1540.robot2022.commands.shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
@@ -9,6 +9,7 @@ import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.shooter.Shooter.ShooterProfile;
+import org.team1540.robot2022.utils.ChickenShuffleboard;
 import org.team1540.robot2022.utils.FeatherClient;
 import org.team1540.robot2022.utils.LIDAR;
 import org.team1540.robot2022.utils.Limelight;
@@ -46,28 +47,29 @@ public class ShootSequence extends SequentialCommandGroup {
                     () -> !this.profile.equals(ShooterProfile.HUB)
                 ),
                 new InstantCommand(() -> {
-                    if (this.profile == Shooter.ShooterProfile.FAR) {
+                    if (ChickenShuffleboard.ShooterTab.Tuning.enableManualSetpoints.getBoolean(false) && !DriverStation.isFMSAttached()) { // Make sure this is never going during a competition
+                        hoodState = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointHood.getBoolean(true);
+                        frontVelocity = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointFront.getDouble(1000);
+                        rearVelocity = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointRear.getDouble(1000);
+
+                    } else if (this.profile == Shooter.ShooterProfile.FAR) {
                         hoodState = true;
                         frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(limelightDistance);
                         rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(limelightDistance);
                     } else if (this.profile == Shooter.ShooterProfile.HUB) {
                         hoodState = false;
-                        frontVelocity = SmartDashboard.getNumber("shooter/presets/hub/front", InterpolationTable.hubFront);
-                        rearVelocity = SmartDashboard.getNumber("shooter/presets/hub/rear", InterpolationTable.hubRear);
+                        frontVelocity = ChickenShuffleboard.ShooterTab.Presets.hubFront.getDouble(InterpolationTable.hubFront);
+                        rearVelocity  = ChickenShuffleboard.ShooterTab.Presets.hubRear.getDouble(InterpolationTable.hubRear);
                     } else if (this.profile == Shooter.ShooterProfile.TARMAC) {
                         hoodState = false;
-                        frontVelocity = SmartDashboard.getNumber("shooter/presets/tarmac/front", InterpolationTable.tarmacFront);
-                        rearVelocity = SmartDashboard.getNumber("shooter/presets/tarmac/rear", InterpolationTable.tarmacRear);
+                        frontVelocity = ChickenShuffleboard.ShooterTab.Presets.tarmacFront.getDouble(InterpolationTable.tarmacFront);
+                        rearVelocity = ChickenShuffleboard.ShooterTab.Presets.tarmacRear.getDouble(InterpolationTable.tarmacRear);
                     } else if (this.profile == Shooter.ShooterProfile.LOWGOAL) {
                         hoodState = false;
-                        frontVelocity = SmartDashboard.getNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
-                        rearVelocity = SmartDashboard.getNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
+                        frontVelocity = ChickenShuffleboard.ShooterTab.Presets.lowGoalFront.getDouble(InterpolationTable.lowGoalFront);
+                        rearVelocity = ChickenShuffleboard.ShooterTab.Presets.lowGoalRear.getDouble(InterpolationTable.lowGoalRear);
                     }
 
-                    // Used for tuning:
-                    // hoodState = true;
-                    // frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
-                    // rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
 
                     hood.set(hoodState);
                     shooter.setVelocityRPM(shooter.shooterMotorFront, frontVelocity);
