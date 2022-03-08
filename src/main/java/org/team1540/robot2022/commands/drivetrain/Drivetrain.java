@@ -1,25 +1,17 @@
 package org.team1540.robot2022.commands.drivetrain;
 
-import java.util.HashMap;
-import java.util.Map;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import org.team1540.robot2022.Constants;
 import org.team1540.robot2022.Constants.DriveConstants.Motors;
+import org.team1540.robot2022.utils.ChickenShuffleboard;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 import org.team1540.robot2022.utils.NavX;
-import org.team1540.robot2022.utils.AutoHelper.AutoPath;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,8 +28,6 @@ public class Drivetrain extends SubsystemBase {
     private final DifferentialDriveOdometry driveOdometry;
 
     private final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Constants.DriveConstants.KS_VOLTS, Constants.DriveConstants.KV_VOLT_SECONDS_PER_METER, Constants.DriveConstants.KA_VOLT_SECONDS_SQUARED_PER_METER);
-
-    public final DashboardField fieldWidget = new DashboardField();
 
     public static final double motorToMPS = 26.0349916751;
 
@@ -68,12 +58,8 @@ public class Drivetrain extends SubsystemBase {
                 navx.getRotation2d(),
                 driveLFront.getDistanceMeters(),
                 driveRFront.getDistanceMeters());
-
-        SmartDashboard.putNumber("drivetrain/leftEncoderMeters", driveLFront.getDistanceMeters());
-        SmartDashboard.putNumber("drivetrain/rightEncoderMeters", driveRFront.getDistanceMeters());
-        SmartDashboard.putNumber("drivetrain/PID/errorL", driveLFront.getClosedLoopError());
-        SmartDashboard.putNumber("drivetrain/PID/errorR", driveRFront.getClosedLoopError());
-        fieldWidget.field.setRobotPose(driveOdometry.getPoseMeters());
+                
+        ChickenShuffleboard.DrivetrainTab.Field.field2d.setRobotPose(driveOdometry.getPoseMeters());
     }
 
     /**
@@ -186,13 +172,8 @@ public class Drivetrain extends SubsystemBase {
      * @param rightVelocity right motor velocity RPM setpoint
      */
     public void setFFVelocity(double leftVelocity, double rightVelocity) {
-        SmartDashboard.putNumber("drivetrain/feedforward/leftVelocity", leftVelocity);
-        SmartDashboard.putNumber("drivetrain/feedforward/rightVelocity", rightVelocity);
-
         double leftVolts = feedForward.calculate(leftVelocity);
         double rightVolts = feedForward.calculate(rightVelocity);
-        SmartDashboard.putNumber("drivetrain/feedforward/leftVolts", leftVelocity);
-        SmartDashboard.putNumber("drivetrain/feedforward/rightVolts", rightVolts);
         setVolts(leftVolts, rightVolts);
     }
 
@@ -209,71 +190,7 @@ public class Drivetrain extends SubsystemBase {
      */
     private void updatePIDs() {
         for (TalonFX motor : driveMotors) {
-            motor.config_kP(0, SmartDashboard.getNumber("drivetrain/PID/kP", 0.3));
-        }
-    }
-
-
-    public class DashboardField {
-        private final String defaultColor = "#FFFFFFFF";
-
-        protected final Field2d field = new Field2d();
-        private Map<String, Object> widgetProperties = new HashMap<>();
-        private final ComplexWidget widget = Shuffleboard.getTab("Autonomous")
-            .add(field)
-            .withPosition(0, 0)
-            .withWidget(BuiltInWidgets.kField)
-            .withSize(5, 3)
-            .withProperties(widgetProperties);
-
-
-        /**
-         * Sets the color for a path
-         * @param pathname the name of the path
-         * @param color the color to set it to (#RRGGBBAA)
-         */
-        public void setPathColor(String pathname, String color) {
-            widgetProperties.put(pathname, color);
-            widget.withProperties(widgetProperties);
-        }
-
-        /**
-         * Sets the color for a path
-         * @param path the path
-         * @param color the color to set it to (#RRGGBBAA)
-         */
-        public void setPathColor(AutoPath path, String color) {
-            widgetProperties.put(path.name, color);
-            widget.withProperties(widgetProperties);
-        }
-        
-
-        /**
-         * Resets all path colors to the default
-         */
-        public void resetPathColors() {
-            widgetProperties.forEach((key, value) -> {
-                this.setPathColor(key, defaultColor);
-            });
-            
-        }
-
-        /**
-         * Adds a path to the field object
-         * @param pathname The name of the path
-         * @param trajectory The path's trajectory
-         */
-        public void addPath(String pathname, Trajectory trajectory) {
-            field.getObject(pathname).setTrajectory(trajectory);
-            this.setPathColor(pathname, defaultColor);
-        }
-
-        /**
-         * Adds a path to the field object
-         * @param path an AutoPath
-         */
-        public void addPath(AutoPath path) {
-            this.addPath(path.name, path.trajectory);
+            motor.config_kP(0, ChickenShuffleboard.DrivetrainTab.kP.getDouble(0.3));
         }
     }
 }

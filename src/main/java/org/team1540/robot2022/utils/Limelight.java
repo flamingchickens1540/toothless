@@ -55,11 +55,6 @@ public class Limelight {
         return 39.37007874 * actualHeight / Math.tan(theta);
     }
 
-    public void updateSmartDashboardValues() {
-        SmartDashboard.putNumber("limelight/custom/calculatedDistance", getCalculatedDistance());
-        SmartDashboard.putBoolean("limelight/custom/targetFound", isTargetFound());
-    }
-
     /**
      * Gets the output of the limelight targeting from the network table.
      *
