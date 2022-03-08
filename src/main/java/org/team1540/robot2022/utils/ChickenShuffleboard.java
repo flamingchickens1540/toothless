@@ -312,7 +312,8 @@ public final class ChickenShuffleboard {
 
 
             }
-    }
+        }
+        
         public static class Presets {
             private static ShuffleboardLayout presetList = tab.getLayout("Presets", BuiltInLayouts.kList);
             private static ShuffleboardLayout hubGrid     = presetList.getLayout("Hub",     BuiltInLayouts.kGrid).withProperties(Map.of("numberOfRows",1,"numberOfColumns", 2, "labelPosition", "TOP")).withPosition(0, 0);

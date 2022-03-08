@@ -1,6 +1,5 @@
 package org.team1540.robot2022.commands.shooter;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
@@ -47,11 +46,10 @@ public class ShootSequence extends SequentialCommandGroup {
                     () -> !this.profile.equals(ShooterProfile.HUB)
                 ),
                 new InstantCommand(() -> {
-                    if (ChickenShuffleboard.ShooterTab.Tuning.enableManualSetpoints.getBoolean(false) && !DriverStation.isFMSAttached()) { // Make sure this is never going during a competition
+                    if (this.profile == ShooterProfile.TESTING) {
                         hoodState = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointHood.getBoolean(true);
                         frontVelocity = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointFront.getDouble(1000);
                         rearVelocity = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointRear.getDouble(1000);
-
                     } else if (this.profile == Shooter.ShooterProfile.FAR) {
                         hoodState = true;
                         frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(limelightDistance);
