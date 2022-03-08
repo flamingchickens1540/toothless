@@ -1,6 +1,5 @@
 package org.team1540.robot2022.commands.shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
@@ -9,10 +8,7 @@ import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.shooter.Shooter.ShooterProfile;
-import org.team1540.robot2022.utils.FeatherClient;
-import org.team1540.robot2022.utils.LIDAR;
-import org.team1540.robot2022.utils.Limelight;
-import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.utils.*;
 
 public class ShootSequence extends SequentialCommandGroup {
     private final Shooter shooter;
@@ -39,12 +35,12 @@ public class ShootSequence extends SequentialCommandGroup {
         addCommands(
                 new PrintCommand("Starting shoot sequence with profile " + this.profile),
                 new ConditionalCommand(
-                    sequence(
-                        new InstantCommand(() -> limelight.setLeds(true)),
-                        new WaitCommand(0.2)
-                    ),
-                    new InstantCommand(), 
-                    () -> !this.profile.equals(ShooterProfile.HUB)
+                        sequence(
+                                new InstantCommand(() -> limelight.setLeds(true)),
+                                new WaitCommand(0.2)
+                        ),
+                        new InstantCommand(),
+                        () -> !this.profile.equals(ShooterProfile.HUB)
                 ),
                 new InstantCommand(() -> {
                     if (this.profile == ShooterProfile.TESTING) {
@@ -88,7 +84,7 @@ public class ShootSequence extends SequentialCommandGroup {
 
 
     public void setProfile(ShooterProfile profile) {
-        System.out.println("Setting profile "+profile);
+        System.out.println("Setting profile " + profile);
         this.profile = profile;
     }
 
