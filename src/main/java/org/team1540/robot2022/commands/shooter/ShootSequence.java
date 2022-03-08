@@ -12,6 +12,7 @@ import org.team1540.robot2022.utils.ChickenShuffleboard;
 import org.team1540.robot2022.utils.FeatherClient;
 import org.team1540.robot2022.utils.LIDAR;
 import org.team1540.robot2022.utils.Limelight;
+import org.team1540.robot2022.utils.NavX;
 
 public class ShootSequence extends SequentialCommandGroup {
     private final Shooter shooter;
@@ -27,7 +28,7 @@ public class ShootSequence extends SequentialCommandGroup {
     private double rearVelocity;
     private boolean hoodState; // New state to set the hood to
 
-    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar, Shooter.ShooterProfile m_profile, boolean pointToTarget) {
+    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar, NavX navX, Shooter.ShooterProfile m_profile, boolean pointToTarget) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
@@ -75,7 +76,7 @@ public class ShootSequence extends SequentialCommandGroup {
                 FeatherClient.commandRecordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile),
 
                 new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
-                        new PointToTarget(drivetrain, limelight).withTimeout(2),
+                        new PointToTarget(drivetrain, limelight, navX).withTimeout(2),
                         new InstantCommand(),
                         () -> limelight.isTargetFound() && !this.profile.equals(ShooterProfile.HUB) && pointToTarget
                 ),
