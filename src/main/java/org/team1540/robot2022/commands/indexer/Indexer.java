@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -51,7 +52,11 @@ public class Indexer extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+        SmartDashboard.putBoolean("indexer/top", this.getTopSensor());
+        SmartDashboard.putBoolean("indexer/bottom", this.getBottomSensor());
+        SmartDashboard.putBoolean("indexer/full", this.isFull());
+    }
 
     /**
      * Returns true if the top beam break is blocked
@@ -152,9 +157,7 @@ public class Indexer extends SubsystemBase {
      * @return an InstantCommand that sets the motors
      */
     public Command commandSet(IndexerState topMode, IndexerState bottomMode) {
-        return new InstantCommand(() -> {
-            this.set(topMode, bottomMode);
-        }, this);
+        return new InstantCommand(() -> this.set(topMode, bottomMode), this);
     }
 
     /**
@@ -164,9 +167,7 @@ public class Indexer extends SubsystemBase {
      * @return an InstantCommand that sets the motor
      */
     public Command commandSetTop(IndexerState mode) {
-        return new InstantCommand(() -> {
-            this.setTop(mode);
-        }, this);
+        return new InstantCommand(() -> this.setTop(mode), this);
     }
 
     /**
@@ -176,9 +177,7 @@ public class Indexer extends SubsystemBase {
      * @return an InstantCommand that sets the motor
      */
     public Command commandSetBottom(IndexerState mode) {
-        return new InstantCommand(() -> {
-            this.setBottom(mode);
-        }, this);
+        return new InstantCommand(() -> this.setBottom(mode), this);
     }
 
     /**

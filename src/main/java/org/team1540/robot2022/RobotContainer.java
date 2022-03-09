@@ -6,11 +6,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -137,7 +139,7 @@ public class RobotContainer {
         new POVButton(copilotController, DPadAxis.DOWN)
                 .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
 
-        
+
         // coop:button(DPadLeft,Lower intake [press],copilot)
         new POVButton(copilotController, DPadAxis.LEFT)
                 .whenPressed(intake.commandSetFold(false));
@@ -213,19 +215,19 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        
-        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, false));
-        autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, true));
-        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, true));
-        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood,  false));
-        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood));
-        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood));
+
+        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, false));
+        autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, true));
+        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, true));
+        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, false));
+        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx));
+        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx));
 
         Shuffleboard.getTab("Autonomous")
-            .add("Auto Selector",autoChooser)
-            .withPosition(5, 0)
-            .withSize(5, 1)
-            .withWidget(BuiltInWidgets.kSplitButtonChooser);
+                .add("Auto Selector", autoChooser)
+                .withPosition(5, 0)
+                .withSize(5, 1)
+                .withWidget(BuiltInWidgets.kSplitButtonChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
 
         // Indexer values
@@ -267,15 +269,15 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/rear", InterpolationTable.tarmacRear);
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
-        
+
 
         // Highlight selected auto path
-        
+
         getAutonomousCommand().highlightPaths(drivetrain);
-        
+
         NetworkTableInstance.getDefault().getTable("Shuffleboard/Autonomous/Auto Selector").addEntryListener((table, key, entry, value, flags) -> getAutonomousCommand().highlightPaths(drivetrain), EntryListenerFlags.kUpdate);
 
-        
+
     }
 
     public AutoSequence getAutonomousCommand() {

@@ -9,15 +9,15 @@
 
 package org.team1540.robot2022.utils;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 
 /**
  * LinearInterpolator - given a table of x and y values, will interpolate values
@@ -48,9 +48,8 @@ public class LinearInterpolator {
 
     /**
      * create LinearInterpolator class from file
-     * Input location of the file within the deploy directory. `A file at src/main/deploy/file.json` should be entered as `file.json`
-     * 
-     * @param file, 
+     *
+     * @param path Input location of the file within the deploy directory. `A file at src/main/deploy/file.json` should be entered as `file.json`
      */
     public LinearInterpolator(String path) {
         File inputFile = Filesystem.getDeployDirectory().toPath().resolve(path).toFile();

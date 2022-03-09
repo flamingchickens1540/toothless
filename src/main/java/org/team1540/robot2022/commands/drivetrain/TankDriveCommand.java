@@ -27,9 +27,8 @@ public class TankDriveCommand extends CommandBase {
 
     /**
      * Converts the input percent to a meter per second value
-     * 
-     * @param percent The percent input
-     * 
+     *
+     * @param inputPercent The percent input
      * @return The speed in meters per second
      */
     public double calculateMPS(double inputPercent) {
