@@ -1,29 +1,28 @@
 package org.team1540.robot2022.utils;
 
-import java.util.HashMap;
-
-import org.team1540.robot2022.Constants.LightConstants;
-
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import org.team1540.robot2022.Constants.LightConstants;
+
+import java.util.HashMap;
 
 /**
  * Wrapper for Rev Robotics Blinkin LED
  * Driver.
  */
-public class RevBlinken extends Spark {
+public class RevBlinkin extends Spark {
     private HashMap<String, ColorPattern> mappings = new HashMap<String, ColorPattern>();
 
     /**
-     * Construct an instance of a RevBlinken
+     * Construct an instance of a RevBlinkin
      *
-     * @param channel The PWM channel that the Blinken is attached to. 0-9 are
+     * @param channel The PWM channel that the Blinkin is attached to. 0-9 are
      *                on-board, 10-19 are on
      *                the MXP port
      * @throws IndexOutOfBoundsException If the specified PWM channel does not
      *                                   exist.
      */
-    public RevBlinken(int channel) {
+    public RevBlinkin(int channel) {
         super(channel);
 
         mappings.put(Alliance.Blue + "" + GameStage.DISABLE, LightConstants.DISABLED);
@@ -50,7 +49,7 @@ public class RevBlinken extends Spark {
     }
 
     /**
-     * Sets the Blinken output manually.
+     * Sets the Blinkin output manually.
      *
      * @param manualSetpoint The manual setpoint to be sent over PWM.
      */
@@ -85,7 +84,7 @@ public class RevBlinken extends Spark {
 
     /**
      * Enum for possible color patterns according to the
-     * <a href="http://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf">Blinken
+     * <a href="http://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf">Blinkin
      * user manual.</a>
      */
     public enum ColorPattern {

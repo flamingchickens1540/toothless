@@ -30,13 +30,13 @@ import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
 import org.team1540.robot2022.utils.*;
-import org.team1540.robot2022.utils.RevBlinken.GameStage;
+import org.team1540.robot2022.utils.RevBlinkin.GameStage;
 
 public class RobotContainer {
     private final boolean ENABLE_COMPRESSOR = true;
 
     // Hardware
-    public final RevBlinken robotLEDs = new RevBlinken(0);
+    public final RevBlinkin robotLEDs = new RevBlinkin(0);
     public final Limelight limelight = new Limelight("limelight");
     public final NavX navx = new NavX(SPI.Port.kMXP);
     public final PneumaticHub ph = new PneumaticHub(Constants.PNEUMATIC_HUB);
