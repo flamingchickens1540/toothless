@@ -47,7 +47,11 @@ public class ShootSequence extends SequentialCommandGroup {
                     () -> !this.profile.equals(ShooterProfile.HUB)
                 ),
                 new InstantCommand(() -> {
-                    if (this.profile == Shooter.ShooterProfile.FAR) {
+                    if (this.profile == ShooterProfile.TESTING) {
+                        hoodState = true;
+                        frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
+                        rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
+                    } else if (this.profile == Shooter.ShooterProfile.FAR) {
                         hoodState = true;
                         frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(limelightDistance);
                         rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(limelightDistance);
@@ -65,10 +69,6 @@ public class ShootSequence extends SequentialCommandGroup {
                         rearVelocity = SmartDashboard.getNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
                     }
 
-                    // Used for tuning:
-                    // hoodState = true;
-                    // frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
-                    // rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
 
                     hood.set(hoodState);
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
