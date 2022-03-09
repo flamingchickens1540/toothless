@@ -80,7 +80,7 @@ public class AutoHelper {
      * @return A RamseteCommand to follow the trajectory
      */
     public static RamseteCommand getRamseteCommand(Drivetrain drivetrain, AutoPath path) {
-        drivetrain.fieldWidget.addPath(path);
+        ChickenShuffleboard.DrivetrainTab.Field.addPath(path);
         return getRamseteCommand(drivetrain, path.trajectory);
     }
 

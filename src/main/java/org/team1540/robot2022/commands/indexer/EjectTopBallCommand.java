@@ -1,12 +1,12 @@
 package org.team1540.robot2022.commands.indexer;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2022.commands.indexer.Indexer.IndexerState;
 import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.utils.ChickenShuffleboard;
 
 /**
  * Eject the top ball out of the shooter
@@ -20,7 +20,7 @@ public class EjectTopBallCommand extends SequentialCommandGroup {
         this.indexer = indexer;
         this.shooter = shooter;
 
-        double ballEjectSpeed = SmartDashboard.getNumber("indexer/ballEjectFlywheelRPM", 1000);
+        double ballEjectSpeed = ChickenShuffleboard.IndexerTab.ballEjectFlywheelRPM.getDouble(1000);
 
         addRequirements(indexer, shooter);
         addCommands(

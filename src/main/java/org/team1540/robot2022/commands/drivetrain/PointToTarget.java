@@ -5,11 +5,10 @@ import java.util.LinkedList;
 import java.util.function.DoubleConsumer;
 
 import edu.wpi.first.math.filter.MedianFilter;
+import org.team1540.robot2022.utils.ChickenShuffleboard;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.MiniPID;
-
 import edu.wpi.first.wpilibj.drive.Vector2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2022.utils.NavX;
 
@@ -34,9 +33,9 @@ public class PointToTarget extends CommandBase {
 
     @Override
     public void initialize() {
-        double p = SmartDashboard.getNumber("pointToTarget/kP", 0.7);
-        double i = SmartDashboard.getNumber("pointToTarget/kI", 0);
-        double d = SmartDashboard.getNumber("pointToTarget/kD", 0.4);
+        double p = ChickenShuffleboard.PointToTargetTab.kP.getDouble(0.7);
+        double i = ChickenShuffleboard.PointToTargetTab.kI.getDouble(0);
+        double d = ChickenShuffleboard.PointToTargetTab.kD.getDouble(0.4);
         limelight.setLeds(true);
         pid.setPID(p, i, d);
         pid.setSetpoint(0);
@@ -136,14 +135,14 @@ public class PointToTarget extends CommandBase {
      * @param angleXOffset the offset we still need to turn to reach the target
      */
     private void turnWithLimelight(double angleXOffset) {
-        if (Math.abs(angleXOffset) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
+        if (Math.abs(angleXOffset) > ChickenShuffleboard.PointToTargetTab.deadzone.getDouble(2)) {
 
             double distanceToTarget = getHorizontalDistanceToTarget();
             double pidOutput = pid.getOutput(getError(angleXOffset));
             double multiplier = angleXOffset > 0 ? 1 : -1;
 
-            SmartDashboard.putNumber("pointToTarget/pidOutput", pidOutput);
-            SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", distanceToTarget);
+            ChickenShuffleboard.PointToTargetTab.pidOutput.setNumber(pidOutput);
+            ChickenShuffleboard.PointToTargetTab.distanceToTarget.setNumber(distanceToTarget);
 
             pidOutput = clampPID(pidOutput);
             double valueL = multiplier * -pidOutput;
@@ -175,12 +174,12 @@ public class PointToTarget extends CommandBase {
      * @return the clamped value
      */
     private double clampPID(double pidOutput) {
-        if (pidOutput > SmartDashboard.getNumber("pointToTarget/pidClamp", 0.8)) {
-            SmartDashboard.putBoolean("pointToTarget/isClamping", true);
+        if (pidOutput > ChickenShuffleboard.PointToTargetTab.pidClamp.getDouble(0.8)) {
+            ChickenShuffleboard.PointToTargetTab.isClamping.setBoolean(true);
             this.end(false);
             return 0;
         } else {
-            SmartDashboard.putBoolean("pointToTarget/isClamping", false);
+            ChickenShuffleboard.PointToTargetTab.isClamping.setBoolean(false);
             return pidOutput;
         }
     }

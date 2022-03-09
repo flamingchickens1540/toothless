@@ -22,9 +22,9 @@ public class AutoSequence extends SequentialCommandGroup {
      * @param drivetrain The Drivetrain subsystem
      */
     public void highlightPaths(Drivetrain drivetrain) {
-        drivetrain.fieldWidget.resetPathColors();
+        ChickenShuffleboard.DrivetrainTab.Field.resetPathColors();
         for (AutoPath path : paths) {
-            drivetrain.fieldWidget.setPathColor(path, "#FF0000FF");
+            ChickenShuffleboard.DrivetrainTab.Field.setPathColor(path, "#FF0000FF");
         }
     }
 

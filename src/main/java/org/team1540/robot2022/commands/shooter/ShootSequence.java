@@ -1,5 +1,6 @@
 package org.team1540.robot2022.commands.shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
@@ -64,7 +65,6 @@ public class ShootSequence extends SequentialCommandGroup {
                         frontVelocity = SmartDashboard.getNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
                         rearVelocity = SmartDashboard.getNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
                     }
-
 
                     hood.set(hoodState);
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
