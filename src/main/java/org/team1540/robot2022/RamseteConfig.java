@@ -5,6 +5,7 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RamseteConfig {
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(Constants.DriveConstants.K_TRACKWIDTH_METERS);
@@ -32,6 +33,6 @@ public class RamseteConfig {
     // RamseteCommand Defaults
     public static final RamseteController ramseteController = new RamseteController(kRamseteB, kRamseteZeta);
     public static final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(Constants.DriveConstants.KS_VOLTS, Constants.DriveConstants.KV_VOLT_SECONDS_PER_METER, Constants.DriveConstants.KA_VOLT_SECONDS_SQUARED_PER_METER);
-    public static final PIDController leftPID = new PIDController(Constants.DriveConstants.KP_DRIVE_VEL, 0, 0);
-    public static final PIDController rightPID = new PIDController(Constants.DriveConstants.KP_DRIVE_VEL, 0, 0);
+    public static final PIDController leftPID = new PIDController(SmartDashboard.getNumber("ramsetePID/kP", Constants.DriveConstants.KP_DRIVE_VEL), 0, 0);
+    public static final PIDController rightPID = new PIDController(SmartDashboard.getNumber("ramsetePID/kP", Constants.DriveConstants.KP_DRIVE_VEL), 0, 0);
 }

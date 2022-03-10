@@ -5,7 +5,7 @@
 package org.team1540.robot2022;
 
 import org.team1540.robot2022.utils.CurrentLimitConfig;
-import org.team1540.robot2022.utils.RevBlinken.ColorPattern;
+import org.team1540.robot2022.utils.RevBlinkin.ColorPattern;
 
 public final class Constants {
     public static final int PNEUMATIC_HUB = 20;

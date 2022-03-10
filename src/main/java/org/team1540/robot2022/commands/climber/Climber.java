@@ -2,21 +2,22 @@ package org.team1540.robot2022.commands.climber;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import org.team1540.robot2022.Constants;
-import org.team1540.robot2022.Constants.ClimberConstants;
-import org.team1540.robot2022.utils.ChickenShuffleboard;
-import org.team1540.robot2022.utils.ChickenTalonFX;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2022.Constants;
+import org.team1540.robot2022.Constants.ClimberConstants;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
+import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Climber extends SubsystemBase {
-    public final ChickenTalonFX motorLeft = new ChickenTalonFX(ClimberConstants.Motors.LEFT);
-    public final ChickenTalonFX motorRight = new ChickenTalonFX(ClimberConstants.Motors.RIGHT);
+    private final ChickenTalonFX motorLeft = new ChickenTalonFX(ClimberConstants.Motors.LEFT);
+    private final ChickenTalonFX motorRight = new ChickenTalonFX(ClimberConstants.Motors.RIGHT);
     private final ChickenTalonFX[] motors = new ChickenTalonFX[]{motorLeft, motorRight};
 
     private final DoubleSolenoid solenoid = new DoubleSolenoid(
@@ -33,8 +34,11 @@ public class Climber extends SubsystemBase {
         motorLeft.setInverted(true);
         motorRight.setInverted(true);
 
+        ChickenSmartDashboard.putDefaultNumber("climber/limits/leftUp", -470000);
+        ChickenSmartDashboard.putDefaultNumber("climber/limits/rightUp", -470000);
+
         updateLimits();
-        NetworkTableInstance.getDefault().getTable("Shuffleboard/Climber/Limits").addEntryListener((table, key, entry, value, flags) -> updateLimits(), EntryListenerFlags.kUpdate);
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/limits").addEntryListener((table, key, entry, value, flags) -> updateLimits(), EntryListenerFlags.kUpdate);
     }
 
     /**
@@ -49,7 +53,13 @@ public class Climber extends SubsystemBase {
         }).andThen(this::updateLimits);
     }
 
-    public void periodic() {}
+    public void periodic() {
+        SmartDashboard.putNumber("climber/encoders/left", motorLeft.getSelectedSensorPosition());
+        SmartDashboard.putNumber("climber/encoders/right", motorRight.getSelectedSensorPosition());
+
+        SmartDashboard.putNumber("climber/current/left", motorLeft.getStatorCurrent());
+        SmartDashboard.putNumber("climber/current/right", motorRight.getStatorCurrent());
+    }
 
     /**
      * Update soft limits
@@ -75,9 +85,8 @@ public class Climber extends SubsystemBase {
     }
 
     private void updateLimits() {
-        double leftUpLimit = ChickenShuffleboard.ClimberTab.leftLimit.getDouble(-470000);
-        double rightUpLimit = ChickenShuffleboard.ClimberTab.rightLimit.getDouble(-470000);
-        
+        double leftUpLimit = SmartDashboard.getNumber("climber/limits/leftUp", -470000);
+        double rightUpLimit = SmartDashboard.getNumber("climber/limits/rightUp", -470000);
         motorLeft.configReverseSoftLimitEnable(true);
         motorRight.configReverseSoftLimitEnable(true);
         motorLeft.configReverseSoftLimitThreshold(leftUpLimit);

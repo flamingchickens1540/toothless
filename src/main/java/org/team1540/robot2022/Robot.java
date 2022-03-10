@@ -5,6 +5,7 @@
 package org.team1540.robot2022;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
@@ -61,6 +62,12 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+
+        // Update the limelight's custom SmartDashboard values
+        robotContainer.limelight.updateSmartDashboardValues();
+
+        SmartDashboard.putBoolean("pneumatics/pressureSwitch", robotContainer.ph.getPressureSwitch());
+        SmartDashboard.putString("shooter/profile", robotContainer.shootSequence.profile + "");
     }
 
     /**

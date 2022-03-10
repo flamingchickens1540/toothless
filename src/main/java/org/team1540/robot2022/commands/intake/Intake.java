@@ -46,7 +46,7 @@ public class Intake extends SubsystemBase {
     /**
      * Set intake roller percent output
      *
-     * @param intake roller percent output
+     * @param percent roller percent output
      */
     public void setPercent(double percent) {
         motor.set(ControlMode.PercentOutput, percent);

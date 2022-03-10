@@ -1,13 +1,25 @@
 package org.team1540.robot2022;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team1540.robot2022.commands.climber.Climber;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
-import org.team1540.robot2022.commands.drivetrain.Drivetrain;
-import org.team1540.robot2022.commands.drivetrain.FFTankDriveCommand;
-import org.team1540.robot2022.commands.drivetrain.OdometryResetSequence;
-import org.team1540.robot2022.commands.drivetrain.PointToTarget;
+import org.team1540.robot2022.commands.drivetrain.*;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.EjectBottomBallCommand;
 import org.team1540.robot2022.commands.indexer.EjectTopBallCommand;
@@ -17,39 +29,14 @@ import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
-import org.team1540.robot2022.utils.AutoSequence;
-import org.team1540.robot2022.utils.ChickenShuffleboard;
-import org.team1540.robot2022.utils.DPadAxis;
-import org.team1540.robot2022.utils.LIDAR;
-import org.team1540.robot2022.utils.Limelight;
-import org.team1540.robot2022.utils.NavX;
-import org.team1540.robot2022.utils.RevBlinken;
-import org.team1540.robot2022.utils.TestAllMotorsCommand;
-import org.team1540.robot2022.utils.RevBlinken.GameStage;
-import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.team1540.robot2022.utils.*;
+import org.team1540.robot2022.utils.RevBlinkin.GameStage;
 
 public class RobotContainer {
     private final boolean ENABLE_COMPRESSOR = true;
 
     // Hardware
-    public final RevBlinken robotLEDs = new RevBlinken(0);
+    public final RevBlinkin robotLEDs = new RevBlinkin(0);
     public final Limelight limelight = new Limelight("limelight");
     public final NavX navx = new NavX(SPI.Port.kMXP);
     public final PneumaticHub ph = new PneumaticHub(Constants.PNEUMATIC_HUB);
@@ -83,17 +70,15 @@ public class RobotContainer {
 
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
-    // coop:button(LTrigger,Forward,pilot)
-    // coop:button(RTrigger,Reverse,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
     // Unsure what buttons to assign to this, currently uses triggers when called.
     public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
 
+    // Misc
+    private final SendableChooser<AutoSequence> autoChooser = new SendableChooser<>();
 
     public RobotContainer() {
-        ChickenShuffleboard.initialize(this);
-
         initSmartDashboard();
         configureButtonBindings();
         initModeTransitionBindings();
@@ -113,7 +98,7 @@ public class RobotContainer {
         new JoystickButton(driverController, Button.kLeftBumper.value)
                 .whenHeld(shootSequence);
 
-        // coop:button(LBumper,Shoot [hold],pilot)
+        // coop:button(LTrigger,Shoot [hold],pilot)
         new Trigger(() -> driverController.getLeftTriggerAxis() == 1)
                 .whileActiveOnce(shootSequence);
 
@@ -152,7 +137,7 @@ public class RobotContainer {
         new POVButton(copilotController, DPadAxis.DOWN)
                 .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
 
-        
+
         // coop:button(DPadLeft,Lower intake [press],copilot)
         new POVButton(copilotController, DPadAxis.LEFT)
                 .whenPressed(intake.commandSetFold(false));
@@ -186,6 +171,9 @@ public class RobotContainer {
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
 
+
+        // SmartDashboard
+        SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
     }
 
     private void initModeTransitionBindings() {
@@ -225,18 +213,72 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        
-        SmartDashboard.putData(CommandScheduler.getInstance());
-        
-        // Highlight selected auto path
-        getAutonomousCommand().highlightPaths(drivetrain);
-        
-        NetworkTableInstance.getDefault().getTable("Shuffleboard/Drivetrain/Auto Selector").addEntryListener((table, key, entry, value, flags) -> getAutonomousCommand().highlightPaths(drivetrain), EntryListenerFlags.kUpdate);
 
-        
+        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, false));
+        autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, true));
+        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, true));
+        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, false));
+        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx));
+        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx));
+
+        Shuffleboard.getTab("Autonomous")
+                .add("Auto Selector", autoChooser)
+                .withPosition(5, 0)
+                .withSize(5, 1)
+                .withWidget(BuiltInWidgets.kSplitButtonChooser);
+        SmartDashboard.putData(CommandScheduler.getInstance());
+
+        // Indexer values
+        ChickenSmartDashboard.putDefaultNumber("intake/speed", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/top", 0.2);
+        ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/bottom", 0.2);
+        ChickenSmartDashboard.putDefaultNumber("indexer/ballEjectFlywheelRPM", 1000);
+
+        // PointToTarget values
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/kD", 0.4);
+
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/pidClamp", 0.8);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/targetDeadzoneDegrees", 2);
+
+        SmartDashboard.putNumber("pointToTarget/pidOutput", 0);
+        SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", 0);
+
+        SmartDashboard.putBoolean("pointToTarget/isClamping", false);
+
+        // Drivetrain values
+        ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxVelocity", 1);
+        ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxAcceleration", 0.5);
+
+        // Climber values
+        ChickenSmartDashboard.putDefaultNumber("climber/PID/kP", 0.3);
+
+        SmartDashboard.putNumber("shooter/tuning/frontRPM", -1000);
+        SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);
+
+        // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors, plus or minus)
+        SmartDashboard.putNumber("shooter/tuning/targetError", 30);
+
+
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/front", InterpolationTable.hubFront);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/rear", InterpolationTable.hubRear);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/front", InterpolationTable.tarmacFront);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/rear", InterpolationTable.tarmacRear);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
+        ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
+
+
+        // Highlight selected auto path
+
+        getAutonomousCommand().highlightPaths(drivetrain);
+
+        NetworkTableInstance.getDefault().getTable("Shuffleboard/Autonomous/Auto Selector").addEntryListener((table, key, entry, value, flags) -> getAutonomousCommand().highlightPaths(drivetrain), EntryListenerFlags.kUpdate);
+
+
     }
 
     public AutoSequence getAutonomousCommand() {
-        return ChickenShuffleboard.DrivetrainTab.autoChooser.getSelected();
+        return autoChooser.getSelected();
     }
 }

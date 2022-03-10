@@ -1,5 +1,6 @@
 package org.team1540.robot2022.commands.shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2022.InterpolationTable;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
@@ -44,25 +45,25 @@ public class ShootSequence extends SequentialCommandGroup {
                 ),
                 new InstantCommand(() -> {
                     if (this.profile == ShooterProfile.TESTING) {
-                        hoodState = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointHood.getBoolean(true);
-                        frontVelocity = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointFront.getDouble(1000);
-                        rearVelocity = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointRear.getDouble(1000);
+                        hoodState = true;
+                        frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
+                        rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
                     } else if (this.profile == Shooter.ShooterProfile.FAR) {
                         hoodState = true;
                         frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(limelightDistance);
                         rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(limelightDistance);
                     } else if (this.profile == Shooter.ShooterProfile.HUB) {
                         hoodState = false;
-                        frontVelocity = ChickenShuffleboard.ShooterTab.Presets.hubFront.getDouble(InterpolationTable.hubFront);
-                        rearVelocity = ChickenShuffleboard.ShooterTab.Presets.hubRear.getDouble(InterpolationTable.hubRear);
+                        frontVelocity = SmartDashboard.getNumber("shooter/presets/hub/front", InterpolationTable.hubFront);
+                        rearVelocity = SmartDashboard.getNumber("shooter/presets/hub/rear", InterpolationTable.hubRear);
                     } else if (this.profile == Shooter.ShooterProfile.TARMAC) {
                         hoodState = false;
-                        frontVelocity = ChickenShuffleboard.ShooterTab.Presets.tarmacFront.getDouble(InterpolationTable.tarmacFront);
-                        rearVelocity = ChickenShuffleboard.ShooterTab.Presets.tarmacRear.getDouble(InterpolationTable.tarmacRear);
+                        frontVelocity = SmartDashboard.getNumber("shooter/presets/tarmac/front", InterpolationTable.tarmacFront);
+                        rearVelocity = SmartDashboard.getNumber("shooter/presets/tarmac/rear", InterpolationTable.tarmacRear);
                     } else if (this.profile == Shooter.ShooterProfile.LOWGOAL) {
                         hoodState = false;
-                        frontVelocity = ChickenShuffleboard.ShooterTab.Presets.lowGoalFront.getDouble(InterpolationTable.lowGoalFront);
-                        rearVelocity = ChickenShuffleboard.ShooterTab.Presets.lowGoalRear.getDouble(InterpolationTable.lowGoalRear);
+                        frontVelocity = SmartDashboard.getNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
+                        rearVelocity = SmartDashboard.getNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
                     }
 
                     hood.set(hoodState);

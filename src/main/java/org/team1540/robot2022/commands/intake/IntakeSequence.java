@@ -17,9 +17,10 @@ public class IntakeSequence extends SequentialCommandGroup {
 
     /**
      * Constructs an IntakeSequence that spins up the shooter when full
-     * @param intake
-     * @param indexer
-     * @param shooter
+     *
+     * @param intake  the intake subsystem
+     * @param indexer the indexer subsystem
+     * @param shooter the shooter subsystem
      */
     public IntakeSequence(Intake intake, Indexer indexer, Shooter shooter) {
         this.intake = intake;
@@ -55,8 +56,8 @@ public class IntakeSequence extends SequentialCommandGroup {
 
     /**
      * Constructs an IntakeSequence that does not spin up the shooter when full
-     * @param intake
-     * @param indexer
+     * @param intake the intake subsystem
+     * @param indexer the indexer subsystem
      */
     public IntakeSequence(Intake intake, Indexer indexer) {
         this.intake = intake;
