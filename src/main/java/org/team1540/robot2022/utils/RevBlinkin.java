@@ -61,27 +61,27 @@ public class RevBlinkin extends Spark {
      * Enum for possible game stages
      */
     public enum GameStage {
-        AUTONOMOUS(ColorPattern.FIRE_MEDIUM, ColorScheme.RAINBOW),
-        TELEOP(ColorPattern.FIRE_MEDIUM, ColorScheme.RAINBOW),
+        AUTONOMOUS(ColorPattern.FIRE_MEDIUM, PatternTheme.RAINBOW),
+        TELEOP(ColorPattern.FIRE_MEDIUM, PatternTheme.RAINBOW),
         ENDGAME(ColorPattern.RAINBOW_PARTY, ColorPattern.RAINBOW_PARTY),
         DISABLE(ColorPattern.TWINKLES_RAINBOW, ColorPattern.TWINKLES_RAINBOW);
 
-        private final ColorScheme top;
-        private final ColorScheme bottom;
+        private final PatternTheme top;
+        private final PatternTheme bottom;
 
-        GameStage(ColorScheme top, ColorScheme bottom) {
+        GameStage(PatternTheme top, PatternTheme bottom) {
             this.top = top;
             this.bottom = bottom;
         }
 
-        GameStage(ColorPattern top, ColorScheme bottom) {
-            this.top = new ColorScheme(top);
+        GameStage(ColorPattern top, PatternTheme bottom) {
+            this.top = new PatternTheme(top);
             this.bottom = bottom;
         }
 
         GameStage(ColorPattern top, ColorPattern bottom) {
-            this.top = new ColorScheme(top);
-            this.bottom = new ColorScheme(bottom);
+            this.top = new PatternTheme(top);
+            this.bottom = new PatternTheme(bottom);
         }
 
         /**
@@ -218,17 +218,17 @@ public class RevBlinkin extends Spark {
     /**
      * Allows for theming effects based on alliance color
      */
-    public static class ColorScheme {
-        public static final ColorScheme RAINBOW = new ColorScheme(ColorPattern.RAINBOW_LAVA, ColorPattern.RAINBOW_OCEAN, ColorPattern.RAINBOW);
-        public static final ColorScheme BPM = new ColorScheme(ColorPattern.BPM_LAVA, ColorPattern.BPM_OCEAN, ColorPattern.BPM_OCEAN);
-        public static final ColorScheme WAVES = new ColorScheme(ColorPattern.WAVES_LAVA, ColorPattern.WAVES_OCEAN, ColorPattern.WAVES_RAINBOW);
-        public static final ColorScheme TWINKLES = new ColorScheme(ColorPattern.TWINKLES_LAVA, ColorPattern.TWINKLES_OCEAN, ColorPattern.TWINKLES_RAINBOW);
-        public static final ColorScheme SINELON = new ColorScheme(ColorPattern.SINELON_LAVA, ColorPattern.SINELON_OCEAN, ColorPattern.SINELON_RAINBOW);
-        public static final ColorScheme CHASE = new ColorScheme(ColorPattern.CHASE_RED, ColorPattern.CHASE_BLUE);
-        public static final ColorScheme HEARTBEAT = new ColorScheme(ColorPattern.HEARTBEAT_RED, ColorPattern.HEARTBEAT_BLUE);
-        public static final ColorScheme BREATH = new ColorScheme(ColorPattern.BREATH_RED, ColorPattern.BREATH_BLUE);
-        public static final ColorScheme SOLID = new ColorScheme(ColorPattern.RED, ColorPattern.BLUE);
-        public static final ColorScheme SHOT = new ColorScheme(ColorPattern.RED_SHOT, ColorPattern.BLUE_SHOT);
+    public static class PatternTheme {
+        public static final PatternTheme RAINBOW = new PatternTheme(ColorPattern.RAINBOW_LAVA, ColorPattern.RAINBOW_OCEAN, ColorPattern.RAINBOW);
+        public static final PatternTheme BPM = new PatternTheme(ColorPattern.BPM_LAVA, ColorPattern.BPM_OCEAN, ColorPattern.BPM_OCEAN);
+        public static final PatternTheme WAVES = new PatternTheme(ColorPattern.WAVES_LAVA, ColorPattern.WAVES_OCEAN, ColorPattern.WAVES_RAINBOW);
+        public static final PatternTheme TWINKLES = new PatternTheme(ColorPattern.TWINKLES_LAVA, ColorPattern.TWINKLES_OCEAN, ColorPattern.TWINKLES_RAINBOW);
+        public static final PatternTheme SINELON = new PatternTheme(ColorPattern.SINELON_LAVA, ColorPattern.SINELON_OCEAN, ColorPattern.SINELON_RAINBOW);
+        public static final PatternTheme CHASE = new PatternTheme(ColorPattern.CHASE_RED, ColorPattern.CHASE_BLUE);
+        public static final PatternTheme HEARTBEAT = new PatternTheme(ColorPattern.HEARTBEAT_RED, ColorPattern.HEARTBEAT_BLUE);
+        public static final PatternTheme BREATH = new PatternTheme(ColorPattern.BREATH_RED, ColorPattern.BREATH_BLUE);
+        public static final PatternTheme SOLID = new PatternTheme(ColorPattern.RED, ColorPattern.BLUE);
+        public static final PatternTheme SHOT = new PatternTheme(ColorPattern.RED_SHOT, ColorPattern.BLUE_SHOT);
 
 
         private final ColorPattern red;
@@ -242,7 +242,7 @@ public class RevBlinkin extends Spark {
          * @param bluePattern    The pattern for the blue alliance
          * @param defaultPattern The pattern to use if the robot doesn't know its alliance (like if not yet connected to the FMS)
          */
-        public ColorScheme(ColorPattern redPattern, ColorPattern bluePattern, ColorPattern defaultPattern) {
+        public PatternTheme(ColorPattern redPattern, ColorPattern bluePattern, ColorPattern defaultPattern) {
             this.red = redPattern;
             this.blue = bluePattern;
             this.other = defaultPattern;
@@ -254,7 +254,7 @@ public class RevBlinkin extends Spark {
          * @param redPattern  The pattern for the red alliance
          * @param bluePattern The pattern for the blue alliance
          */
-        public ColorScheme(ColorPattern redPattern, ColorPattern bluePattern) {
+        public PatternTheme(ColorPattern redPattern, ColorPattern bluePattern) {
             this.red = redPattern;
             this.blue = bluePattern;
             this.other = redPattern;
@@ -265,7 +265,7 @@ public class RevBlinkin extends Spark {
          *
          * @param pattern The pattern to use for both alliances
          */
-        public ColorScheme(ColorPattern pattern) {
+        public PatternTheme(ColorPattern pattern) {
             this.red = pattern;
             this.blue = pattern;
             this.other = pattern;
