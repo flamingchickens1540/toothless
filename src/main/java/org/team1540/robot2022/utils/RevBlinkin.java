@@ -208,6 +208,9 @@ public class RevBlinkin extends Spark {
         public static final ColorScheme WAVES = new ColorScheme(ColorPattern.WAVES_LAVA, ColorPattern.WAVES_OCEAN);
         public static final ColorScheme TWINKLES = new ColorScheme(ColorPattern.TWINKLES_LAVA, ColorPattern.TWINKLES_OCEAN);
         public static final ColorScheme SINELON = new ColorScheme(ColorPattern.SINELON_LAVA, ColorPattern.SINELON_OCEAN);
+        public static final ColorScheme SOLID = new ColorScheme(ColorPattern.RED, ColorPattern.BLUE);
+        public static final ColorScheme SHOT = new ColorScheme(ColorPattern.RED_SHOT, ColorPattern.BLUE_SHOT);
+        public static final ColorScheme BPM = new ColorScheme(ColorPattern.BPM_LAVA, ColorPattern.BPM_OCEAN);
 
 
         private final ColorPattern red;
