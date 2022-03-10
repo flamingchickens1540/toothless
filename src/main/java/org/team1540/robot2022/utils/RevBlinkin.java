@@ -1,8 +1,8 @@
 package org.team1540.robot2022.utils;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Wrapper for Rev Robotics Blinkin LED
@@ -46,9 +46,14 @@ public class RevBlinkin extends Spark {
         super.set(manualSetpoint);
     }
 
+    /**
+     * Applies the pattern set for a game stage
+     *
+     * @param stage What part of the game to set the pattern for
+     */
     public void applyPattern(GameStage stage) {
         ColorPattern pattern = this.isTop ? stage.getTop() : stage.getBottom();
-        System.out.println(isTop + ":" + pattern);
+        SmartDashboard.putString("lights/pattern" + (isTop ? "Top" : "Bottom"), pattern + "");
         this.set(pattern);
     }
 
@@ -79,10 +84,20 @@ public class RevBlinkin extends Spark {
             this.bottom = new ColorScheme(bottom);
         }
 
+        /**
+         * Gets the pattern for the top set of lights
+         *
+         * @return the pattern
+         */
         public ColorPattern getTop() {
             return this.top.get();
         }
 
+        /**
+         * Gets the pattern for the bottom set of lights
+         *
+         * @return the pattern
+         */
         public ColorPattern getBottom() {
             return this.bottom.get();
         }
@@ -200,37 +215,75 @@ public class RevBlinkin extends Spark {
         }
     }
 
+    /**
+     * Allows for theming effects based on alliance color
+     */
     public static class ColorScheme {
-        public static final ColorScheme RAINBOW = new ColorScheme(ColorPattern.RAINBOW_LAVA, ColorPattern.RAINBOW_OCEAN);
+        public static final ColorScheme RAINBOW = new ColorScheme(ColorPattern.RAINBOW_LAVA, ColorPattern.RAINBOW_OCEAN, ColorPattern.RAINBOW);
+        public static final ColorScheme BPM = new ColorScheme(ColorPattern.BPM_LAVA, ColorPattern.BPM_OCEAN, ColorPattern.BPM_OCEAN);
+        public static final ColorScheme WAVES = new ColorScheme(ColorPattern.WAVES_LAVA, ColorPattern.WAVES_OCEAN, ColorPattern.WAVES_RAINBOW);
+        public static final ColorScheme TWINKLES = new ColorScheme(ColorPattern.TWINKLES_LAVA, ColorPattern.TWINKLES_OCEAN, ColorPattern.TWINKLES_RAINBOW);
+        public static final ColorScheme SINELON = new ColorScheme(ColorPattern.SINELON_LAVA, ColorPattern.SINELON_OCEAN, ColorPattern.SINELON_RAINBOW);
         public static final ColorScheme CHASE = new ColorScheme(ColorPattern.CHASE_RED, ColorPattern.CHASE_BLUE);
         public static final ColorScheme HEARTBEAT = new ColorScheme(ColorPattern.HEARTBEAT_RED, ColorPattern.HEARTBEAT_BLUE);
         public static final ColorScheme BREATH = new ColorScheme(ColorPattern.BREATH_RED, ColorPattern.BREATH_BLUE);
-        public static final ColorScheme WAVES = new ColorScheme(ColorPattern.WAVES_LAVA, ColorPattern.WAVES_OCEAN);
-        public static final ColorScheme TWINKLES = new ColorScheme(ColorPattern.TWINKLES_LAVA, ColorPattern.TWINKLES_OCEAN);
-        public static final ColorScheme SINELON = new ColorScheme(ColorPattern.SINELON_LAVA, ColorPattern.SINELON_OCEAN);
         public static final ColorScheme SOLID = new ColorScheme(ColorPattern.RED, ColorPattern.BLUE);
         public static final ColorScheme SHOT = new ColorScheme(ColorPattern.RED_SHOT, ColorPattern.BLUE_SHOT);
-        public static final ColorScheme BPM = new ColorScheme(ColorPattern.BPM_LAVA, ColorPattern.BPM_OCEAN);
 
 
         private final ColorPattern red;
         private final ColorPattern blue;
+        private final ColorPattern other;
 
+        /**
+         * Constructs a ColorScheme that depends on the current alliance
+         *
+         * @param redPattern     The pattern for the red alliance
+         * @param bluePattern    The pattern for the blue alliance
+         * @param defaultPattern The pattern to use if the robot doesn't know its alliance (like if not yet connected to the FMS)
+         */
+        public ColorScheme(ColorPattern redPattern, ColorPattern bluePattern, ColorPattern defaultPattern) {
+            this.red = redPattern;
+            this.blue = bluePattern;
+            this.other = defaultPattern;
+        }
+
+        /**
+         * Constructs a ColorScheme that depends on the current alliance and uses red as its default
+         *
+         * @param redPattern  The pattern for the red alliance
+         * @param bluePattern The pattern for the blue alliance
+         */
         public ColorScheme(ColorPattern redPattern, ColorPattern bluePattern) {
             this.red = redPattern;
             this.blue = bluePattern;
+            this.other = redPattern;
         }
 
+        /**
+         * Constructs a ColorScheme that does not depend on the current alliance
+         *
+         * @param pattern The pattern to use for both alliances
+         */
         public ColorScheme(ColorPattern pattern) {
             this.red = pattern;
             this.blue = pattern;
+            this.other = pattern;
         }
 
+        /**
+         * Gets the {@link ColorPattern} for the current alliance, as reported by the FMS or driver station
+         *
+         * @return The themed pattern
+         */
         public ColorPattern get() {
-            if (DriverStation.getAlliance() == Alliance.Blue) {
-                return this.blue;
-            } else {
-                return this.red;
+            switch (DriverStation.getAlliance()) {
+                case Red:
+                    return this.red;
+                case Blue:
+                    return this.blue;
+                default:
+                    return this.other;
             }
         }
     }
