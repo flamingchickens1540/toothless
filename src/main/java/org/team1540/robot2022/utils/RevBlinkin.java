@@ -1,17 +1,16 @@
 package org.team1540.robot2022.utils;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import org.team1540.robot2022.Constants.LightConstants;
-
-import java.util.HashMap;
 
 /**
  * Wrapper for Rev Robotics Blinkin LED
  * Driver.
  */
 public class RevBlinkin extends Spark {
-    private HashMap<String, ColorPattern> mappings = new HashMap<String, ColorPattern>();
+
+    private final boolean isTop;
 
     /**
      * Construct an instance of a RevBlinkin
@@ -22,20 +21,10 @@ public class RevBlinkin extends Spark {
      * @throws IndexOutOfBoundsException If the specified PWM channel does not
      *                                   exist.
      */
-    public RevBlinkin(int channel) {
+    public RevBlinkin(int channel, boolean isTop) {
         super(channel);
 
-        mappings.put(Alliance.Blue + "" + GameStage.DISABLE, LightConstants.DISABLED);
-        mappings.put(Alliance.Red + "" + GameStage.DISABLE, LightConstants.DISABLED);
-
-        mappings.put(Alliance.Red + "" + GameStage.AUTONOMOUS, LightConstants.RED_AUTO);
-        mappings.put(Alliance.Blue + "" + GameStage.AUTONOMOUS, LightConstants.BLUE_AUTO);
-
-        mappings.put(Alliance.Red + "" + GameStage.TELEOP, LightConstants.RED_TELEOP);
-        mappings.put(Alliance.Blue + "" + GameStage.TELEOP, LightConstants.BLUE_TELEOP);
-
-        mappings.put(Alliance.Red + "" + GameStage.ENDGAME, LightConstants.RED_ENDGAME);
-        mappings.put(Alliance.Blue + "" + GameStage.ENDGAME, LightConstants.BLUE_ENDGAME);
+        this.isTop = isTop;
     }
 
     /**
@@ -57,12 +46,9 @@ public class RevBlinkin extends Spark {
         super.set(manualSetpoint);
     }
 
-    public ColorPattern getPattern(Alliance alliance, GameStage stage) {
-        return mappings.get(alliance + "" + stage);
-    }
-
-    public void applyPattern(Alliance alliance, GameStage stage) {
-        ColorPattern pattern = this.getPattern(alliance, stage);
+    public void applyPattern(GameStage stage) {
+        ColorPattern pattern = this.isTop ? stage.getTop() : stage.getBottom();
+        System.out.println(isTop + ":" + pattern);
         this.set(pattern);
     }
 
@@ -70,15 +56,35 @@ public class RevBlinkin extends Spark {
      * Enum for possible game stages
      */
     public enum GameStage {
-        AUTONOMOUS(1),
-        TELEOP(2),
-        ENDGAME(3),
-        DISABLE(4);
+        AUTONOMOUS(ColorPattern.FIRE_MEDIUM, ColorScheme.RAINBOW),
+        TELEOP(ColorPattern.FIRE_MEDIUM, ColorScheme.RAINBOW),
+        ENDGAME(ColorPattern.RAINBOW_PARTY, ColorPattern.RAINBOW_PARTY),
+        DISABLE(ColorPattern.TWINKLES_RAINBOW, ColorPattern.TWINKLES_RAINBOW);
 
-        final int stage;
+        private final ColorScheme top;
+        private final ColorScheme bottom;
 
-        GameStage(int stage) {
-            this.stage = stage;
+        GameStage(ColorScheme top, ColorScheme bottom) {
+            this.top = top;
+            this.bottom = bottom;
+        }
+
+        GameStage(ColorPattern top, ColorScheme bottom) {
+            this.top = new ColorScheme(top);
+            this.bottom = bottom;
+        }
+
+        GameStage(ColorPattern top, ColorPattern bottom) {
+            this.top = new ColorScheme(top);
+            this.bottom = new ColorScheme(bottom);
+        }
+
+        public ColorPattern getTop() {
+            return this.top.get();
+        }
+
+        public ColorPattern getBottom() {
+            return this.bottom.get();
         }
     }
 
@@ -87,7 +93,7 @@ public class RevBlinkin extends Spark {
      * <a href="http://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf">Blinkin
      * user manual.</a>
      */
-    public enum ColorPattern {
+    private enum ColorPattern {
         RAINBOW(-0.99),
         RAINBOW_PARTY(-0.97),
         RAINBOW_OCEAN(-0.95),
@@ -191,6 +197,38 @@ public class RevBlinkin extends Spark {
 
         ColorPattern(double setpoint) {
             this.setpoint = setpoint;
+        }
+    }
+
+    public static class ColorScheme {
+        public static final ColorScheme RAINBOW = new ColorScheme(ColorPattern.RAINBOW_LAVA, ColorPattern.RAINBOW_OCEAN);
+        public static final ColorScheme CHASE = new ColorScheme(ColorPattern.CHASE_RED, ColorPattern.CHASE_BLUE);
+        public static final ColorScheme HEARTBEAT = new ColorScheme(ColorPattern.HEARTBEAT_RED, ColorPattern.HEARTBEAT_BLUE);
+        public static final ColorScheme BREATH = new ColorScheme(ColorPattern.BREATH_RED, ColorPattern.BREATH_BLUE);
+        public static final ColorScheme WAVES = new ColorScheme(ColorPattern.WAVES_LAVA, ColorPattern.WAVES_OCEAN);
+        public static final ColorScheme TWINKLES = new ColorScheme(ColorPattern.TWINKLES_LAVA, ColorPattern.TWINKLES_OCEAN);
+        public static final ColorScheme SINELON = new ColorScheme(ColorPattern.SINELON_LAVA, ColorPattern.SINELON_OCEAN);
+
+
+        private final ColorPattern red;
+        private final ColorPattern blue;
+
+        public ColorScheme(ColorPattern redPattern, ColorPattern bluePattern) {
+            this.red = redPattern;
+            this.blue = bluePattern;
+        }
+
+        public ColorScheme(ColorPattern pattern) {
+            this.red = pattern;
+            this.blue = pattern;
+        }
+
+        public ColorPattern get() {
+            if (DriverStation.getAlliance() == Alliance.Blue) {
+                return this.blue;
+            } else {
+                return this.red;
+            }
         }
     }
 }

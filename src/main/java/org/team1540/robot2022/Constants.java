@@ -5,7 +5,6 @@
 package org.team1540.robot2022;
 
 import org.team1540.robot2022.utils.CurrentLimitConfig;
-import org.team1540.robot2022.utils.RevBlinkin.ColorPattern;
 
 public final class Constants {
     public static final int PNEUMATIC_HUB = 20;
@@ -85,16 +84,4 @@ public final class Constants {
         public static final double ZERO_SPIKE_CURRENT = 20;
     }
 
-    public static final class LightConstants {
-        public static final ColorPattern DISABLED = ColorPattern.FIRE_LARGE;
-
-        public static final ColorPattern RED_AUTO = ColorPattern.BPM_LAVA;
-        public static final ColorPattern BLUE_AUTO = ColorPattern.BPM_OCEAN;
-
-        public static final ColorPattern RED_TELEOP = ColorPattern.RAINBOW_LAVA;
-        public static final ColorPattern BLUE_TELEOP = ColorPattern.RAINBOW_OCEAN;
-
-        public static final ColorPattern RED_ENDGAME = ColorPattern.RAINBOW_PARTY;
-        public static final ColorPattern BLUE_ENDGAME = ColorPattern.RAINBOW_PARTY;
-    }
 }
