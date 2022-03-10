@@ -1,17 +1,16 @@
 package org.team1540.robot2022.utils;
 
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import org.team1540.robot2022.Constants.LightConstants;
-
-import java.util.HashMap;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Wrapper for Rev Robotics Blinkin LED
  * Driver.
  */
 public class RevBlinkin extends Spark {
-    private HashMap<String, ColorPattern> mappings = new HashMap<String, ColorPattern>();
+
+    private final boolean isTop;
 
     /**
      * Construct an instance of a RevBlinkin
@@ -22,20 +21,10 @@ public class RevBlinkin extends Spark {
      * @throws IndexOutOfBoundsException If the specified PWM channel does not
      *                                   exist.
      */
-    public RevBlinkin(int channel) {
+    public RevBlinkin(int channel, boolean isTop) {
         super(channel);
 
-        mappings.put(Alliance.Blue + "" + GameStage.DISABLE, LightConstants.DISABLED);
-        mappings.put(Alliance.Red + "" + GameStage.DISABLE, LightConstants.DISABLED);
-
-        mappings.put(Alliance.Red + "" + GameStage.AUTONOMOUS, LightConstants.RED_AUTO);
-        mappings.put(Alliance.Blue + "" + GameStage.AUTONOMOUS, LightConstants.BLUE_AUTO);
-
-        mappings.put(Alliance.Red + "" + GameStage.TELEOP, LightConstants.RED_TELEOP);
-        mappings.put(Alliance.Blue + "" + GameStage.TELEOP, LightConstants.BLUE_TELEOP);
-
-        mappings.put(Alliance.Red + "" + GameStage.ENDGAME, LightConstants.RED_ENDGAME);
-        mappings.put(Alliance.Blue + "" + GameStage.ENDGAME, LightConstants.BLUE_ENDGAME);
+        this.isTop = isTop;
     }
 
     /**
@@ -57,12 +46,14 @@ public class RevBlinkin extends Spark {
         super.set(manualSetpoint);
     }
 
-    public ColorPattern getPattern(Alliance alliance, GameStage stage) {
-        return mappings.get(alliance + "" + stage);
-    }
-
-    public void applyPattern(Alliance alliance, GameStage stage) {
-        ColorPattern pattern = this.getPattern(alliance, stage);
+    /**
+     * Applies the pattern set for a game stage
+     *
+     * @param stage What part of the game to set the pattern for
+     */
+    public void applyPattern(GameStage stage) {
+        ColorPattern pattern = this.isTop ? stage.getTop() : stage.getBottom();
+        SmartDashboard.putString("lights/pattern" + (isTop ? "Top" : "Bottom"), pattern + "");
         this.set(pattern);
     }
 
@@ -70,15 +61,45 @@ public class RevBlinkin extends Spark {
      * Enum for possible game stages
      */
     public enum GameStage {
-        AUTONOMOUS(1),
-        TELEOP(2),
-        ENDGAME(3),
-        DISABLE(4);
+        AUTONOMOUS(ColorPattern.FIRE_MEDIUM, PatternTheme.RAINBOW),
+        TELEOP(ColorPattern.FIRE_MEDIUM, PatternTheme.RAINBOW),
+        ENDGAME(ColorPattern.RAINBOW_PARTY, ColorPattern.RAINBOW_PARTY),
+        DISABLE(ColorPattern.TWINKLES_RAINBOW, ColorPattern.TWINKLES_RAINBOW);
 
-        final int stage;
+        private final PatternTheme top;
+        private final PatternTheme bottom;
 
-        GameStage(int stage) {
-            this.stage = stage;
+        GameStage(PatternTheme top, PatternTheme bottom) {
+            this.top = top;
+            this.bottom = bottom;
+        }
+
+        GameStage(ColorPattern top, PatternTheme bottom) {
+            this.top = new PatternTheme(top);
+            this.bottom = bottom;
+        }
+
+        GameStage(ColorPattern top, ColorPattern bottom) {
+            this.top = new PatternTheme(top);
+            this.bottom = new PatternTheme(bottom);
+        }
+
+        /**
+         * Gets the pattern for the top set of lights
+         *
+         * @return the pattern
+         */
+        public ColorPattern getTop() {
+            return this.top.get();
+        }
+
+        /**
+         * Gets the pattern for the bottom set of lights
+         *
+         * @return the pattern
+         */
+        public ColorPattern getBottom() {
+            return this.bottom.get();
         }
     }
 
@@ -87,7 +108,7 @@ public class RevBlinkin extends Spark {
      * <a href="http://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf">Blinkin
      * user manual.</a>
      */
-    public enum ColorPattern {
+    private enum ColorPattern {
         RAINBOW(-0.99),
         RAINBOW_PARTY(-0.97),
         RAINBOW_OCEAN(-0.95),
@@ -191,6 +212,79 @@ public class RevBlinkin extends Spark {
 
         ColorPattern(double setpoint) {
             this.setpoint = setpoint;
+        }
+    }
+
+    /**
+     * Allows for theming effects based on alliance color
+     */
+    public static class PatternTheme {
+        public static final PatternTheme RAINBOW = new PatternTheme(ColorPattern.RAINBOW_LAVA, ColorPattern.RAINBOW_OCEAN, ColorPattern.RAINBOW);
+        public static final PatternTheme BPM = new PatternTheme(ColorPattern.BPM_LAVA, ColorPattern.BPM_OCEAN, ColorPattern.BPM_OCEAN);
+        public static final PatternTheme WAVES = new PatternTheme(ColorPattern.WAVES_LAVA, ColorPattern.WAVES_OCEAN, ColorPattern.WAVES_RAINBOW);
+        public static final PatternTheme TWINKLES = new PatternTheme(ColorPattern.TWINKLES_LAVA, ColorPattern.TWINKLES_OCEAN, ColorPattern.TWINKLES_RAINBOW);
+        public static final PatternTheme SINELON = new PatternTheme(ColorPattern.SINELON_LAVA, ColorPattern.SINELON_OCEAN, ColorPattern.SINELON_RAINBOW);
+        public static final PatternTheme CHASE = new PatternTheme(ColorPattern.CHASE_RED, ColorPattern.CHASE_BLUE);
+        public static final PatternTheme HEARTBEAT = new PatternTheme(ColorPattern.HEARTBEAT_RED, ColorPattern.HEARTBEAT_BLUE);
+        public static final PatternTheme BREATH = new PatternTheme(ColorPattern.BREATH_RED, ColorPattern.BREATH_BLUE);
+        public static final PatternTheme SOLID = new PatternTheme(ColorPattern.RED, ColorPattern.BLUE);
+        public static final PatternTheme SHOT = new PatternTheme(ColorPattern.RED_SHOT, ColorPattern.BLUE_SHOT);
+
+
+        private final ColorPattern red;
+        private final ColorPattern blue;
+        private final ColorPattern other;
+
+        /**
+         * Constructs a ColorScheme that depends on the current alliance
+         *
+         * @param redPattern     The pattern for the red alliance
+         * @param bluePattern    The pattern for the blue alliance
+         * @param defaultPattern The pattern to use if the robot doesn't know its alliance (like if not yet connected to the FMS)
+         */
+        public PatternTheme(ColorPattern redPattern, ColorPattern bluePattern, ColorPattern defaultPattern) {
+            this.red = redPattern;
+            this.blue = bluePattern;
+            this.other = defaultPattern;
+        }
+
+        /**
+         * Constructs a ColorScheme that depends on the current alliance and uses red as its default
+         *
+         * @param redPattern  The pattern for the red alliance
+         * @param bluePattern The pattern for the blue alliance
+         */
+        public PatternTheme(ColorPattern redPattern, ColorPattern bluePattern) {
+            this.red = redPattern;
+            this.blue = bluePattern;
+            this.other = redPattern;
+        }
+
+        /**
+         * Constructs a ColorScheme that does not depend on the current alliance
+         *
+         * @param pattern The pattern to use for both alliances
+         */
+        public PatternTheme(ColorPattern pattern) {
+            this.red = pattern;
+            this.blue = pattern;
+            this.other = pattern;
+        }
+
+        /**
+         * Gets the {@link ColorPattern} for the current alliance, as reported by the FMS or driver station
+         *
+         * @return The themed pattern
+         */
+        public ColorPattern get() {
+            switch (DriverStation.getAlliance()) {
+                case Red:
+                    return this.red;
+                case Blue:
+                    return this.blue;
+                default:
+                    return this.other;
+            }
         }
     }
 }

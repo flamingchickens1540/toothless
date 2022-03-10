@@ -5,8 +5,6 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -30,13 +28,13 @@ import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
 import org.team1540.robot2022.utils.*;
-import org.team1540.robot2022.utils.RevBlinkin.GameStage;
 
 public class RobotContainer {
     private final boolean ENABLE_COMPRESSOR = true;
 
     // Hardware
-    public final RevBlinkin robotLEDs = new RevBlinkin(0);
+    public final RevBlinkin topLEDs = new RevBlinkin(9, true);
+    public final RevBlinkin bottomLEDs = new RevBlinkin(8, false);
     public final Limelight limelight = new Limelight("limelight");
     public final NavX navx = new NavX(SPI.Port.kMXP);
     public final PneumaticHub ph = new PneumaticHub(Constants.PNEUMATIC_HUB);
@@ -182,9 +180,6 @@ public class RobotContainer {
         var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
         var teleop = new Trigger(DriverStation::isTeleopEnabled);
 
-        teleop.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP));
-        autonomous.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.AUTONOMOUS));
-        disabled.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.DISABLE));
 
         // Enable break mode when enabled
         enabled.whenActive(() -> {
@@ -221,11 +216,7 @@ public class RobotContainer {
         autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx));
         autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx));
 
-        Shuffleboard.getTab("Autonomous")
-                .add("Auto Selector", autoChooser)
-                .withPosition(5, 0)
-                .withSize(5, 1)
-                .withWidget(BuiltInWidgets.kSplitButtonChooser);
+        SmartDashboard.putData("autoSelector", autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
 
         // Indexer values
