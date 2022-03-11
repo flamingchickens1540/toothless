@@ -31,9 +31,7 @@ public class FFTankDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-//        drivetrain.setNeutralMode(NeutralMode.Coast);
-        // double triggers = MathUtils.deadzone(controller.getLeftTriggerAxis(), deadzone) - MathUtils.deadzone(controller.getRightTriggerAxis(), deadzone);
-        double triggers = 0;
+        double triggers = MathUtils.deadzone(controller.getLeftTriggerAxis(), deadzone) - MathUtils.deadzone(controller.getRightTriggerAxis(), deadzone);
         deadzone = SmartDashboard.getNumber("drivetrain/tankDrive/deadzone", 0.15);
         double leftThrottle = scaleStickToVelocity(MathUtils.deadzone(controller.getLeftY(), deadzone) + triggers);
         double rightThrottle = scaleStickToVelocity(MathUtils.deadzone(controller.getRightY(), deadzone) + triggers);
