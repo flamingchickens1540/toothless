@@ -53,7 +53,10 @@ public class FeatherClient {
     }
 
     /**
-     * Initialize feather by creating the directory structure and resetting the match timer. This should be called in autonomousInit
+     * Initialize a feather match. This should be called in autonomousInit.
+     * - Resets the match timer
+     * - Creates the directory structure
+     * - Schedules the match info update command
      */
     public static void initialize() {
         timer.reset();
