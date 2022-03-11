@@ -96,8 +96,7 @@ public class Robot extends TimedRobot {
         robotContainer.bottomLEDs.applyPattern(RevBlinkin.GameStage.AUTONOMOUS);
 
         new ClimberZeroCommand(robotContainer.climber).schedule();
-        FeatherClient.resetTimer();
-        robotContainer.updateMatchInfo.schedule();
+        FeatherClient.initialize();
     }
 
     /**

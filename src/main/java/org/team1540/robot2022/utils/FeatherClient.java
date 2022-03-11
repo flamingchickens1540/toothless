@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.team1540.robot2022.commands.util.UpdateMatchInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class FeatherClient {
     private static ShootingParameters lastShot;
     private static boolean isLastShotFirstBall; // else second ball
 
-    private static String matchId = "unknown";
+    private static String matchDirectoryPrefix;
 
     /**
      * Attempt to update matchId when the robot receives the FMS matchInfo packet
@@ -33,23 +34,45 @@ public class FeatherClient {
      */
     public static boolean updateMatchId() {
         if (DriverStation.getMatchType() != DriverStation.MatchType.None) {
-            matchId = String.format("%s-%dr%d-%s%d",
+            String matchId = String.format("%s-%dr%d-%s%d",
                     DriverStation.getEventName(),
                     DriverStation.getMatchNumber(),
                     DriverStation.getReplayNumber(),
                     DriverStation.getAlliance() + "",
                     DriverStation.getLocation());
-            return true;
+
+            // Write shot log to file
+            try {
+                Files.writeString(Paths.get(matchDirectoryPrefix + "/matchId"), matchId + System.lineSeparator(), StandardOpenOption.CREATE);
+                return true;
+            } catch (IOException e) {
+                DriverStation.reportError("[feather] Unable to create matchId file: " + e, true);
+            }
         }
         return false;
     }
 
     /**
-     * Resets the match timer. This should be called in autonomousInit
+     * Initialize feather by creating the directory structure and resetting the match timer. This should be called in autonomousInit
      */
-    public static void resetTimer() {
+    public static void initialize() {
         timer.reset();
         timer.start();
+
+        matchDirectoryPrefix = "/home/lvuser/feather/matches/" + UUID.randomUUID();
+
+        // Create match directory
+        File directory = new File(matchDirectoryPrefix);
+        if (!directory.exists()) directory.mkdirs();
+
+        // Create shot log file
+        try {
+            Files.writeString(Paths.get(matchDirectoryPrefix + "/shots.jsonl"), "", StandardOpenOption.CREATE);
+        } catch (IOException e) {
+            DriverStation.reportError("[feather] Unable to create shot log file: " + e, true);
+        }
+
+        new UpdateMatchInfo().schedule();
     }
 
     /**
@@ -62,25 +85,16 @@ public class FeatherClient {
     }
 
     /**
-     * Gets a match identifier including the event name, match and replay numbers, and alliance station.
-     *
-     * @return match ID
-     */
-    private static String getMatchID() {
-        return matchId;
-    }
-
-    /**
      * Record a shot and result to a local file
      *
      * @param shot shooting parameters
      */
     private static void commitShot(ShootingParameters shot) {
-        String jsonString = String.format("{\"matchId\": \"%s\", \"timer\": %f, " +
+        String jsonString = String.format("{\"id\": \"%s\", \"timer\": %f, " +
                         "\"limelightDistance\": %f, \"lidarDistance\": %f, " +
                         "\"frontRPM\": %f, \"rearRPM\": %f, \"hoodUp\": %b, \"profile\": \"%s\", " +
                         "\"firstResult\": %s, \"secondResult\": %s}",
-                shot.matchId, lastShot.matchSeconds,
+                shot.uuid, shot.matchSeconds,
                 shot.limelightDistance, shot.lidarDistance,
                 shot.frontRPM, shot.rearRPM, shot.hoodUp, shot.profile + "",
                 shot.firstBall + "", shot.secondBall + ""
@@ -88,9 +102,9 @@ public class FeatherClient {
 
         // Write shot log to file
         try {
-            Files.writeString(Paths.get(shot.directoryPrefix + "/shot.json"), jsonString + System.lineSeparator(), StandardOpenOption.CREATE);
+            Files.writeString(Paths.get(matchDirectoryPrefix + "/shots.jsonl"), jsonString + System.lineSeparator(), StandardOpenOption.APPEND);
         } catch (IOException e) {
-            DriverStation.reportError("[feather] Unable to create shot log file: " + e, true);
+            DriverStation.reportError("[feather] Unable to append to shot log file: " + e, true);
         }
     }
 
@@ -190,7 +204,7 @@ public class FeatherClient {
     }
 
     /**
-     * Shooting parameters
+     * Stores shooting configuration values, raw sensor outputs, and ball results
      */
     private static class ShootingParameters {
         public double limelightDistance;
@@ -200,11 +214,11 @@ public class FeatherClient {
         public boolean hoodUp;
         public String profile;
 
-        public String matchId;
         public double matchSeconds;
         public ShotResult firstBall;
         public ShotResult secondBall;
-        public String directoryPrefix;
+
+        public String uuid;
 
         public ShootingParameters(double limelightDistance, double lidarDistance,
                                   double frontRPM, double rearRPM, boolean hoodUp,
@@ -216,19 +230,12 @@ public class FeatherClient {
             this.hoodUp = hoodUp;
             this.profile = profile;
 
-            this.matchId = getMatchID();
             this.matchSeconds = getTimer();
-
-            // Generate a directory name with match ID and a random UUID to handle tethered testing and FMS problems
-            this.directoryPrefix = "/home/lvuser/feather/" + this.matchId + "_" + UUID.randomUUID();
-
-            // Create match directory
-            File directory = new File(this.directoryPrefix);
-            if (!directory.exists()) directory.mkdirs();
+            this.uuid = UUID.randomUUID() + "";
 
             // Write limelight image
             CameraServer.getVideo("limelight").grabFrame(mat);
-            Imgcodecs.imwrite(this.directoryPrefix + "/limelight-" + this.matchId + ".png", mat);
+            Imgcodecs.imwrite(matchDirectoryPrefix + "/limelight-" + this.uuid + ".png", mat);
         }
     }
 
