@@ -9,7 +9,10 @@ import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.shooter.Shooter.ShooterProfile;
-import org.team1540.robot2022.utils.*;
+import org.team1540.robot2022.utils.FeatherClient;
+import org.team1540.robot2022.utils.LIDAR;
+import org.team1540.robot2022.utils.Limelight;
+import org.team1540.robot2022.utils.NavX;
 
 public class ShootSequence extends SequentialCommandGroup {
     private final Shooter shooter;
@@ -86,6 +89,16 @@ public class ShootSequence extends SequentialCommandGroup {
     public void setProfile(ShooterProfile profile) {
         System.out.println("Setting profile " + profile);
         this.profile = profile;
+    }
+
+    /**
+     * Factory method for setting the profile
+     *
+     * @param profile The profile to set to
+     * @return The InstantCommand that sets the profile
+     */
+    public InstantCommand commandSetProfile(ShooterProfile profile) {
+        return new InstantCommand(() -> this.setProfile(profile));
     }
 
     @Override

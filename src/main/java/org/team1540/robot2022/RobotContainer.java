@@ -7,10 +7,7 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -30,8 +27,6 @@ import org.team1540.robot2022.commands.shooter.Shooter;
 import org.team1540.robot2022.utils.*;
 
 public class RobotContainer {
-    private final boolean ENABLE_COMPRESSOR = true;
-
     // Hardware
     public final RevBlinkin topLEDs = new RevBlinkin(9, true);
     public final RevBlinkin bottomLEDs = new RevBlinkin(8, false);
@@ -51,14 +46,14 @@ public class RobotContainer {
     // Controllers
     public final XboxController driverController = new XboxController(0);
     public final XboxController copilotController = new XboxController(1);
-
     // Buttons
+
     public final DigitalInput zeroOdometry = new DigitalInput(0);
+
 
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
 
     // coop:button(LJoystick,Left climber up/down,copilot)
     // coop:button(RJoystick,Right climber up/down,copilot)
@@ -66,13 +61,18 @@ public class RobotContainer {
     // coop:button(RTrigger,Climber down,copilot)
     public final ClimberUpDownCommand climberUpDownCommand = new ClimberUpDownCommand(climber, copilotController);
 
+
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
+    // coop:button(LTrigger,Drive forward,pilot)
+    // coop:button(RTrigger,Drive reverse,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
-    // Unsure what buttons to assign to this, currently uses triggers when called.
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
     public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
 
+
+    private final boolean ENABLE_COMPRESSOR = true;
     // Misc
     private final SendableChooser<AutoSequence> autoChooser = new SendableChooser<>();
 
@@ -92,17 +92,21 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
 
-        // coop:button(LBumper,Shoot [hold],pilot)
+        // coop:button(LBumper,Shoot HUB [hold],pilot)
+        // coop:button(RBumper,Shoot FAR [hold],pilot)
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(shootSequence);
+                .or(new JoystickButton(driverController, Button.kRightBumper.value))
+                .whileActiveOnce(new SequentialCommandGroup(
+                        new InstantCommand(() -> {
+                            if (driverController.getLeftBumper()) {
+                                shootSequence.setProfile(Shooter.ShooterProfile.HUB);
+                            } else {
+                                shootSequence.setProfile(Shooter.ShooterProfile.FAR);
+                            }
+                        }),
+                        shootSequence
+                ));
 
-        // coop:button(LTrigger,Shoot [hold],pilot)
-        new Trigger(() -> driverController.getLeftTriggerAxis() == 1)
-                .whileActiveOnce(shootSequence);
-
-        // coop:button(RBumper,Point to target [hold],pilot)
-        new JoystickButton(driverController, Button.kRightBumper.value)
-                .whenHeld(new PointToTarget(drivetrain, limelight, navx));
 
         // coop:button(DPadUp,Shoot from touching hub [press],pilot)
         new POVButton(driverController, DPadAxis.UP)
@@ -241,6 +245,7 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxVelocity", 1);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxAcceleration", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/deadzone", 0.15);
 
         // Climber values
         ChickenSmartDashboard.putDefaultNumber("climber/PID/kP", 0.3);
