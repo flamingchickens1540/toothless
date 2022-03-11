@@ -43,7 +43,6 @@ public class ShootSequence extends SequentialCommandGroup {
                         () -> !this.profile.equals(ShooterProfile.HUB)
                 ),
                 new InstantCommand(() -> {
-                    new WaitUntilCommand(()->!indexer.getBottomSensor());
                     if (this.profile == ShooterProfile.TESTING) {
                         hoodState = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointHood.getBoolean(true);
                         frontVelocity = ChickenShuffleboard.ShooterTab.Tuning.manualSetpointFront.getDouble(1000);

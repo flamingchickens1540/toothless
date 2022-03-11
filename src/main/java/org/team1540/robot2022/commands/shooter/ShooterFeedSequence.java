@@ -31,7 +31,7 @@ public class ShooterFeedSequence extends SequentialCommandGroup {
                                 new WaitUntilCommand(shooter::isSpunUp),                                                  // Wait until flywheel is spun up again
                                 indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL), // Run both indexer wheels to shoot bottom ball
                                 new WaitUntilCommand(() -> !indexer.getTopSensor()),      // Wait until ball leaves top of indexer
-                                new WaitCommand(0.5)                                      // Wait for bottom ball to be fully shot before stopping flywheels TODO: Can we reduce this?
+                                new WaitUntilCommand(()->!indexer.getBottomSensor())                                      // Wait for bottom ball to be fully shot before stopping flywheels TODO: Can we reduce this?
                         ),
                         new InstantCommand(),
                         indexer::getBottomSensor
