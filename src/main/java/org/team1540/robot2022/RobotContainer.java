@@ -181,6 +181,7 @@ public class RobotContainer {
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
+        SmartDashboard.putData("shooter/enableTestProfile", new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.TESTING)));
     }
 
     private void initModeTransitionBindings() {
