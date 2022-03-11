@@ -143,9 +143,7 @@ public class Shooter extends SubsystemBase {
      * @return new InstantCommand
      */
     public Command commandSetVelocity(double front, double rear) {
-        return new InstantCommand(() -> {
-            this.setVelocityRPM(front, rear);
-        }, this);
+        return new InstantCommand(() -> this.setVelocityRPM(front, rear), this);
     }
 
     /**
@@ -182,6 +180,11 @@ public class Shooter extends SubsystemBase {
         /**
          * Choose HUB, TARMAC, or FAR based on LIDAR distance
          */
-        AUTOMATIC
+        AUTOMATIC,
+
+        /**
+         * Use manual setpoints from SmartDashboard
+         */
+        TESTING
     }
 }

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
 import org.team1540.robot2022.utils.FeatherClient;
+import org.team1540.robot2022.utils.RevBlinkin;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -35,9 +36,10 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         // Instantiate our RobotContainer. This will perform all our button bindings,
-        // and put our
-        // autonomous chooser on the dashboard.
+        // and put our autonomous chooser on the dashboard.
         this.robotContainer = new RobotContainer();
+        
+        robotContainer.limelight.setLeds(false);
     }
 
     /**
@@ -66,7 +68,7 @@ public class Robot extends TimedRobot {
         robotContainer.limelight.updateSmartDashboardValues();
 
         SmartDashboard.putBoolean("pneumatics/pressureSwitch", robotContainer.ph.getPressureSwitch());
-        SmartDashboard.putString("shooter/profile", robotContainer.shootSequence.profile+"");
+        SmartDashboard.putString("shooter/profile", robotContainer.shootSequence.profile + "");
     }
 
     /**
@@ -75,6 +77,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         robotContainer.limelight.setLeds(false);
+        robotContainer.topLEDs.applyPattern(RevBlinkin.GameStage.DISABLE);
+        robotContainer.bottomLEDs.applyPattern(RevBlinkin.GameStage.DISABLE);
     }
 
     @Override
@@ -88,6 +92,8 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.schedule();
         }
+        robotContainer.topLEDs.applyPattern(RevBlinkin.GameStage.AUTONOMOUS);
+        robotContainer.bottomLEDs.applyPattern(RevBlinkin.GameStage.AUTONOMOUS);
 
         new ClimberZeroCommand(robotContainer.climber).schedule();
         FeatherClient.resetTimer();
@@ -106,9 +112,11 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+        robotContainer.topLEDs.applyPattern(RevBlinkin.GameStage.TELEOP);
+        robotContainer.bottomLEDs.applyPattern(RevBlinkin.GameStage.TELEOP);
 
         robotContainer.drivetrain.setDefaultCommand(robotContainer.ffTankDriveCommand);
-        
+
         new ClimberUpDownCommand(robotContainer.climber, robotContainer.copilotController).schedule();
     }
 

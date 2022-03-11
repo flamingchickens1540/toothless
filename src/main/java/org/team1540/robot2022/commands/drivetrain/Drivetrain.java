@@ -1,15 +1,8 @@
 package org.team1540.robot2022.commands.drivetrain;
 
-import java.util.HashMap;
-import java.util.Map;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import org.team1540.robot2022.Constants;
-import org.team1540.robot2022.Constants.DriveConstants.Motors;
-import org.team1540.robot2022.utils.ChickenTalonFX;
-import org.team1540.robot2022.utils.NavX;
-import org.team1540.robot2022.utils.AutoHelper.AutoPath;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -23,6 +16,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2022.Constants;
+import org.team1540.robot2022.Constants.DriveConstants.Motors;
+import org.team1540.robot2022.utils.AutoHelper.AutoPath;
+import org.team1540.robot2022.utils.ChickenTalonFX;
+import org.team1540.robot2022.utils.NavX;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Drivetrain extends SubsystemBase {
     public final ChickenTalonFX driveLFront = new ChickenTalonFX(Motors.LEFT_FRONT);
@@ -214,23 +215,24 @@ public class Drivetrain extends SubsystemBase {
     }
 
 
-    public class DashboardField {
+    public static class DashboardField {
         private final String defaultColor = "#FFFFFFFF";
 
         protected final Field2d field = new Field2d();
-        private Map<String, Object> widgetProperties = new HashMap<>();
+        private final Map<String, Object> widgetProperties = new HashMap<>();
         private final ComplexWidget widget = Shuffleboard.getTab("Autonomous")
-            .add(field)
-            .withPosition(0, 0)
-            .withWidget(BuiltInWidgets.kField)
-            .withSize(5, 3)
-            .withProperties(widgetProperties);
+                .add(field)
+                .withPosition(0, 0)
+                .withWidget(BuiltInWidgets.kField)
+                .withSize(5, 3)
+                .withProperties(widgetProperties);
 
 
         /**
          * Sets the color for a path
+         *
          * @param pathname the name of the path
-         * @param color the color to set it to (#RRGGBBAA)
+         * @param color    the color to set it to (#RRGGBBAA)
          */
         public void setPathColor(String pathname, String color) {
             widgetProperties.put(pathname, color);
@@ -239,28 +241,28 @@ public class Drivetrain extends SubsystemBase {
 
         /**
          * Sets the color for a path
-         * @param path the path
+         *
+         * @param path  the path
          * @param color the color to set it to (#RRGGBBAA)
          */
         public void setPathColor(AutoPath path, String color) {
             widgetProperties.put(path.name, color);
             widget.withProperties(widgetProperties);
         }
-        
+
 
         /**
          * Resets all path colors to the default
          */
         public void resetPathColors() {
-            widgetProperties.forEach((key, value) -> {
-                this.setPathColor(key, defaultColor);
-            });
-            
+            widgetProperties.forEach((key, value) -> this.setPathColor(key, defaultColor));
+
         }
 
         /**
          * Adds a path to the field object
-         * @param pathname The name of the path
+         *
+         * @param pathname   The name of the path
          * @param trajectory The path's trajectory
          */
         public void addPath(String pathname, Trajectory trajectory) {
@@ -270,6 +272,7 @@ public class Drivetrain extends SubsystemBase {
 
         /**
          * Adds a path to the field object
+         *
          * @param path an AutoPath
          */
         public void addPath(AutoPath path) {

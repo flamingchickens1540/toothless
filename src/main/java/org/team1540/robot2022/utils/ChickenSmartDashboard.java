@@ -9,11 +9,11 @@ public final class ChickenSmartDashboard {
      *
      * @param key          the key to be assigned to
      * @param defaultValue the value to be set if no value is found
-     * @return False if the table key already exists with a different type
      * @see SmartDashboard#putNumber
      */
-    public static boolean putDefaultNumber(String key, double defaultValue) {
-        return SmartDashboard.putNumber(key, SmartDashboard.getNumber(key, defaultValue));
+    public static void putDefaultNumber(String key, double defaultValue) {
+        SmartDashboard.putNumber(key, SmartDashboard.getNumber(key, defaultValue));
+        SmartDashboard.setPersistent(key);
     }
 
     /**
@@ -21,11 +21,11 @@ public final class ChickenSmartDashboard {
      *
      * @param key          the key to be assigned to
      * @param defaultValue the value to be set if no value is found
-     * @return False if the table key already exists with a different type
      * @see SmartDashboard#putBoolean
      */
-    public static boolean putDefaultBoolean(String key, boolean defaultValue) {
-        return SmartDashboard.putBoolean(key, SmartDashboard.getBoolean(key, defaultValue));
+    public static void putDefaultBoolean(String key, boolean defaultValue) {
+        SmartDashboard.putBoolean(key, SmartDashboard.getBoolean(key, defaultValue));
+        SmartDashboard.setPersistent(key);
     }
 
     /**
@@ -33,10 +33,10 @@ public final class ChickenSmartDashboard {
      *
      * @param key          the key to be assigned to
      * @param defaultValue the value to be set if no value is found
-     * @return False if the table key already exists with a different type
      * @see SmartDashboard#putString
      */
-    public static boolean putDefaultString(String key, String defaultValue) {
-        return SmartDashboard.putString(key, SmartDashboard.getString(key, defaultValue));
+    public static void putDefaultString(String key, String defaultValue) {
+        SmartDashboard.putString(key, SmartDashboard.getString(key, defaultValue));
+        SmartDashboard.setPersistent(key);
     }
 }

@@ -157,9 +157,7 @@ public class Indexer extends SubsystemBase {
      * @return an InstantCommand that sets the motors
      */
     public Command commandSet(IndexerState topMode, IndexerState bottomMode) {
-        return new InstantCommand(() -> {
-            this.set(topMode, bottomMode);
-        }, this);
+        return new InstantCommand(() -> this.set(topMode, bottomMode), this);
     }
 
     /**
@@ -169,9 +167,7 @@ public class Indexer extends SubsystemBase {
      * @return an InstantCommand that sets the motor
      */
     public Command commandSetTop(IndexerState mode) {
-        return new InstantCommand(() -> {
-            this.setTop(mode);
-        }, this);
+        return new InstantCommand(() -> this.setTop(mode), this);
     }
 
     /**
@@ -181,9 +177,7 @@ public class Indexer extends SubsystemBase {
      * @return an InstantCommand that sets the motor
      */
     public Command commandSetBottom(IndexerState mode) {
-        return new InstantCommand(() -> {
-            this.setBottom(mode);
-        }, this);
+        return new InstantCommand(() -> this.setBottom(mode), this);
     }
 
     /**

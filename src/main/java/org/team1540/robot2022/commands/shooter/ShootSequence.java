@@ -12,6 +12,7 @@ import org.team1540.robot2022.commands.shooter.Shooter.ShooterProfile;
 import org.team1540.robot2022.utils.FeatherClient;
 import org.team1540.robot2022.utils.LIDAR;
 import org.team1540.robot2022.utils.Limelight;
+import org.team1540.robot2022.utils.NavX;
 
 public class ShootSequence extends SequentialCommandGroup {
     private final Shooter shooter;
@@ -27,11 +28,12 @@ public class ShootSequence extends SequentialCommandGroup {
     private double rearVelocity;
     private boolean hoodState; // New state to set the hood to
 
-    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar, Shooter.ShooterProfile m_profile, boolean pointToTarget) {
+    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar, NavX navX, Shooter.ShooterProfile m_profile, boolean pointToTarget) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
         this.profile = m_profile;
+        // this.profile = Shooter.ShooterProfile.FAR;
 
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
@@ -45,7 +47,11 @@ public class ShootSequence extends SequentialCommandGroup {
                         () -> !this.profile.equals(ShooterProfile.HUB)
                 ),
                 new InstantCommand(() -> {
-                    if (this.profile == Shooter.ShooterProfile.FAR) {
+                    if (this.profile == ShooterProfile.TESTING) {
+                        hoodState = true;
+                        frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
+                        rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
+                    } else if (this.profile == Shooter.ShooterProfile.FAR) {
                         hoodState = true;
                         frontVelocity = interpolationTable.frontFlywheelInterpolator.getInterpolatedValue(limelightDistance);
                         rearVelocity = interpolationTable.rearFlywheelInterpolator.getInterpolatedValue(limelightDistance);
@@ -63,17 +69,12 @@ public class ShootSequence extends SequentialCommandGroup {
                         rearVelocity = SmartDashboard.getNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
                     }
 
-                    // Used for tuning:
-                    // hoodState = true;
-                    // frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
-                    // rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
-
                     hood.set(hoodState);
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
                 }),
 
                 new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
-                        new PointToTarget(drivetrain, limelight).withTimeout(2),
+                        new PointToTarget(drivetrain, limelight, navX).withTimeout(2),
                         new InstantCommand(),
                         () -> limelight.isTargetFound() && !this.profile.equals(ShooterProfile.HUB) && pointToTarget
                 ),
@@ -84,12 +85,25 @@ public class ShootSequence extends SequentialCommandGroup {
         );
     }
 
+
     public void setProfile(ShooterProfile profile) {
+        System.out.println("Setting profile " + profile);
         this.profile = profile;
+    }
+
+    /**
+     * Factory method for setting the profile
+     *
+     * @param profile The profile to set to
+     * @return The InstantCommand that sets the profile
+     */
+    public InstantCommand commandSetProfile(ShooterProfile profile) {
+        return new InstantCommand(() -> this.setProfile(profile));
     }
 
     @Override
     public void end(boolean isInterrupted) {
+        System.out.println("Stopping ShootSequence");
         shooter.stop();
         indexer.stop();
         if (limelight != null) {

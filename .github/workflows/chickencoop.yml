@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
-      - run: npx chickencoop -i src/main/java/org/team1540/robot2022/RobotContainer.java -o controls.pdf
+      - run: npx chickencoop -i src/main/java/org/team1540/robot2022/RobotContainer.java -o controls.pdf --error
       - uses: actions/upload-artifact@v2
         with:
           name: Controls Diagram

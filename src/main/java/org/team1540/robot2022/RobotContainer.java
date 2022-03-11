@@ -5,14 +5,9 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -31,13 +26,11 @@ import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
 import org.team1540.robot2022.commands.util.UpdateMatchInfo;
 import org.team1540.robot2022.utils.*;
-import org.team1540.robot2022.utils.RevBlinken.GameStage;
 
 public class RobotContainer {
-    private final boolean ENABLE_COMPRESSOR = true;
-
     // Hardware
-    public final RevBlinken robotLEDs = new RevBlinken(0);
+    public final RevBlinkin topLEDs = new RevBlinkin(9, true);
+    public final RevBlinkin bottomLEDs = new RevBlinkin(8, false);
     public final Limelight limelight = new Limelight("limelight");
     public final NavX navx = new NavX(SPI.Port.kMXP);
     public final PneumaticHub ph = new PneumaticHub(Constants.PNEUMATIC_HUB);
@@ -57,12 +50,13 @@ public class RobotContainer {
     public final XboxController featherController = new XboxController(3);
 
     // Buttons
+
     public final DigitalInput zeroOdometry = new DigitalInput(0);
+
 
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, Shooter.ShooterProfile.HUB, true);
     public final UpdateMatchInfo updateMatchInfo = new UpdateMatchInfo();
 
     // coop:button(LJoystick,Left climber up/down,copilot)
@@ -71,13 +65,18 @@ public class RobotContainer {
     // coop:button(RTrigger,Climber down,copilot)
     public final ClimberUpDownCommand climberUpDownCommand = new ClimberUpDownCommand(climber, copilotController);
 
+
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
+    // coop:button(LTrigger,Drive forward,pilot)
+    // coop:button(RTrigger,Drive reverse,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
-    // Unsure what buttons to assign to this, currently uses triggers when called.
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
     public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
 
+
+    private final boolean ENABLE_COMPRESSOR = true;
     // Misc
     private final SendableChooser<AutoSequence> autoChooser = new SendableChooser<>();
 
@@ -97,17 +96,21 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
 
-        // coop:button(LBumper,Shoot [hold],pilot)
+        // coop:button(LBumper,Shoot HUB [hold],pilot)
+        // coop:button(RBumper,Shoot FAR [hold],pilot)
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(shootSequence);
+                .or(new JoystickButton(driverController, Button.kRightBumper.value))
+                .whileActiveOnce(new SequentialCommandGroup(
+                        new InstantCommand(() -> {
+                            if (driverController.getLeftBumper()) {
+                                shootSequence.setProfile(Shooter.ShooterProfile.HUB);
+                            } else {
+                                shootSequence.setProfile(Shooter.ShooterProfile.FAR);
+                            }
+                        }),
+                        shootSequence
+                ));
 
-        // coop:button(LTrigger,Shoot [hold],pilot)
-        new Trigger(() -> driverController.getLeftTriggerAxis() == 1)
-                .whileActiveOnce(shootSequence);
-
-        // coop:button(RBumper,Point to target [hold],pilot)
-        new JoystickButton(driverController, Button.kRightBumper.value)
-                .whenHeld(new PointToTarget(drivetrain, limelight));
 
         // coop:button(DPadUp,Shoot from touching hub [press],pilot)
         new POVButton(driverController, DPadAxis.UP)
@@ -186,9 +189,6 @@ public class RobotContainer {
         var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
         var teleop = new Trigger(DriverStation::isTeleopEnabled);
 
-        teleop.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.TELEOP));
-        autonomous.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.AUTONOMOUS));
-        disabled.whenActive(() -> robotLEDs.applyPattern(DriverStation.getAlliance(), GameStage.DISABLE));
 
         // Enable break mode when enabled
         enabled.whenActive(() -> {
@@ -217,18 +217,15 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, false));
-        autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, true));
-        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, true));
-        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, false));
-        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood));
-        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood));
 
-        Shuffleboard.getTab("Autonomous")
-                .add("Auto Selector", autoChooser)
-                .withPosition(5, 0)
-                .withSize(5, 1)
-                .withWidget(BuiltInWidgets.kSplitButtonChooser);
+        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, false));
+        autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, true));
+        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, true));
+        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, false));
+        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx));
+        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx));
+
+        SmartDashboard.putData("autoSelector", autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
 
         // Indexer values
@@ -253,6 +250,7 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxVelocity", 1);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxAcceleration", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/deadzone", 0.15);
 
         // Climber values
         ChickenSmartDashboard.putDefaultNumber("climber/PID/kP", 0.3);
@@ -263,6 +261,7 @@ public class RobotContainer {
         // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors, plus or minus)
         SmartDashboard.putNumber("shooter/tuning/targetError", 30);
 
+
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/front", InterpolationTable.hubFront);
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/rear", InterpolationTable.hubRear);
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/front", InterpolationTable.tarmacFront);
@@ -270,10 +269,14 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
 
+
         // Highlight selected auto path
+
         getAutonomousCommand().highlightPaths(drivetrain);
 
         NetworkTableInstance.getDefault().getTable("Shuffleboard/Autonomous/Auto Selector").addEntryListener((table, key, entry, value, flags) -> getAutonomousCommand().highlightPaths(drivetrain), EntryListenerFlags.kUpdate);
+
+
     }
 
     public AutoSequence getAutonomousCommand() {

@@ -24,10 +24,9 @@ public class AutoHelper {
     /**
      * Returns a ParallelDeadlineGroup that runs intake and indexer while following the given trajectory
      *
-     * @param drivetrain     The drivetrain subsystem
-     * @param intake         The intake subsystem
-     * @param indexer        The indexer subsystem
-     * @param trajectoryName the path of the trajectory file relative to `deploy/paths`
+     * @param drivetrain The drivetrain subsystem
+     * @param intake     The intake subsystem
+     * @param indexer    The indexer subsystem
      * @return The SequentialCommandGroup
      */
     public static ParallelDeadlineGroup runPath(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, AutoPath path) {
@@ -54,9 +53,9 @@ public class AutoHelper {
                 new IntakeSequence(intake, indexer),
 
                 // Prepare to shoot
-                hood.commandSet(path.hoodState),                                  // Set hood
-                shooter.commandSetVelocity(path.frontSetpoint, path.rearSetpoint), // Spin up flywheels
-                FeatherClient.commandRecordShot(0, 0, path.frontSetpoint, path.rearSetpoint, path.hoodState, "autonomous-" + path.name) // Record in FEATHER
+                hood.commandSet(path.hoodState),                                      // Set hood
+                // shooter.commandSetVelocity(path.frontSetpoint, path.rearSetpoint), // Spin up flywheels
+                shooter.commandSetVelocity(2000, 2000)
         );
     }
 
@@ -113,7 +112,7 @@ public class AutoHelper {
     /**
      * Returns a new {@link RamseteCommand} with trajectory and constants pre-filled
      * for convenience
-     *
+     * 
      * @param drivetrain     The drivetrain subsystem
      * @param trajectoryName The name of the trajectory file relative to the
      *                       <code>deploy/paths</code> directory.
@@ -155,18 +154,18 @@ public class AutoHelper {
     }
 
     public static class AutoPath {
-        public Trajectory trajectory;
-        public boolean hoodState;
-        public double frontSetpoint, rearSetpoint;
-        public String name;
+        public static final AutoPath auto1Ball = new AutoPath("2ball.posA.path1.wpilib.json", 2200, 2500, true);
+        public static final AutoPath auto2Ball1A = new AutoPath("2ball.posA.path1.wpilib.json", 2200, 2500, true);
+        public static final AutoPath auto2Ball1B = new AutoPath("2ball.posB.path1.wpilib.json", 2200, 2500, true);
+        public static final AutoPath auto3Ball2 = new AutoPath("3ball.posA.path2.wpilib.json", 2500, 2800, true);
+        public static final AutoPath auto4Ball2 = new AutoPath("4ball.posA.path2.wpilib.json", 2400, 2800, true);
+        public static final AutoPath auto5Ball2 = new AutoPath("5ball.posA.path2.wpilib.json", 2600, 2900, true);
+        public static final AutoPath auto5Ball3 = new AutoPath("5ball.posA.path3.wpilib.json", 2400, 2800, true);
 
-        public static AutoPath auto1Ball = new AutoPath("2ball.posA.path1.wpilib.json", 2200, 2500, true);
-        public static AutoPath auto2Ball1A = new AutoPath("2ball.posA.path1.wpilib.json", 2200, 2500, true);
-        public static AutoPath auto2Ball1B = new AutoPath("2ball.posB.path1.wpilib.json", 2200, 2500, true);
-        public static AutoPath auto3Ball2 = new AutoPath("3ball.posA.path2.wpilib.json", 2500, 2800, true);
-        public static AutoPath auto4Ball2 = new AutoPath("4ball.posA.path2.wpilib.json", 2400, 2800, true);
-        public static AutoPath auto5Ball2 = new AutoPath("5ball.posA.path2.wpilib.json", 2600, 2900, true);
-        public static AutoPath auto5Ball3 = new AutoPath("5ball.posA.path3.wpilib.json", 2400, 2800, true);
+        public final Trajectory trajectory;
+        public final boolean hoodState;
+        public final double frontSetpoint, rearSetpoint;
+        public final String name;
 
         private AutoPath(String pathName, double frontSetpoint, double rearSetpoint, boolean hoodState) {
             this.trajectory = AutoHelper.getTrajectory(pathName);
