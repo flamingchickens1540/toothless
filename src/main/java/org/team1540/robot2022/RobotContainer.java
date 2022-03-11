@@ -46,20 +46,11 @@ public class RobotContainer {
     // Controllers
     public final XboxController driverController = new XboxController(0);
     public final XboxController copilotController = new XboxController(1);
-
-    // Commands
-
-    // coop:button(LJoystick,Left tank,pilot)
-    // coop:button(RJoystick,Right tank,pilot)
-    public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
-
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
-
-    // Unsure what buttons to assign to this, currently uses triggers when called.
-    public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
-
     // Buttons
+
     public final DigitalInput zeroOdometry = new DigitalInput(0);
+
+
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
@@ -69,6 +60,15 @@ public class RobotContainer {
     // coop:button(LTrigger,Climber up,copilot)
     // coop:button(RTrigger,Climber down,copilot)
     public final ClimberUpDownCommand climberUpDownCommand = new ClimberUpDownCommand(climber, copilotController);
+
+
+    // coop:button(LJoystick,Left tank,pilot)
+    // coop:button(RJoystick,Right tank,pilot)
+    public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
+
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
+    public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
+
 
     private final boolean ENABLE_COMPRESSOR = true;
     // Misc
@@ -91,18 +91,26 @@ public class RobotContainer {
         // Driver
 
         // coop:button(LBumper,Shoot HUB [hold],pilot)
+        // coop:button(RBumper,Shoot FAR [hold],pilot)
         new JoystickButton(driverController, Button.kLeftBumper.value)
-                .whenHeld(new SequentialCommandGroup(
-                        shootSequence.commandSetProfile(Shooter.ShooterProfile.HUB),
+                .or(new JoystickButton(driverController, Button.kRightBumper.value))
+                .whileActiveOnce(new SequentialCommandGroup(
+                        new InstantCommand(() -> {
+                            if (driverController.getLeftBumper()) {
+                                shootSequence.setProfile(Shooter.ShooterProfile.HUB);
+                            } else {
+                                shootSequence.setProfile(Shooter.ShooterProfile.FAR);
+                            }
+                        }),
                         shootSequence
                 ));
 
-        // coop:button(RBumper,Shoot FAR [hold],pilot)
-        new JoystickButton(driverController, Button.kRightBumper.value)
-                .whenHeld(new SequentialCommandGroup(
-                        shootSequence.commandSetProfile(Shooter.ShooterProfile.FAR),
-                        shootSequence
-                ));
+//        // coop:button(RBumper,Shoot FAR [hold],pilot)
+//        new JoystickButton(driverController, Button.kRightBumper.value)
+//                .whenHeld(new SequentialCommandGroup(
+//                        shootSequence.commandSetProfile(Shooter.ShooterProfile.FAR),
+//                        shootSequence
+//                ));
 
         // coop:button(DPadUp,Shoot from touching hub [press],pilot)
         new POVButton(driverController, DPadAxis.UP)
@@ -241,6 +249,7 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxVelocity", 1);
         ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/maxAcceleration", 0.5);
+        ChickenSmartDashboard.putDefaultNumber("drivetrain/tankDrive/deadzone", 0.15);
 
         // Climber values
         ChickenSmartDashboard.putDefaultNumber("climber/PID/kP", 0.3);
