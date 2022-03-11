@@ -34,8 +34,10 @@ public class Climber extends SubsystemBase {
         motorLeft.setInverted(true);
         motorRight.setInverted(true);
 
-        ChickenSmartDashboard.putDefaultNumber("climber/limits/leftUp", -470000);
-        ChickenSmartDashboard.putDefaultNumber("climber/limits/rightUp", -470000);
+        ChickenSmartDashboard.putDefaultNumber("climber/limits/retracted/leftUp", -645000);
+        ChickenSmartDashboard.putDefaultNumber("climber/limits/retracted/rightUp", -645000);
+        ChickenSmartDashboard.putDefaultNumber("climber/limits/extended/leftUp", -600000);
+        ChickenSmartDashboard.putDefaultNumber("climber/limits/extended/rightUp", -600000);
 
         updateLimits();
         NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/limits").addEntryListener((table, key, entry, value, flags) -> updateLimits(), EntryListenerFlags.kUpdate);
@@ -85,8 +87,14 @@ public class Climber extends SubsystemBase {
     }
 
     private void updateLimits() {
-        double leftUpLimit = SmartDashboard.getNumber("climber/limits/leftUp", -470000);
-        double rightUpLimit = SmartDashboard.getNumber("climber/limits/rightUp", -470000);
+        double leftUpLimit, rightUpLimit;
+        if (this.solenoid.get() == DoubleSolenoid.Value.kForward) { // If retracted, solenoid is inverted
+            leftUpLimit = SmartDashboard.getNumber("climber/limits/retracted/leftUp", -470000);
+            rightUpLimit = SmartDashboard.getNumber("climber/limits/retracted/rightUp", -470000);
+        } else {
+            leftUpLimit = SmartDashboard.getNumber("climber/limits/extended/leftUp", -600000);
+            rightUpLimit = SmartDashboard.getNumber("climber/limits/extended/rightUp", -600000);
+        }
         motorLeft.configReverseSoftLimitEnable(true);
         motorRight.configReverseSoftLimitEnable(true);
         motorLeft.configReverseSoftLimitThreshold(leftUpLimit);
@@ -105,6 +113,7 @@ public class Climber extends SubsystemBase {
      */
     public void setSolenoids(boolean forward) {
         solenoid.set(forward ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
+        this.updateLimits();
     }
 
     /**
