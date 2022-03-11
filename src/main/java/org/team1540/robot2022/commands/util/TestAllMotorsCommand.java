@@ -1,14 +1,15 @@
-package org.team1540.robot2022.utils;
-
-import org.team1540.robot2022.commands.drivetrain.Drivetrain;
-import org.team1540.robot2022.commands.indexer.Indexer;
-import org.team1540.robot2022.commands.intake.Intake;
-import org.team1540.robot2022.commands.shooter.Shooter;
+package org.team1540.robot2022.commands.util;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import org.team1540.robot2022.commands.drivetrain.Drivetrain;
+import org.team1540.robot2022.commands.indexer.Indexer;
+import org.team1540.robot2022.commands.intake.Intake;
+import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.utils.ChickenTalonFX;
+import org.team1540.robot2022.utils.MathUtils;
 
 public class TestAllMotorsCommand extends CommandBase {
     private XboxController controller;

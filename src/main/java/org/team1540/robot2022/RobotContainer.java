@@ -24,6 +24,7 @@ import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.commands.util.TestAllMotorsCommand;
 import org.team1540.robot2022.utils.*;
 
 public class RobotContainer {
@@ -171,7 +172,7 @@ public class RobotContainer {
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
-                .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
+                .whenActive(new OdometryResetSequence(drivetrain, navx, limelight, shooter.shooterMotorFront, shooter.shooterMotorRear));
 
 
         // SmartDashboard
