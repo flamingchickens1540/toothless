@@ -105,12 +105,6 @@ public class RobotContainer {
                         shootSequence
                 ));
 
-//        // coop:button(RBumper,Shoot FAR [hold],pilot)
-//        new JoystickButton(driverController, Button.kRightBumper.value)
-//                .whenHeld(new SequentialCommandGroup(
-//                        shootSequence.commandSetProfile(Shooter.ShooterProfile.FAR),
-//                        shootSequence
-//                ));
 
         // coop:button(DPadUp,Shoot from touching hub [press],pilot)
         new POVButton(driverController, DPadAxis.UP)
