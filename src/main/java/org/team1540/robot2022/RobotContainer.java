@@ -46,10 +46,10 @@ public class RobotContainer {
     // Controllers
     public final XboxController driverController = new XboxController(0);
     public final XboxController copilotController = new XboxController(1);
+    public final XboxController featherController = new XboxController(3);
+
     // Buttons
-
     public final DigitalInput zeroOdometry = new DigitalInput(0);
-
 
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
@@ -61,7 +61,6 @@ public class RobotContainer {
     // coop:button(RTrigger,Climber down,copilot)
     public final ClimberUpDownCommand climberUpDownCommand = new ClimberUpDownCommand(climber, copilotController);
 
-
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
     // coop:button(LTrigger,Drive forward,pilot)
@@ -70,7 +69,6 @@ public class RobotContainer {
 
     public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
     public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
-
 
     private final boolean ENABLE_COMPRESSOR = true;
     // Misc
@@ -173,9 +171,11 @@ public class RobotContainer {
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
 
+        FeatherClient.configureController(featherController);
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
+        SmartDashboard.putData("shooter/enableTestProfile", new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.TESTING)));
     }
 
     private void initModeTransitionBindings() {
@@ -183,7 +183,6 @@ public class RobotContainer {
         var disabled = new Trigger(DriverStation::isDisabled);
         var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
         var teleop = new Trigger(DriverStation::isTeleopEnabled);
-
 
         // Enable break mode when enabled
         enabled.whenActive(() -> {
@@ -212,7 +211,6 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-
         autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, false));
         autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, true));
         autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, true));
@@ -256,7 +254,6 @@ public class RobotContainer {
         // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors, plus or minus)
         SmartDashboard.putNumber("shooter/tuning/targetError", 30);
 
-
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/front", InterpolationTable.hubFront);
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/rear", InterpolationTable.hubRear);
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/front", InterpolationTable.tarmacFront);
@@ -264,14 +261,10 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
         ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
 
-
         // Highlight selected auto path
-
         getAutonomousCommand().highlightPaths(drivetrain);
 
         NetworkTableInstance.getDefault().getTable("Shuffleboard/Autonomous/Auto Selector").addEntryListener((table, key, entry, value, flags) -> getAutonomousCommand().highlightPaths(drivetrain), EntryListenerFlags.kUpdate);
-
-
     }
 
     public AutoSequence getAutonomousCommand() {

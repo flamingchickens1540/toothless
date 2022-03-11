@@ -169,7 +169,7 @@ gradle-app.setting
 # End of https://www.toptal.com/developers/gitignore/api/gradle
 
 # Control diagram
-controls.pdf
+controls*.pdf
 
 # Simulator
 simgui*.json

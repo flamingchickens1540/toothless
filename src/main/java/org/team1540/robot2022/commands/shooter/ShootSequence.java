@@ -72,7 +72,6 @@ public class ShootSequence extends SequentialCommandGroup {
                     hood.set(hoodState);
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
                 }),
-                FeatherClient.commandRecordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile),
 
                 new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
                         new PointToTarget(drivetrain, limelight, navX).withTimeout(2),
@@ -81,6 +80,7 @@ public class ShootSequence extends SequentialCommandGroup {
                 ),
                 new WaitCommand(0.25),
                 new WaitUntilCommand(shooter::isSpunUp),
+                FeatherClient.commandRecordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile+""),
                 new ShooterFeedSequence(indexer, shooter)
         );
     }

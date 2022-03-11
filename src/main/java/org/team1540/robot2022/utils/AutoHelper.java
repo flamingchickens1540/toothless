@@ -112,7 +112,7 @@ public class AutoHelper {
     /**
      * Returns a new {@link RamseteCommand} with trajectory and constants pre-filled
      * for convenience
-     *
+     * 
      * @param drivetrain     The drivetrain subsystem
      * @param trajectoryName The name of the trajectory file relative to the
      *                       <code>deploy/paths</code> directory.
