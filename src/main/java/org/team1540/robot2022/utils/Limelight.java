@@ -77,23 +77,39 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-         return getTargetAngles().x != 0;
+        return getTargetAngles().x != 0;
     }
 
-    public boolean getLeds() {
-        return limelightTable.getEntry("ledMode").getDouble(1) == 0;
+    public double getLeds() {
+        return limelightTable.getEntry("ledMode").getDouble(1);
     }
 
     /**
      * Sets limelight's green LEDs on or off.
      *
-     * @param isOn the new state of the LEDs
+     * @param isOn If the LEDs should be on, otherwise off
      */
     public void setLeds(boolean isOn) {
-        if (getLeds() != isOn) {
-            limelightTable.getEntry("ledMode").setNumber(isOn ? 0 : 1);
+        setLeds(isOn ? LEDMode.ON : LEDMode.OFF);
+    }
+
+    /**
+     * Sets limelight's green LEDs on or off.
+     *
+     * @param mode the new state of the LEDs
+     */
+    public void setLeds(int mode) {
+        if (getLeds() != mode) {
+            limelightTable.getEntry("ledMode").setNumber(mode);
             NetworkTableInstance.getDefault().flush();
         }
+    }
+
+    public static final class LEDMode {
+        public static final int PIPELINE = 0;
+        public static final int OFF = 1;
+        public static final int BLINK = 2;
+        public static final int ON = 3;
     }
 
     public long getPipeline() {
