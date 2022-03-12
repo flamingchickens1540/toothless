@@ -183,6 +183,9 @@ public class RobotContainer {
         var disabled = new Trigger(DriverStation::isDisabled);
         var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
         var teleop = new Trigger(DriverStation::isTeleopEnabled);
+        var fmsConnected = new Trigger(DriverStation::isFMSAttached);
+
+        fmsConnected.whenActive(bottomLEDs.commandSetPattern(RevBlinkin.ColorPattern.GREEN));
 
         // Enable break mode when enabled
         enabled.whenActive(() -> {
@@ -264,7 +267,7 @@ public class RobotContainer {
         // Highlight selected auto path
         getAutonomousCommand().highlightPaths(drivetrain);
 
-        NetworkTableInstance.getDefault().getTable("Shuffleboard/Autonomous/Auto Selector").addEntryListener((table, key, entry, value, flags) -> getAutonomousCommand().highlightPaths(drivetrain), EntryListenerFlags.kUpdate);
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/autoSelector").addEntryListener((table, key, entry, value, flags) -> getAutonomousCommand().highlightPaths(drivetrain), EntryListenerFlags.kUpdate);
     }
 
     public AutoSequence getAutonomousCommand() {
