@@ -33,9 +33,9 @@ public class PointToTarget extends CommandBase {
 
     @Override
     public void initialize() {
-        double p = SmartDashboard.getNumber("pointToTarget/kP", 0.7);
+        double p = SmartDashboard.getNumber("pointToTarget/kP", 0.006);
         double i = SmartDashboard.getNumber("pointToTarget/kI", 0);
-        double d = SmartDashboard.getNumber("pointToTarget/kD", 0.4);
+        double d = SmartDashboard.getNumber("pointToTarget/kD", 0.015);
         limelight.setLeds(true);
         pid.setPID(p, i, d);
         pid.setSetpoint(0);
