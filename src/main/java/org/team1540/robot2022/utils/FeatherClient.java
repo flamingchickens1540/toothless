@@ -1,14 +1,11 @@
 package org.team1540.robot2022.utils;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.team1540.robot2022.commands.util.UpdateMatchInfo;
 
 import java.io.File;
@@ -20,7 +17,7 @@ import java.util.UUID;
 
 public class FeatherClient {
     private static final Timer timer = new Timer();
-    private static final Mat mat = new Mat();
+//    private static final Mat mat = new Mat();
 
     private static ShootingParameters lastShot;
     private static boolean isLastShotFirstBall; // else second ball
@@ -104,11 +101,13 @@ public class FeatherClient {
         );
 
         // Write shot log to file
+//        lastShot = null;
         try {
             Files.writeString(Paths.get(matchDirectoryPrefix + "/shots.jsonl"), jsonString + System.lineSeparator(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             DriverStation.reportError("[feather] Unable to append to shot log file: " + e, true);
         }
+
     }
 
     /**
@@ -237,8 +236,8 @@ public class FeatherClient {
             this.uuid = UUID.randomUUID() + "";
 
             // Write limelight image
-            CameraServer.getVideo("limelight").grabFrame(mat);
-            Imgcodecs.imwrite(matchDirectoryPrefix + "/limelight-" + this.uuid + ".png", mat);
+//            CameraServer.getVideo("limelight").grabFrame(mat);
+//            Imgcodecs.imwrite(matchDirectoryPrefix + "/limelight-" + this.uuid + ".png", mat);
         }
     }
 
@@ -265,6 +264,6 @@ public class FeatherClient {
                 .whenPressed(new InstantCommand(() -> setLastShotResult(ShotResult.UNKNOWN)));
         // coop:button(Back,Undo,pilot)
         new JoystickButton(controller, XboxController.Button.kBack.value)
-                .whenPressed(new InstantCommand(() -> undoSetLastShotResult()));
+                .whenPressed(new InstantCommand(FeatherClient::undoSetLastShotResult));
     }
 }
