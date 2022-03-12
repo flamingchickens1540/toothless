@@ -84,6 +84,10 @@ public class Limelight {
         return limelightTable.getEntry("ledMode").getDouble(1);
     }
 
+    public boolean getLedsOn() {
+        return limelightTable.getEntry("ledMode").getDouble(1) == LEDMode.ON;
+    }
+
     /**
      * Sets limelight's green LEDs on or off.
      *
