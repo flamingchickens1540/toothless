@@ -90,13 +90,13 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
 
-        // coop:button(LBumper,Shoot HUB [hold],pilot)
-        // coop:button(RBumper,Shoot FAR [hold],pilot)
-        new JoystickButton(driverController, Button.kLeftBumper.value)
-                .or(new JoystickButton(driverController, Button.kRightBumper.value))
+        // coop:button(LTrigger,Shoot HUB [hold],pilot)
+        // coop:button(RTrigger,Shoot FAR [hold],pilot)
+        new Trigger(() -> driverController.getLeftTriggerAxis() == 1)
+                .or(new Trigger(() -> driverController.getRightTriggerAxis() == 1))
                 .whileActiveOnce(new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            if (driverController.getLeftBumper()) {
+                            if (driverController.getLeftTriggerAxis() == 1) {
                                 shootSequence.setProfile(Shooter.ShooterProfile.HUB);
                             } else {
                                 shootSequence.setProfile(Shooter.ShooterProfile.FAR);

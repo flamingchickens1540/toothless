@@ -31,32 +31,43 @@ public class FFTankDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double triggers = MathUtils.deadzone(controller.getLeftTriggerAxis(), deadzone) - MathUtils.deadzone(controller.getRightTriggerAxis(), deadzone);
+//        double triggers = MathUtils.deadzone(controller.getLeftTriggerAxis(), deadzone) - MathUtils.deadzone(controller.getRightTriggerAxis(), deadzone);
+        double triggers = 0;
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/triggers", triggers);
+
         deadzone = SmartDashboard.getNumber("drivetrain/tankDrive/deadzone", 0.15);
         double leftThrottle = scaleStickToVelocity(MathUtils.deadzone(controller.getLeftY(), deadzone) + triggers);
         double rightThrottle = scaleStickToVelocity(MathUtils.deadzone(controller.getRightY(), deadzone) + triggers);
 
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/leftStick", controller.getLeftY());
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/rightStick", controller.getRightY());
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/leftThrottle", leftThrottle);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/rightThrottle", rightThrottle);
         double combined = Math.abs(leftThrottle) + Math.abs(rightThrottle);
+
 
         double ratioL = leftThrottle / combined;
         double ratioR = rightThrottle / combined;
 
-        SmartDashboard.putNumber("drivetrain/limiter/combined", combined);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/combined", combined);
         double total = slewRateLimiter.calculate(combined / 2) * 2.0;
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/total", total);
 
         double leftCalculated = ratioL * total;
         double rightCalculated = ratioR * total;
 
-        SmartDashboard.putNumber("drivetrain/limiter/calc/left", leftCalculated);
-        SmartDashboard.putNumber("drivetrain/limiter/calc/right", rightCalculated);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/calc/left", leftCalculated);
+        SmartDashboard.putNumber("drivetrain/tankDrive/debug/calc/right", rightCalculated);
 
-        if (leftCalculated + rightCalculated == 0) {
-            // Slow down instead of stopping immediately when inputs are 0
-            drivetrain.setFFVelocity(total / 2, total / 2);
-        } else {
-            // This is reversed to make the intake be the front of the robot
-            drivetrain.setFFVelocity(rightCalculated, leftCalculated);
-        }
+        drivetrain.setFFVelocity(rightCalculated, leftCalculated);
+
+//        if (leftCalculated + rightCalculated == 0) {
+//            // Slow down instead of stopping immediately when inputs are 0
+//            drivetrain.setFFVelocity(total / 2, total / 2);
+//        } else {
+//            // This is reversed to make the intake be the front of the robot
+//            drivetrain.setFFVelocity(rightCalculated, leftCalculated);
+//        }
 
 
     }
