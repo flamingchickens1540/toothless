@@ -169,7 +169,7 @@ public class RobotContainer {
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
-                .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
+                .whenActive(new OdometryResetSequence(drivetrain, navx, bottomLEDs));
 
         FeatherClient.configureController(featherController);
 

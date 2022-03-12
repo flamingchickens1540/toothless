@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RevBlinkin extends Spark {
 
     private final boolean isTop;
+    private ColorPattern pattern;
 
     /**
      * Construct an instance of a RevBlinkin
@@ -35,6 +36,7 @@ public class RevBlinkin extends Spark {
      * @throws NullPointerException If pattern is null.
      */
     public void setPattern(ColorPattern pattern) {
+        this.pattern = pattern;
         super.set(pattern.setpoint);
     }
 
@@ -292,5 +294,9 @@ public class RevBlinkin extends Spark {
 
     public Command commandSetPattern(ColorPattern pattern) {
         return new ChickenInstantCommand(() -> this.setPattern(pattern), true);
+    }
+
+    public ColorPattern getPattern() {
+        return this.pattern;
     }
 }
