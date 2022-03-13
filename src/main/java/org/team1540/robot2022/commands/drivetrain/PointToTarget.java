@@ -124,15 +124,17 @@ public class PointToTarget extends CommandBase {
         // Steps to calculate on-screen coordinate offsets as angles, as given in the Limelight docs.
         double normalizedCornerXAvg = (2.0 / limelight.getResolution().x) * (correctedCornerXAvg - (limelight.getResolution().x / 2 - 0.5));
         double viewportCornerXAvg = Math.tan(limelight.getHorizontalFov() / 2) * normalizedCornerXAvg;
-        double degreeOffsetCornerXAvg = Math.atan2(1, viewportCornerXAvg);
-
+        double degreeOffsetCornerXAvg = Math.toDegrees(Math.atan2(viewportCornerXAvg, 1));
+        SmartDashboard.putNumber("pointToTarget/corner/correctedCornerX", correctedCornerXAvg);
+        SmartDashboard.putNumber("pointToTarget/corner/offsetNormalizedX", normalizedCornerXAvg);
+        SmartDashboard.putNumber("pointToTarget/corner/offsetAvg", degreeOffsetCornerXAvg);
         turnFunction.accept(degreeOffsetCornerXAvg);
     }
 
     /**
      * Executes turning to the target using the Limelight as the primary sensor to determine whether we have turned enough.
      *
-     * @param angleXOffset the offset we still need to turn to reach the target
+     * @param angleXOffset the offset in degrees we still need to turn to reach the target
      */
     private void turnWithLimelight(double angleXOffset) {
         if (Math.abs(angleXOffset) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
@@ -185,7 +187,7 @@ public class PointToTarget extends CommandBase {
     }
 
     public void execute() {
-        calculateWithAverage(this::turnWithLimelight);
+        calculateWithCorners(this::turnWithLimelight);
     }
 
     public void end(boolean isInterrupted) {
