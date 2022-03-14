@@ -70,23 +70,14 @@ public class RevBlinkin extends Spark {
         ENDGAME(ColorPattern.RAINBOW_PARTY, ColorPattern.RAINBOW_PARTY),
         DISABLE(ColorPattern.TWINKLES_RAINBOW, ColorPattern.TWINKLES_RAINBOW);
 
-        private final PatternTheme top;
-        private final PatternTheme bottom;
+        private final BlinkinEffect top;
+        private final BlinkinEffect bottom;
 
-        GameStage(PatternTheme top, PatternTheme bottom) {
+        GameStage(BlinkinEffect top, BlinkinEffect bottom) {
             this.top = top;
             this.bottom = bottom;
         }
 
-        GameStage(ColorPattern top, PatternTheme bottom) {
-            this.top = new PatternTheme(top);
-            this.bottom = bottom;
-        }
-
-        GameStage(ColorPattern top, ColorPattern bottom) {
-            this.top = new PatternTheme(top);
-            this.bottom = new PatternTheme(bottom);
-        }
 
         /**
          * Gets the pattern for the top set of lights
@@ -112,7 +103,7 @@ public class RevBlinkin extends Spark {
      * <a href="http://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf">Blinkin
      * user manual.</a>
      */
-    public enum ColorPattern {
+    public enum ColorPattern implements BlinkinEffect {
         RAINBOW(-0.99),
         RAINBOW_PARTY(-0.97),
         RAINBOW_OCEAN(-0.95),
@@ -217,12 +208,16 @@ public class RevBlinkin extends Spark {
         ColorPattern(double setpoint) {
             this.setpoint = setpoint;
         }
+
+        public ColorPattern get() {
+            return this;
+        }
     }
 
     /**
      * Allows for theming effects based on alliance color
      */
-    public static class PatternTheme {
+    public static class PatternTheme implements BlinkinEffect {
         public static final PatternTheme RAINBOW = new PatternTheme(ColorPattern.RAINBOW_LAVA, ColorPattern.RAINBOW_OCEAN, ColorPattern.RAINBOW);
         public static final PatternTheme BPM = new PatternTheme(ColorPattern.BPM_LAVA, ColorPattern.BPM_OCEAN, ColorPattern.BPM_OCEAN);
         public static final PatternTheme WAVES = new PatternTheme(ColorPattern.WAVES_LAVA, ColorPattern.WAVES_OCEAN, ColorPattern.WAVES_RAINBOW);
@@ -264,16 +259,6 @@ public class RevBlinkin extends Spark {
             this.other = redPattern;
         }
 
-        /**
-         * Constructs a ColorScheme that does not depend on the current alliance
-         *
-         * @param pattern The pattern to use for both alliances
-         */
-        public PatternTheme(ColorPattern pattern) {
-            this.red = pattern;
-            this.blue = pattern;
-            this.other = pattern;
-        }
 
         /**
          * Gets the {@link ColorPattern} for the current alliance, as reported by the FMS or driver station
@@ -290,6 +275,10 @@ public class RevBlinkin extends Spark {
                     return this.other;
             }
         }
+    }
+
+    private interface BlinkinEffect {
+        ColorPattern get();
     }
 
     public Command commandSetPattern(ColorPattern pattern) {
