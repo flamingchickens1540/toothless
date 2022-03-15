@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
         this.robotContainer = new RobotContainer();
         
         robotContainer.limelight.setLeds(false);
+        robotContainer.bottomLEDs.setPattern(RevBlinkin.ColorPattern.YELLOW);
     }
 
     /**
@@ -77,8 +78,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         robotContainer.limelight.setLeds(false);
-        robotContainer.topLEDs.applyPattern(RevBlinkin.GameStage.DISABLE);
-        robotContainer.bottomLEDs.applyPattern(RevBlinkin.GameStage.DISABLE);
+        robotContainer.topLEDs.setPattern(RevBlinkin.GameStage.DISABLE);
+        robotContainer.bottomLEDs.setPattern(RevBlinkin.GameStage.DISABLE);
     }
 
     @Override
@@ -92,8 +93,8 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.schedule();
         }
-        robotContainer.topLEDs.applyPattern(RevBlinkin.GameStage.AUTONOMOUS);
-        robotContainer.bottomLEDs.applyPattern(RevBlinkin.GameStage.AUTONOMOUS);
+        robotContainer.topLEDs.setPattern(RevBlinkin.GameStage.AUTONOMOUS);
+        robotContainer.bottomLEDs.setPattern(RevBlinkin.GameStage.AUTONOMOUS);
 
         new ClimberZeroCommand(robotContainer.climber).schedule();
         FeatherClient.initialize();
@@ -111,8 +112,8 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
-        robotContainer.topLEDs.applyPattern(RevBlinkin.GameStage.TELEOP);
-        robotContainer.bottomLEDs.applyPattern(RevBlinkin.GameStage.TELEOP);
+        robotContainer.topLEDs.setPattern(RevBlinkin.GameStage.TELEOP);
+        robotContainer.bottomLEDs.setPattern(RevBlinkin.GameStage.TELEOP);
 
         robotContainer.drivetrain.setDefaultCommand(robotContainer.ffTankDriveCommand);
 

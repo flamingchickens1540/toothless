@@ -41,7 +41,11 @@ public class ShootSequence extends SequentialCommandGroup {
                 new ConditionalCommand(
                         sequence(
                                 new InstantCommand(() -> limelight.setLeds(true)),
-                                new WaitCommand(0.2)
+                                new WaitCommand(0.2),
+                                new InstantCommand(() -> {
+                                    limelightDistance = limelight.getCalculatedDistance();
+                                    lidarDistance = lidar.getDistance();
+                                })
                         ),
                         new InstantCommand(),
                         () -> !this.profile.equals(ShooterProfile.HUB)
@@ -80,7 +84,7 @@ public class ShootSequence extends SequentialCommandGroup {
                 ),
                 new WaitCommand(0.25),
                 new WaitUntilCommand(shooter::isSpunUp),
-                FeatherClient.commandRecordShot(limelightDistance, lidarDistance, frontVelocity, rearVelocity, hoodState, this.profile+""),
+                FeatherClient.commandRecordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + ""),
                 new ShooterFeedSequence(indexer, shooter)
         );
     }

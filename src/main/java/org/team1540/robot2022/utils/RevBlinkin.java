@@ -3,6 +3,7 @@ package org.team1540.robot2022.utils;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Wrapper for Rev Robotics Blinkin LED
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class RevBlinkin extends Spark {
 
     private final boolean isTop;
+    private ColorPattern pattern;
 
     /**
      * Construct an instance of a RevBlinkin
@@ -33,7 +35,8 @@ public class RevBlinkin extends Spark {
      * @param pattern The pattern to use
      * @throws NullPointerException If pattern is null.
      */
-    public void set(ColorPattern pattern) {
+    public void setPattern(ColorPattern pattern) {
+        this.pattern = pattern;
         super.set(pattern.setpoint);
     }
 
@@ -51,17 +54,18 @@ public class RevBlinkin extends Spark {
      *
      * @param stage What part of the game to set the pattern for
      */
-    public void applyPattern(GameStage stage) {
+    public void setPattern(GameStage stage) {
         ColorPattern pattern = this.isTop ? stage.getTop() : stage.getBottom();
         SmartDashboard.putString("lights/pattern" + (isTop ? "Top" : "Bottom"), pattern + "");
-        this.set(pattern);
+        this.setPattern(pattern);
     }
+
 
     /**
      * Enum for possible game stages
      */
     public enum GameStage {
-        AUTONOMOUS(ColorPattern.FIRE_MEDIUM, PatternTheme.RAINBOW),
+        AUTONOMOUS(ColorPattern.FIRE_MEDIUM, PatternTheme.HEARTBEAT),
         TELEOP(ColorPattern.FIRE_MEDIUM, PatternTheme.RAINBOW),
         ENDGAME(ColorPattern.RAINBOW_PARTY, ColorPattern.RAINBOW_PARTY),
         DISABLE(ColorPattern.TWINKLES_RAINBOW, ColorPattern.TWINKLES_RAINBOW);
@@ -108,7 +112,7 @@ public class RevBlinkin extends Spark {
      * <a href="http://www.revrobotics.com/content/docs/REV-11-1105-UM.pdf">Blinkin
      * user manual.</a>
      */
-    private enum ColorPattern {
+    public enum ColorPattern {
         RAINBOW(-0.99),
         RAINBOW_PARTY(-0.97),
         RAINBOW_OCEAN(-0.95),
@@ -286,5 +290,13 @@ public class RevBlinkin extends Spark {
                     return this.other;
             }
         }
+    }
+
+    public Command commandSetPattern(ColorPattern pattern) {
+        return new ChickenInstantCommand(() -> this.setPattern(pattern), true);
+    }
+
+    public ColorPattern getPattern() {
+        return this.pattern;
     }
 }

@@ -63,8 +63,6 @@ public class RobotContainer {
 
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
-    // coop:button(LTrigger,Drive forward,pilot)
-    // coop:button(RTrigger,Drive reverse,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
     public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
@@ -90,13 +88,13 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
 
-        // coop:button(LBumper,Shoot HUB [hold],pilot)
-        // coop:button(RBumper,Shoot FAR [hold],pilot)
-        new JoystickButton(driverController, Button.kLeftBumper.value)
-                .or(new JoystickButton(driverController, Button.kRightBumper.value))
+        // coop:button(LTrigger,Shoot HUB [hold],pilot)
+        // coop:button(RTrigger,Shoot FAR [hold],pilot)
+        new Trigger(() -> driverController.getLeftTriggerAxis() == 1)
+                .or(new Trigger(() -> driverController.getRightTriggerAxis() == 1))
                 .whileActiveOnce(new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            if (driverController.getLeftBumper()) {
+                            if (driverController.getLeftTriggerAxis() == 1) {
                                 shootSequence.setProfile(Shooter.ShooterProfile.HUB);
                             } else {
                                 shootSequence.setProfile(Shooter.ShooterProfile.FAR);
@@ -169,13 +167,14 @@ public class RobotContainer {
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
-                .whenActive(new OdometryResetSequence(drivetrain, navx, limelight));
+                .whenActive(new OdometryResetSequence(drivetrain, navx, limelight, bottomLEDs));
 
         FeatherClient.configureController(featherController);
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
         SmartDashboard.putData("shooter/enableTestProfile", new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.TESTING)));
+        SmartDashboard.putData("driveTrain/resetOdometry", OdometryResetSequence.getOdometryResetter(navx, drivetrain));
     }
 
     private void initModeTransitionBindings() {
@@ -183,6 +182,9 @@ public class RobotContainer {
         var disabled = new Trigger(DriverStation::isDisabled);
         var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
         var teleop = new Trigger(DriverStation::isTeleopEnabled);
+        var fmsConnected = new Trigger(DriverStation::isFMSAttached);
+
+        fmsConnected.whenActive(bottomLEDs.commandSetPattern(RevBlinkin.ColorPattern.GREEN));
 
         // Enable break mode when enabled
         enabled.whenActive(() -> {
@@ -264,7 +266,7 @@ public class RobotContainer {
         // Highlight selected auto path
         getAutonomousCommand().highlightPaths(drivetrain);
 
-        NetworkTableInstance.getDefault().getTable("Shuffleboard/Autonomous/Auto Selector").addEntryListener((table, key, entry, value, flags) -> getAutonomousCommand().highlightPaths(drivetrain), EntryListenerFlags.kUpdate);
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/autoSelector").addEntryListener((table, key, entry, value, flags) -> getAutonomousCommand().highlightPaths(drivetrain), EntryListenerFlags.kUpdate);
     }
 
     public AutoSequence getAutonomousCommand() {

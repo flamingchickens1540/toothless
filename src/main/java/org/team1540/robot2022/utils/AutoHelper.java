@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import org.team1540.robot2022.RamseteConfig;
+import org.team1540.robot2022.Robot;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
@@ -18,6 +19,7 @@ import org.team1540.robot2022.commands.shooter.Shooter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 public class AutoHelper {
 
@@ -133,6 +135,9 @@ public class AutoHelper {
             try {
                 trajectory = TrajectoryUtil.fromPathweaverJson(Filesystem.getOperatingDirectory().toPath().resolve("PathWeaver/output").resolve(trajectoryName));
             } catch (IOException ex1) {
+                if (Robot.isSimulation()) {
+                    return new Trajectory(List.of(new Trajectory.State()));
+                }
                 File file = trajectoryPath.toFile();
                 if (!file.exists()) {
                     DriverStation.reportError("File does not exist! " + ex.getLocalizedMessage(), ex.getStackTrace());
