@@ -24,6 +24,7 @@ import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.commands.vision.Vision;
 import org.team1540.robot2022.utils.*;
 
 public class RobotContainer {
@@ -42,6 +43,7 @@ public class RobotContainer {
     public final Indexer indexer = new Indexer(NeutralMode.Brake);
     public final Shooter shooter = new Shooter();
     public final Climber climber = new Climber();
+    public final Vision vision = new Vision(drivetrain, navx, limelight);
 
     // Controllers
     public final XboxController driverController = new XboxController(0);
@@ -54,6 +56,7 @@ public class RobotContainer {
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
 
     // coop:button(LJoystick,Left climber up/down,copilot)
     // coop:button(RJoystick,Right climber up/down,copilot)
@@ -63,9 +66,11 @@ public class RobotContainer {
 
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
+    // coop:button(LTrigger,Forward,pilot)
+    // coop:button(RTrigger,Reverse,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
+    // Unsure what buttons to assign to this, currently uses triggers when called.
     public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
 
     private final boolean ENABLE_COMPRESSOR = true;
@@ -135,7 +140,7 @@ public class RobotContainer {
         new POVButton(copilotController, DPadAxis.DOWN)
                 .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
 
-
+        
         // coop:button(DPadLeft,Lower intake [press],copilot)
         new POVButton(copilotController, DPadAxis.LEFT)
                 .whenPressed(intake.commandSetFold(false));

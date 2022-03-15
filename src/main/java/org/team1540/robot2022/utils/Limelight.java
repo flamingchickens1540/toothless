@@ -25,7 +25,7 @@ public class Limelight {
     public Limelight(String name) {
         limelightTable = NetworkTableInstance.getDefault().getTable(name);
         SmartDashboard.putNumber("limelight/custom/calculatedDistance", 0);
-        setLeds(false);
+        setLeds(true);
     }
 
     public NetworkTable getNetworkTable() {
@@ -47,7 +47,7 @@ public class Limelight {
     /**
      * Gets the current calculated distance of the limelight to the base of the hub.
      *
-     * @return the distance in meters
+     * @return the distance in inches
      */
     public double getCalculatedDistance() {
         double theta = Math.toRadians(getTargetAngles().y) + limelightAngle;
