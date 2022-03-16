@@ -47,7 +47,7 @@ public class Vision extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         if (lastPose == null) {
-            lastDistance = SmartDashboard.getNumber("vision/distanceInFieldUnits", 1.486479);
+            lastDistance = SmartDashboard.getNumber("vision/distanceInFieldUnits", 0.76264080);
             lastPose = new Pose2d(new Translation2d(8.695, 5.314), new Rotation2d());
             lastRotation = navX.getAngleRadians();
 
@@ -59,17 +59,16 @@ public class Vision extends SubsystemBase {
     }
 
     private double wrapRotation(double rotation) {
-        if (rotation > Math.PI) {
-            return rotation - Math.PI * 2;
-        } else if (rotation < -Math.PI) {
-            return rotation + Math.PI * 2;
+        double scaled = rotation % (2 * Math.PI);
+        if (scaled < 0) {
+            scaled = 2 * Math.PI + scaled;
         }
-        return rotation;
+        return scaled;
     }
 
     public double getAngleToTarget() {
         // double zeroAngleFromFieldY = 1.9386451520732095 - Math.toRadians(90); // y-axis to initialization position, cw
-        double zeroAngleFromFieldY = Math.toRadians(27.8752288); // testing y-axis to initialization position, cw
+        double zeroAngleFromFieldY = Math.toRadians(65.68661595); // testing y-axis to initialization position, cw
 
         // double zeroAngleFromFieldY = Math.toRadians(45);
 
@@ -81,9 +80,12 @@ public class Vision extends SubsystemBase {
         }
 
         // The current angle gets the navX yaw angle, and adds our original offset from positive x-axis.
-        double currentAngle = wrapRotation(navX.getYawRadians() + zeroAngleFromFieldY);
+        double currentAngle = wrapRotation((navX.getYawRadians() + 2 * Math.PI) + zeroAngleFromFieldY);
         // The last angle gets the last recorded navX yaw angle, and adds our original offset from positive x-axis.
-        double lastAngle = wrapRotation(lastRotation + zeroAngleFromFieldY);
+        double lastAngle = wrapRotation(lastRotation + zeroAngleFromFieldY + 2 * Math.PI);
+
+        SmartDashboard.putNumber("sim/1.1_currentAngle", Math.toDegrees(currentAngle));
+        SmartDashboard.putNumber("sim/1.2_lastAngle", Math.toDegrees(lastAngle));
 
         // Gets the vector between our last pose and our new pose.
         Translation2d translation = lastPose.getTranslation().minus(currentPose);
@@ -99,10 +101,10 @@ public class Vision extends SubsystemBase {
 
         // Unit vector perpendicular to the line through last position and hub (AB)
         Vector2d unitBF = new Vector2d(0, -1);
-        unitBF.rotate(-(Math.toDegrees(lastAngle - Math.toRadians(90))));
+        unitBF.rotate(-(Math.toDegrees(wrapRotation(lastAngle - Math.toRadians(90)))));
         
         SmartDashboard.putNumber("sim/3.1_lastAngle", Math.toDegrees(lastAngle));
-        SmartDashboard.putNumber("sim/3_dirBF", Math.toDegrees(lastAngle - Math.toRadians(90)));
+        SmartDashboard.putNumber("sim/3_dirBF", Math.toDegrees(wrapRotation(lastAngle - Math.toRadians(90))));
 
         double magAC = BD.dot(unitBF);
         SmartDashboard.putNumber("sim/4_magAC", magAC);
