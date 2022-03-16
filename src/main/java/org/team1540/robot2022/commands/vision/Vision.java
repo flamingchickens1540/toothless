@@ -89,7 +89,9 @@ public class Vision extends SubsystemBase {
 
         // Gets the vector between our last pose and our new pose.
         Translation2d translation = lastPose.getTranslation().minus(currentPose);
-        
+
+        SmartDashboard.putNumber("sim/0_translationX", translation.getX());
+
         Vector2d BD = new Vector2d(translation.getX(), translation.getY());
 
         SmartDashboard.putNumber("sim/1_magBD", BD.magnitude());
@@ -101,13 +103,22 @@ public class Vision extends SubsystemBase {
 
         // Unit vector perpendicular to the line through last position and hub (AB)
         Vector2d unitBF = new Vector2d(0, -1);
+
+        // Something up here.
         unitBF.rotate(-(Math.toDegrees(wrapRotation(lastAngle - Math.toRadians(90)))));
         
         SmartDashboard.putNumber("sim/3.1_lastAngle", Math.toDegrees(lastAngle));
+
+
+
         SmartDashboard.putNumber("sim/3_dirBF", Math.toDegrees(wrapRotation(lastAngle - Math.toRadians(90))));
 
         double magAC = BD.dot(unitBF);
         SmartDashboard.putNumber("sim/4_magAC", magAC);
+
+        if (magAC > 0) {
+            unitBF.rotate(180);
+        }
 
         Vector2d AC = new Vector2d(unitBF.x * magAC, unitBF.y * magAC);
 
@@ -117,7 +128,6 @@ public class Vision extends SubsystemBase {
         unitBA.rotate(-Math.toDegrees(lastAngle));
 
         SmartDashboard.putNumber("sim/6_dirAB",  Math.toDegrees(lastAngle));
-
         double magFD = BD.dot(unitBA);
 
         SmartDashboard.putNumber("sim/7_magFD", magFD);
@@ -126,7 +136,18 @@ public class Vision extends SubsystemBase {
         Vector2d CD = new Vector2d(unitBF.x * magCD, unitBF.y * magCD);
 
         double theta = Math.atan2(AC.magnitude(), CD.magnitude());
+
+        SmartDashboard.putNumber("sim/8_thetaDegrees", Math.toDegrees(theta));
+
         double angleToTurnTo = currentAngle + theta - zeroAngleFromFieldY;
+
+        double testAngle = Math.atan2(BD.y, BD.x);
+
+        SmartDashboard.putNumber("sim/9_testAngle", Math.toDegrees(testAngle));
+
+//        if (testAngle > Math.PI / 2) {
+//            angleToTurnTo = Math.PI * 2 - angleToTurnTo;
+//        }
 
         // Should return in radians
         return angleToTurnTo;
