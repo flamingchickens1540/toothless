@@ -166,8 +166,8 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kStart.value)
                 .whenPressed(climber.commandDisableLimits());
 
-        // coop:button(RBumper, Run climb sequence,copilot)
-        new JoystickButton(copilotController, Button.kRightBumper.value)
+        // coop:button(LBumper, Run climb sequence,copilot)
+        new JoystickButton(copilotController, Button.kLeftBumper.value)
                 .whenHeld(new ClimbSequence(climber, navx)
                         .alongWith(commandSetLights(RevBlinkin.GameStage.ENDGAME)));
 
