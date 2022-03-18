@@ -55,7 +55,7 @@ public class RevBlinkin extends Spark {
      * @param stage What part of the game to set the pattern for
      */
     public void setPattern(GameStage stage) {
-        ColorPattern pattern = this.isTop ? stage.getTop() : stage.getBottom();
+        ColorPattern pattern = stage.get(isTop);
         SmartDashboard.putString("lights/pattern" + (isTop ? "Top" : "Bottom"), pattern + "");
         this.setPattern(pattern);
     }
@@ -95,6 +95,10 @@ public class RevBlinkin extends Spark {
          */
         public ColorPattern getBottom() {
             return this.bottom.get();
+        }
+
+        public ColorPattern get(boolean isTop) {
+            return isTop ? this.getTop() : this.getBottom();
         }
     }
 

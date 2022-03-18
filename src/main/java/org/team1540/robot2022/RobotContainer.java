@@ -178,13 +178,28 @@ public class RobotContainer {
     }
 
     private void initModeTransitionBindings() {
-        var enabled = new Trigger(RobotState::isEnabled);
-        var disabled = new Trigger(DriverStation::isDisabled);
-        var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
-        var teleop = new Trigger(DriverStation::isTeleopEnabled);
-        var fmsConnected = new Trigger(DriverStation::isFMSAttached);
+        Trigger enabled = new Trigger(RobotState::isEnabled);
+        Trigger disabled = new Trigger(DriverStation::isDisabled);
+        Trigger fmsConnected = new Trigger(DriverStation::isFMSAttached);
+
+        Trigger autonomous = new Trigger(DriverStation::isAutonomousEnabled);
+        Trigger teleop = new Trigger(DriverStation::isTeleopEnabled);
+        Trigger endgame = new Trigger(() -> Timer.getMatchTime() <= 30).and(teleop);
+        Trigger endgamePrepare = new Trigger(() -> Timer.getMatchTime() <= 35).and(teleop); // TODO set to however long climb sequence takes + drive time
+
+        Trigger indexerFull = new Trigger(indexer::isFull).and(teleop);
+
 
         fmsConnected.whenActive(bottomLEDs.commandSetPattern(RevBlinkin.ColorPattern.GREEN));
+
+        endgamePrepare.whenActive(() -> topLEDs.commandSetPattern(RevBlinkin.ColorPattern.VIOLET));
+
+        endgame.whenActive(commandSetLights(RevBlinkin.GameStage.ENDGAME));
+
+
+        // Turn lights gold when indexer is full
+        indexerFull.whenActive(topLEDs.commandSetPattern(RevBlinkin.ColorPattern.GOLD));
+        indexerFull.whenInactive(() -> topLEDs.setPattern(RevBlinkin.GameStage.TELEOP));
 
         // Enable break mode when enabled
         enabled.whenActive(() -> {
@@ -199,14 +214,14 @@ public class RobotContainer {
         disabled.whenActive(new WaitCommand(2)
                 .andThen(
                         new ConditionalCommand( // Check if the robot is still disabled to prevent enabling coast mode when the robot is enabled
-                                new InstantCommand(),
-                                new InstantCommand(() -> {
+                                new PrintCommand("Re-enabled, not coasting"),
+                                new ChickenInstantCommand(() -> {
                                     System.out.println("Setting coast mode");
                                     drivetrain.setNeutralMode(NeutralMode.Coast);
                                     intake.setNeutralMode(NeutralMode.Coast);
                                     indexer.setNeutralMode(NeutralMode.Coast);
                                     climber.setNeutralMode(NeutralMode.Coast);
-                                }),
+                                }, true),
                                 RobotState::isEnabled)
                 )
         );
