@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.team1540.robot2022.commands.climber.ClimbSequence;
 import org.team1540.robot2022.commands.climber.Climber;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
@@ -165,6 +166,11 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kStart.value)
                 .whenPressed(climber.commandDisableLimits());
 
+        // coop:button(RBumper, Run climb sequence,copilot)
+        new JoystickButton(copilotController, Button.kRightBumper.value)
+                .whenHeld(new ClimbSequence(climber, navx)
+                        .alongWith(commandSetLights(RevBlinkin.GameStage.ENDGAME)));
+
         // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight, bottomLEDs));
@@ -286,5 +292,13 @@ public class RobotContainer {
 
     public AutoSequence getAutonomousCommand() {
         return autoChooser.getSelected();
+    }
+
+    public Command commandSetLights(RevBlinkin.GameStage stage) {
+        return new InstantCommand(() -> {
+            topLEDs.setPattern(stage);
+            bottomLEDs.setPattern(stage);
+        }
+        );
     }
 }

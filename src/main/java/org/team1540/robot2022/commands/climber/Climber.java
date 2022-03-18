@@ -16,8 +16,8 @@ import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Climber extends SubsystemBase {
-    private final ChickenTalonFX motorLeft = new ChickenTalonFX(ClimberConstants.Motors.LEFT);
-    private final ChickenTalonFX motorRight = new ChickenTalonFX(ClimberConstants.Motors.RIGHT);
+    public final ChickenTalonFX motorLeft = new ChickenTalonFX(ClimberConstants.Motors.LEFT);
+    public final ChickenTalonFX motorRight = new ChickenTalonFX(ClimberConstants.Motors.RIGHT);
     private final ChickenTalonFX[] motors = new ChickenTalonFX[]{motorLeft, motorRight};
 
     private final DoubleSolenoid solenoid = new DoubleSolenoid(
@@ -61,6 +61,8 @@ public class Climber extends SubsystemBase {
 
         SmartDashboard.putNumber("climber/current/left", motorLeft.getStatorCurrent());
         SmartDashboard.putNumber("climber/current/right", motorRight.getStatorCurrent());
+
+
     }
 
     /**
@@ -159,6 +161,17 @@ public class Climber extends SubsystemBase {
     }
 
     public Command commandSetPercentRight(double percent) {
+
+
         return new InstantCommand(() -> motorRight.setPercent(percent));
+    }
+
+    public Command commandSetPercent(double percent) {
+        return new InstantCommand(
+                () -> {
+                    motorRight.setPercent(percent);
+                    motorLeft.setPercent(percent);
+                }
+        );
     }
 }
