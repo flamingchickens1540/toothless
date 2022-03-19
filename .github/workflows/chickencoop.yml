@@ -20,13 +20,16 @@ jobs:
         uses: actions/setup-node@v2
       - name: Create output directory
         run: mkdir -p site/diagrams/$GITHUB_REF_NAME
-      - name: Generate diagram
-        run: npx chickencoop -i toothless/src/main/java/org/team1540/robot2022/RobotContainer.java -o site/diagrams/$GITHUB_REF_NAME/controls.pdf --error
+      - name: Generate diagrams
+        run: |
+          npx chickencoop -i toothless/src/main/java/org/team1540/robot2022/RobotContainer.java -o site/diagrams/$GITHUB_REF_NAME/controls.pdf --error
+          npx chickencoop -i toothless/src/main/java/org/team1540/robot2022/utils/FeatherClient.java -o site/diagrams/$GITHUB_REF_NAME/feather_client.pdf --error
       - name: commit and push
         run: |
           cd site
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add diagrams/$GITHUB_REF_NAME/controls.pdf
+          git add diagrams/$GITHUB_REF_NAME/feather_client.pdf
           git commit -m "refactor: update diagrams"
           git push
