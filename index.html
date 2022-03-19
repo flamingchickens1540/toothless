@@ -9,7 +9,7 @@ title: {{ site.name }}
     <ul class="posts" id="main">
         {% assign branchDiagrams = site.static_files | where: "primary_pdf", true %}
         {% for pdf in branchDiagrams %}
-        <li><a href="{{ pdf.path | absolute_url }}">{{ pdf.basename | uppercase }}</a></li>
+        <li><a href="{{ pdf.path | absolute_url }}">{{ pdf.basename | replace: '_', ' ' | uppercase }}</a></li>
         {% endfor %}
     </ul>
     {% assign diagrams = site.static_files | where: "pdf", true | where: "primary_pdf", false %}
@@ -24,7 +24,7 @@ title: {{ site.name }}
     <ul class="posts" id="{{branch}}">
         {% assign branchDiagrams = diagrams | where_exp: "pdf", "pdf.path contains branch" %}
         {% for pdf in branchDiagrams %}
-        <li><a href="{{ pdf.path | absolute_url }}">{{ pdf.basename | uppercase }}</a></li>
+        <li><a href="{{ pdf.path | absolute_url }}">{{ pdf.basename | replace: '_', ' ' | uppercase }}</a></li>
         {% endfor %}
     </ul>
     {% endfor %}
