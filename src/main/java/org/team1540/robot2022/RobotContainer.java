@@ -168,8 +168,9 @@ public class RobotContainer {
 
         // coop:button(LBumper, Run climb sequence,copilot)
         new JoystickButton(copilotController, Button.kLeftBumper.value)
-                .whenHeld(new ClimbSequence(climber, navx)
-                        .alongWith(commandSetLights(RevBlinkin.GameStage.ENDGAME)));
+                .whenHeld(new ClimbSequence(climber, navx, topLEDs, true)
+                        .alongWith(commandSetLights(RevBlinkin.GameStage.ENDGAME))
+                        .andThen(new InstantCommand(climberUpDownCommand::schedule)));
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
@@ -226,7 +227,6 @@ public class RobotContainer {
                                     drivetrain.setNeutralMode(NeutralMode.Coast);
                                     intake.setNeutralMode(NeutralMode.Coast);
                                     indexer.setNeutralMode(NeutralMode.Coast);
-                                    climber.setNeutralMode(NeutralMode.Coast);
                                 }, true),
                                 RobotState::isEnabled)
                 )

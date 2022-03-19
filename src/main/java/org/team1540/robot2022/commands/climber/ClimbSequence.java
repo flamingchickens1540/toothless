@@ -2,14 +2,16 @@ package org.team1540.robot2022.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.utils.RevBlinkin;
 
 public class ClimbSequence extends SequentialCommandGroup {
-    private static final double SWING_THRESHOLD = 5;
+    private static final double SWING_THRESHOLD_LOWER = 27;
+    private static final double SWING_THRESHOLD_UPPER = 23;
     private Climber climber;
     private NavX navx;
-    private double lastPitch;
+    private double lastRoll;
 
-    public ClimbSequence(Climber climber, NavX navx) {
+    public ClimbSequence(Climber climber, NavX navx, RevBlinkin lights, boolean toTraversal) {
         this.climber = climber;
         this.navx = navx;
         addCommands(
@@ -23,21 +25,30 @@ public class ClimbSequence extends SequentialCommandGroup {
                 new InstantCommand(() -> climber.setSolenoids(true)), // Retract arm pnuematics
 
                 raiseUntilLimit(-0.8),                                // Raise arms to maximum height
+
+                lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW),
                 new WaitUntilCommand(this::isOptimalSwing),           // Wait for robot to be swinging in the right place
+                lights.commandSetPattern(RevBlinkin.ColorPattern.GREEN),
                 new InstantCommand(() -> climber.setSolenoids(false)),// Move arms to hit high bar
                 new WaitCommand(1),                                   // Wait for arms to finish moving TODO can we lower this?
                 runUntilSpike(0.5, 35),                                // Retract the arms as far as they can go
 
                 // Traversal Bar
-                climber.commandSetPercent(-0.5), // Start extending arms (static hooks attached)
-                new WaitCommand(0.2),
-                new InstantCommand(() -> climber.setSolenoids(true)), // Retract arm pnuematics
+                new ConditionalCommand(
+                        sequence(
+                                new WaitCommand(0.5),
+                                climber.commandSetPercent(-0.5), // Start extending arms (static hooks attached)
+                                new WaitCommand(0.2),
+                                new InstantCommand(() -> climber.setSolenoids(true)), // Retract arm pnuematics
 
-                raiseUntilLimit(-0.8),                                // Raise arms to maximum height
-                new WaitUntilCommand(this::isOptimalSwing),           // Wait for robot to be swinging in the right place
-                new InstantCommand(() -> climber.setSolenoids(false)),// Move arms to hit traversal bar
-                new WaitCommand(1),                                   // Wait for arms to finish moving TODO can we lower this?
-                runUntilSpike(0.5, 35)                                // Retract the arms as far as they can go
+                                raiseUntilLimit(-0.8),                                // Raise arms to maximum height
+                                new WaitUntilCommand(this::isOptimalSwing),           // Wait for robot to be swinging in the right place
+                                new InstantCommand(() -> climber.setSolenoids(false)),// Move arms to hit traversal bar
+                                new WaitCommand(1),                                   // Wait for arms to finish moving TODO can we lower this?
+                                runUntilSpike(0.5, 35)                                // Retract the arms as far as they can go
+                        ),
+                        new PrintCommand(""),
+                        () -> toTraversal)
 
         );
         addRequirements(climber);
@@ -54,11 +65,12 @@ public class ClimbSequence extends SequentialCommandGroup {
      * @return true if the robot is at an optimal angle and swinging the right direction
      */
     private boolean isOptimalSwing() {
-        if (navx.getPitch() - lastPitch > 0 && Math.abs(navx.getPitch() - SWING_THRESHOLD) > 5) { //Check if robot is swinging the right way TODO make sure swing isn't inverted, tune threshold and range.
-            lastPitch = navx.getPitch();
+        double roll = navx.getRoll();
+        if (roll - lastRoll <= 0 && (SWING_THRESHOLD_UPPER <= roll)) { //Check if robot is swinging the right way TODO make sure swing isn't inverted, tune threshold and range.
+            lastRoll = roll;
             return true;
         }
-        lastPitch = navx.getPitch();
+        lastRoll = roll;
         return false;
     }
 
