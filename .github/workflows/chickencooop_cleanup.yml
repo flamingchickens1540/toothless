@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: 'gh-pages'
-      - name: Delete files
+      - name: Delete diagrams
         run: |
           rm -rf diagrams/${{ github.event.ref }}"
 
