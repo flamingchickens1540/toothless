@@ -12,7 +12,7 @@ jobs:
           ref: 'gh-pages'
       - name: Delete diagrams
         run: |
-          rm -rf diagrams/${{ github.event.ref }}"
+          rm -rf "diagrams/${{ github.event.ref }}"
 
       - name: Commmit changes
         run: |
