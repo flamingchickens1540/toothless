@@ -47,12 +47,12 @@ public class Vision extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         if (lastPose == null) {
-            lastDistance = SmartDashboard.getNumber("vision/distanceInFieldUnits", 0.76264080);
-            lastPose = new Pose2d(new Translation2d(8.695, 5.314), new Rotation2d());
+            lastDistance = SmartDashboard.getNumber("vision/distanceInFieldUnits", 0.5);
+            lastPose = new Pose2d(new Translation2d(8.4, 5.3), new Rotation2d());
             lastRotation = navX.getAngleRadians();
 
-            SmartDashboard.putNumber("vision/testingX", 13);
-            SmartDashboard.putNumber("vision/testingY", 5);
+            SmartDashboard.putNumber("vision/testingX", 7.9);
+            SmartDashboard.putNumber("vision/testingY", 4.6);
         }
         SmartDashboard.putNumber("vision/poseX", lastPose.getX());
         SmartDashboard.putNumber("vision/poseY", lastPose.getY());
@@ -68,7 +68,7 @@ public class Vision extends SubsystemBase {
 
     public double getAngleToTarget() {
         // double zeroAngleFromFieldY = 1.9386451520732095 - Math.toRadians(90); // y-axis to initialization position, cw
-        double zeroAngleFromFieldY = Math.toRadians(65.68661595); // testing y-axis to initialization position, cw
+        double zeroAngleFromFieldY = Math.toRadians(53.13010235); // testing y-axis to initialization position, cw
 
         // double zeroAngleFromFieldY = Math.toRadians(45);
 
@@ -88,9 +88,10 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putNumber("sim/1.2_lastAngle", Math.toDegrees(lastAngle));
 
         // Gets the vector between our last pose and our new pose.
-        Translation2d translation = lastPose.getTranslation().minus(currentPose);
+        Translation2d translation = currentPose.minus(lastPose.getTranslation());
 
         SmartDashboard.putNumber("sim/0_translationX", translation.getX());
+        SmartDashboard.putNumber("sim/0_translationY", translation.getY());
 
         Vector2d BD = new Vector2d(translation.getX(), translation.getY());
 
@@ -105,13 +106,10 @@ public class Vision extends SubsystemBase {
         Vector2d unitBF = new Vector2d(0, -1);
 
         // Something up here.
-        unitBF.rotate(-(Math.toDegrees(wrapRotation(lastAngle - Math.toRadians(90)))));
+        unitBF.rotate(-(Math.toDegrees(wrapRotation(lastAngle + Math.toRadians(90)))));
         
         SmartDashboard.putNumber("sim/3.1_lastAngle", Math.toDegrees(lastAngle));
-
-
-
-        SmartDashboard.putNumber("sim/3_dirBF", Math.toDegrees(wrapRotation(lastAngle - Math.toRadians(90))));
+        SmartDashboard.putNumber("sim/3_dirBF", Math.toDegrees(wrapRotation(lastAngle + Math.toRadians(90))));
 
         double magAC = BD.dot(unitBF);
         SmartDashboard.putNumber("sim/4_magAC", magAC);
@@ -132,8 +130,10 @@ public class Vision extends SubsystemBase {
 
         SmartDashboard.putNumber("sim/7_magFD", magFD);
 
-        double magCD = magAB + magFD;
+        double magCD = magAB - magFD;
         Vector2d CD = new Vector2d(unitBF.x * magCD, unitBF.y * magCD);
+
+        SmartDashboard.putNumber("sim/8.1_magCD", magCD);
 
         double theta = Math.atan2(AC.magnitude(), CD.magnitude());
 
@@ -141,15 +141,19 @@ public class Vision extends SubsystemBase {
 
         double angleToTurnTo = currentAngle + theta - zeroAngleFromFieldY;
 
-        double testAngle = Math.atan2(BD.y, BD.x);
+        double testAngle = Math.atan2(BD.y, BD.x) + Math.PI/2;
 
         SmartDashboard.putNumber("sim/9_testAngle", Math.toDegrees(testAngle));
 
-//        if (testAngle > Math.PI / 2) {
-//            angleToTurnTo = Math.PI * 2 - angleToTurnTo;
-//        }
+        if (testAngle + currentAngle < 0 || testAngle + currentAngle > Math.PI) {
+            angleToTurnTo = Math.PI * 2 - angleToTurnTo;
+        }
 
-        // Should return in radians
-        return angleToTurnTo;
+        if (magCD < 0) {
+            angleToTurnTo = Math.PI - angleToTurnTo;
+        }
+
+        // Returns in radians
+        return wrapRotation(angleToTurnTo);
     }
 }
