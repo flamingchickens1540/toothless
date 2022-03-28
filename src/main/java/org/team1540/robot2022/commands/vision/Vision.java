@@ -23,6 +23,9 @@ public class Vision extends SubsystemBase {
         this.drivetrain = drivetrain;
         this.navX = navX;
         this.limelight = limelight;
+
+        // Start by assuming the field units are meters (unconfirmed)
+        SmartDashboard.putNumber("vision/inchesToFieldRatio", 0.0254);
         
         if (isSimulation) {
             SmartDashboard.putNumber("vision/testingX", -4);
@@ -32,7 +35,9 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (limelight.isTargetAligned()) {
+        if (limelight.isTargetAligned() && !isSimulation) {
+            // lastDistance is the limelight's found distance + distance to center of the hub then made into "field units"
+//            lastDistance = (limelight.getCalculatedDistance() + 31.375) * SmartDashboard.getNumber("vision/inchesToFieldRatio", 0.0254);
             lastDistance = limelight.getCalculatedDistance();
             lastPose = drivetrain.getPose();
             lastRotation = navX.getAngleRadians();
@@ -109,7 +114,7 @@ public class Vision extends SubsystemBase {
         // The magnitude of the vector from our last pose to the hub.
         double magAB = lastDistance;
 
-        SmartDashboard.putNumber("sim/2_magAB", magAB);
+//        SmartDashboard.putNumber("sim/2_magAB", magAB);
 
         // Unit vector perpendicular to the line through last position and hub (AB)
         Vector2d unitBF = new Vector2d(0, -1);
