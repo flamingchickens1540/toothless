@@ -80,6 +80,16 @@ public class Limelight {
         return getTargetAngles().x != 0;
     }
 
+    /**
+     * Tells whether the limelight target is aligned to within 1 degree.
+     *
+     * @return the state of target alignment
+     */
+    public boolean isTargetAligned() {
+        Vector2d angles = getTargetAngles();
+        return Math.sqrt(angles.x * angles.x + angles.y * angles.y) < 1;
+    }
+
     public double getLeds() {
         return limelightTable.getEntry("ledMode").getDouble(1);
     }
