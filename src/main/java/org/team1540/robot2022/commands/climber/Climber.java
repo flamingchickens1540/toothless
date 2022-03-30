@@ -95,9 +95,19 @@ public class Climber extends SubsystemBase {
         setPercentRight(0);
     }
 
+    /**
+     * Returns if the arms can be moved
+     *
+     * @param sensor  The magnet sensor to use
+     * @param percent The percent the arms will be moved (to check if it is going down_
+     * @return If the sensor is not tripped, the arms will be moved down, or the limits are disabled
+     */
+    private boolean inThreshold(DigitalInput sensor, double percent) {
+        return sensor.get() || percent > 0 || !limitsEnabled;
+    }
+
     public void setPercentLeft(double percent) {
-        System.out.println(percent);
-        if (this.sensorLeft.get() || percent > 0) {
+        if (inThreshold(sensorLeft, percent)) {
             motorLeft.setPercent(percent);
         } else {
             motorLeft.setPercent(0);
@@ -105,8 +115,7 @@ public class Climber extends SubsystemBase {
     }
 
     public void setPercentRight(double percent) {
-
-        if (this.sensorRight.get() || percent > 0) {
+        if (inThreshold(sensorRight, percent)) {
             motorRight.setPercent(percent);
         } else {
             motorRight.setPercent(0);
