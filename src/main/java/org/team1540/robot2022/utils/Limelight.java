@@ -25,6 +25,7 @@ public class Limelight {
     public Limelight(String name) {
         limelightTable = NetworkTableInstance.getDefault().getTable(name);
         SmartDashboard.putNumber("limelight/custom/calculatedDistance", 0);
+        SmartDashboard.putNumber("limelight/custom/targetAlignedRange", 5);
         setLeds(true);
     }
 
@@ -86,8 +87,7 @@ public class Limelight {
      * @return the state of target alignment
      */
     public boolean isTargetAligned() {
-        Vector2d angles = getTargetAngles();
-        return Math.sqrt(angles.x * angles.x + angles.y * angles.y) < 1;
+        return Math.abs(getTargetAngles().x) < SmartDashboard.getNumber("limelight/custom/targetAlignedRange", 5);
     }
 
     public double getLeds() {
