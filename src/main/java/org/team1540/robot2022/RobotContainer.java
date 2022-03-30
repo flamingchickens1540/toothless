@@ -64,6 +64,8 @@ public class RobotContainer {
 
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
+    // coop:button(LTrigger,Drive Forward,pilot)
+    // coop:button(RTrigger,Drive Backward,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
     public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
@@ -89,13 +91,13 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
 
-        // coop:button(LTrigger,Shoot HUB [hold],pilot)
-        // coop:button(RTrigger,Shoot FAR [hold],pilot)
-        new Trigger(() -> driverController.getLeftTriggerAxis() == 1)
-                .or(new Trigger(() -> driverController.getRightTriggerAxis() == 1))
+        // coop:button(LBumper,Shoot HUB [hold],pilot)
+        // coop:button(RBumper,Shoot FAR [hold],pilot)
+        new Trigger(driverController::getLeftBumper)
+                .or(new Trigger(driverController::getRightBumper))
                 .whileActiveOnce(new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            if (driverController.getLeftTriggerAxis() == 1) {
+                            if (driverController.getLeftBumper()) {
                                 shootSequence.setProfile(Shooter.ShooterProfile.HUB);
                             } else {
                                 shootSequence.setProfile(Shooter.ShooterProfile.FAR);
