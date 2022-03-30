@@ -2,8 +2,7 @@ package org.team1540.robot2022.commands.climber;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
 import org.team1540.robot2022.Constants.ClimberConstants;
-import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Climber extends SubsystemBase {
@@ -27,32 +25,17 @@ public class Climber extends SubsystemBase {
             ClimberConstants.Solenoids.SOLENOID_B
     );
 
+    public final DigitalInput sensorLeft = new DigitalInput(2);
+    public final DigitalInput sensorRight = new DigitalInput(3);
+    private boolean limitsEnabled = true;
+
+
     public Climber() {
         Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(new TalonFX[]{motorLeft, motorRight});
         motorLeft.setNeutralMode(NeutralMode.Brake);
         motorRight.setNeutralMode(NeutralMode.Brake);
         motorLeft.setInverted(true);
         motorRight.setInverted(true);
-
-        ChickenSmartDashboard.putDefaultNumber("climber/limits/retracted/leftUp", -645000);
-        ChickenSmartDashboard.putDefaultNumber("climber/limits/retracted/rightUp", -645000);
-        ChickenSmartDashboard.putDefaultNumber("climber/limits/extended/leftUp", -600000);
-        ChickenSmartDashboard.putDefaultNumber("climber/limits/extended/rightUp", -600000);
-
-        updateLimits();
-        NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/limits").addEntryListener((table, key, entry, value, flags) -> updateLimits(), EntryListenerFlags.kUpdate);
-    }
-
-    /**
-     * Factory method zero the encoders
-     *
-     * @return InstantCommand to zero
-     */
-    public Command commandZeroEncoders() {
-        return new InstantCommand(() -> {
-            motorLeft.setSelectedSensorPosition(0);
-            motorRight.setSelectedSensorPosition(0);
-        }).andThen(this::updateLimits);
     }
 
     public void periodic() {
@@ -65,48 +48,12 @@ public class Climber extends SubsystemBase {
 
     }
 
-    /**
-     * Update soft limits
-     *
-     * @return InstantCommand
-     */
-    public Command commandUpdateLimits() {
-        return new InstantCommand(this::updateLimits);
-    }
-
-    /**
-     * Disable soft limits for zeroing
-     *
-     * @return InstantCommand
-     */
     public Command commandDisableLimits() {
-        return new InstantCommand(() -> {
-            motorLeft.configReverseSoftLimitEnable(false);
-            motorRight.configReverseSoftLimitEnable(false);
-            motorLeft.configForwardSoftLimitEnable(false);
-            motorRight.configForwardSoftLimitEnable(false);
-        });
+        return new InstantCommand(
+                () -> this.limitsEnabled = false
+        );
     }
 
-    private void updateLimits() {
-        double leftUpLimit, rightUpLimit;
-        if (this.solenoid.get() == DoubleSolenoid.Value.kForward) { // If retracted, solenoid is inverted
-            leftUpLimit = SmartDashboard.getNumber("climber/limits/retracted/leftUp", -470000);
-            rightUpLimit = SmartDashboard.getNumber("climber/limits/retracted/rightUp", -470000);
-        } else {
-            leftUpLimit = SmartDashboard.getNumber("climber/limits/extended/leftUp", -600000);
-            rightUpLimit = SmartDashboard.getNumber("climber/limits/extended/rightUp", -600000);
-        }
-        motorLeft.configReverseSoftLimitEnable(true);
-        motorRight.configReverseSoftLimitEnable(true);
-        motorLeft.configReverseSoftLimitThreshold(leftUpLimit);
-        motorRight.configReverseSoftLimitThreshold(rightUpLimit);
-
-        motorLeft.configForwardSoftLimitEnable(false);
-        motorRight.configForwardSoftLimitEnable(false);
-        motorLeft.configForwardSoftLimitThreshold(0);
-        motorRight.configForwardSoftLimitThreshold(0);
-    }
 
     /**
      * Sets the states of the climber arm solenoids
@@ -115,19 +62,19 @@ public class Climber extends SubsystemBase {
      */
     public void setSolenoids(boolean forward) {
         solenoid.set(forward ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
-        this.updateLimits();
     }
 
     /**
-     * Set climber output percent power
+     * Set climber output percent power (positive values lower the arms)
      *
      * @param left  percentage
      * @param right percentage
      */
     public void setPercent(double left, double right) {
-        motorLeft.setPercent(left);
-        motorRight.setPercent(right);
+        setPercentLeft(left);
+        setPercentRight(right);
     }
+
 
     /**
      * Sets the NeutralMode for the climber (either coast or brake)
@@ -144,8 +91,26 @@ public class Climber extends SubsystemBase {
      * Stop climber motors
      */
     public void stop() {
-        motorLeft.setPercent(0);
-        motorRight.setPercent(0);
+        setPercentLeft(0);
+        setPercentRight(0);
+    }
+
+    public void setPercentLeft(double percent) {
+        System.out.println(percent);
+        if (this.sensorLeft.get() || percent > 0) {
+            motorLeft.setPercent(percent);
+        } else {
+            motorLeft.setPercent(0);
+        }
+    }
+
+    public void setPercentRight(double percent) {
+
+        if (this.sensorRight.get() || percent > 0) {
+            motorRight.setPercent(percent);
+        } else {
+            motorRight.setPercent(0);
+        }
     }
 
     public double getLeftCurrent() {
@@ -157,20 +122,18 @@ public class Climber extends SubsystemBase {
     }
 
     public Command commandSetPercentLeft(double percent) {
-        return new InstantCommand(() -> motorLeft.setPercent(percent));
+        return new InstantCommand(() -> setPercentLeft(percent));
     }
 
     public Command commandSetPercentRight(double percent) {
-
-
-        return new InstantCommand(() -> motorRight.setPercent(percent));
+        return new InstantCommand(() -> setPercentRight(percent));
     }
 
     public Command commandSetPercent(double percent) {
         return new InstantCommand(
                 () -> {
-                    motorRight.setPercent(percent);
-                    motorLeft.setPercent(percent);
+                    setPercentRight(percent);
+                    setPercentLeft(percent);
                 }
         );
     }
