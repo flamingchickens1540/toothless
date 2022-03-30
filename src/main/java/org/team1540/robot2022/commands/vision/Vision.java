@@ -17,7 +17,7 @@ public class Vision extends SubsystemBase {
     Pose2d lastPose;
     double lastDistance;
     double lastRotation;
-    boolean isSimulation = true;
+    boolean isSimulation = false;
 
     public Vision(Drivetrain drivetrain, NavX navX, Limelight limelight) {
         this.drivetrain = drivetrain;
@@ -26,23 +26,22 @@ public class Vision extends SubsystemBase {
 
         // Start by assuming the field units are meters (unconfirmed)
         SmartDashboard.putNumber("vision/inchesToFieldRatio", 0.0254);
-        
+        SmartDashboard.putBoolean("vision/allowTargetUpdate", false);
+
         if (isSimulation) {
             SmartDashboard.putNumber("vision/testingX", -4);
             SmartDashboard.putNumber("vision/testingY", -4);
         }
     }
 
+    // TODO: Fix this so we can debug limelight distance easier (set LEDs to true and make isAligned funciton better)
     @Override
     public void periodic() {
-        if (limelight.isTargetAligned() && !isSimulation) {
+        boolean isLimelightAligned = limelight.isTargetAligned();
+        SmartDashboard.putBoolean("vision/limelightAligned", isLimelightAligned);
+        if (SmartDashboard.getBoolean("vision/allowTargetUpdate", false) && isLimelightAligned && !isSimulation) {
             // lastDistance is the limelight's found distance + distance to center of the hub then made into "field units"
-//            lastDistance = (limelight.getCalculatedDistance() + 31.375) * SmartDashboard.getNumber("vision/inchesToFieldRatio", 0.0254);
-            lastDistance = limelight.getCalculatedDistance();
-            lastPose = drivetrain.getPose();
-            lastRotation = navX.getAngleRadians();
-            SmartDashboard.putNumber("vision/poseX", lastPose.getX());
-            SmartDashboard.putNumber("vision/poseY", lastPose.getY());
+            updateLastTargetPose();
         }
         if (lastPose != null) {
             SmartDashboard.putNumber("vision/estimatedAngle", Math.toDegrees(wrapRotationToYaw(getAngleToTarget())));
@@ -59,8 +58,29 @@ public class Vision extends SubsystemBase {
             SmartDashboard.putNumber("vision/testingX", 7.9);
             SmartDashboard.putNumber("vision/testingY", 4.6);
         }
+        SmartDashboard.putNumber("vision/lastRotation", lastRotation);
         SmartDashboard.putNumber("vision/poseX", lastPose.getX());
         SmartDashboard.putNumber("vision/poseY", lastPose.getY());
+    }
+
+    public void zeroPosition() {
+        lastDistance = 1.21973;
+        lastPose = drivetrain.getPose();
+        lastRotation = navX.getAngleRadians();
+        SmartDashboard.putNumber("vision/lastPoseX", lastPose.getX());
+        SmartDashboard.putNumber("vision/lastPoseY", lastPose.getY());
+        SmartDashboard.putNumber("vision/lastRotation", lastRotation);
+        SmartDashboard.putNumber("vision/lastDistance", lastDistance);
+    }
+
+    private void updateLastTargetPose() {
+        lastDistance = (limelight.getCalculatedDistance() + 31.375) * SmartDashboard.getNumber("vision/inchesToFieldRatio", 0.0254);
+        lastPose = drivetrain.getPose();
+        lastRotation = navX.getAngleRadians();
+        SmartDashboard.putNumber("vision/lastPoseX", lastPose.getX());
+        SmartDashboard.putNumber("vision/lastPoseY", lastPose.getY());
+        SmartDashboard.putNumber("vision/lastRotation", lastRotation);
+        SmartDashboard.putNumber("vision/lastDistance", lastDistance);
     }
 
     private double wrapRotation(double rotation) {
@@ -81,12 +101,15 @@ public class Vision extends SubsystemBase {
     // Returns turn angle in radians, un-normalized to yaw, meaning it goes from 0-360
     public double getAngleToTarget() {
         // double zeroAngleFromFieldY = 1.9386451520732095 - Math.toRadians(90); // y-axis to initialization position, cw
-        double zeroAngleFromFieldY = Math.toRadians(65.68661595); // testing y-axis to initialization position, cw
+        double zeroAngleFromFieldY = Math.toRadians(18.89); // angle to Y from pointing to hub, when hub is at (8.3,4.16)
 
         // double zeroAngleFromFieldY = Math.toRadians(45);
 
         // Get the current pose.
         Translation2d currentPose = drivetrain.getPose().getTranslation();
+
+        SmartDashboard.putNumber("vision/currentPoseX", currentPose.getX());
+        SmartDashboard.putNumber("vision/currentPoseY", currentPose.getY());
 
         // This should be removed
         if (isSimulation) {
@@ -94,18 +117,18 @@ public class Vision extends SubsystemBase {
         }
 
         // The current angle gets the navX yaw angle, and adds our original offset from positive x-axis.
-        double currentAngle = wrapRotation((-navX.getYawRadians() + 2 * Math.PI) + zeroAngleFromFieldY);
+        double currentAngle = wrapRotation(zeroAngleFromFieldY);
         // The last angle gets the last recorded navX yaw angle, and adds our original offset from positive x-axis.
         double lastAngle = wrapRotation(lastRotation + zeroAngleFromFieldY + 2 * Math.PI);
 
-//        SmartDashboard.putNumber("sim/1.1_currentAngle", Math.toDegrees(currentAngle));
-//        SmartDashboard.putNumber("sim/1.2_lastAngle", Math.toDegrees(lastAngle));
+        SmartDashboard.putNumber("sim/1.1_currentAngle", Math.toDegrees(currentAngle));
+        SmartDashboard.putNumber("sim/1.2_lastAngle", Math.toDegrees(lastAngle));
 
         // Gets the vector between our last pose and our new pose.
         Translation2d translation = currentPose.minus(lastPose.getTranslation());
 
-//        SmartDashboard.putNumber("sim/0_translationX", translation.getX());
-//        SmartDashboard.putNumber("sim/0_translationY", translation.getY());
+        SmartDashboard.putNumber("vision/translationX", translation.getX());
+        SmartDashboard.putNumber("vision/translationY", translation.getY());
 
         Vector2d BD = new Vector2d(translation.getX(), translation.getY());
 
@@ -122,7 +145,7 @@ public class Vision extends SubsystemBase {
         unitBF.rotate(-(Math.toDegrees(wrapRotation(lastAngle + Math.toRadians(90)))));
         
 //        SmartDashboard.putNumber("sim/3.1_lastAngle", Math.toDegrees(lastAngle));
-//        SmartDashboard.putNumber("sim/3_dirBF", Math.toDegrees(wrapRotation(lastAngle + Math.toRadians(90))));
+        SmartDashboard.putNumber("sim/3_dirBF", Math.toDegrees(wrapRotation(lastAngle + Math.toRadians(90))));
         double magAC = BD.dot(unitBF);
 //        SmartDashboard.putNumber("sim/4_magAC", magAC);
 
@@ -157,6 +180,6 @@ public class Vision extends SubsystemBase {
         }
 
         // Returns in radians, wrapped to be within [0, TWO_PI]
-        return wrapRotation(angleToTurnTo);
+        return wrapRotation(angleToTurnTo + navX.getAngleRadians());
     }
 }

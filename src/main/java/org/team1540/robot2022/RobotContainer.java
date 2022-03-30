@@ -172,14 +172,14 @@ public class RobotContainer {
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
-                .whenActive(new OdometryResetSequence(drivetrain, navx, limelight, bottomLEDs));
+                .whenActive(new OdometryResetSequence(drivetrain, navx, vision, limelight, bottomLEDs));
 
         FeatherClient.configureController(featherController);
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
         SmartDashboard.putData("shooter/enableTestProfile", new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.TESTING)));
-        SmartDashboard.putData("driveTrain/resetOdometry", OdometryResetSequence.getOdometryResetter(navx, drivetrain));
+        SmartDashboard.putData("driveTrain/resetOdometry", OdometryResetSequence.getOdometryResetter(navx, drivetrain, vision));
     }
 
     private void initModeTransitionBindings() {
