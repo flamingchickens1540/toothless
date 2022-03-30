@@ -31,8 +31,8 @@ public class FFTankDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-//        double triggers = MathUtils.deadzone(controller.getLeftTriggerAxis(), deadzone) - MathUtils.deadzone(controller.getRightTriggerAxis(), deadzone);
-        double triggers = 0;
+        double triggers = MathUtils.deadzone(controller.getLeftTriggerAxis(), deadzone) - MathUtils.deadzone(controller.getRightTriggerAxis(), deadzone);
+//        double triggers = 0;
         SmartDashboard.putNumber("drivetrain/tankDrive/debug/triggers", triggers);
 
         deadzone = SmartDashboard.getNumber("drivetrain/tankDrive/deadzone", 0.15);
