@@ -78,7 +78,7 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-        return getTargetAngles().x != 0;
+        return getTargetAngles().x > 0.001;
     }
 
     /**
@@ -87,7 +87,8 @@ public class Limelight {
      * @return the state of target alignment
      */
     public boolean isTargetAligned() {
-        return Math.abs(getTargetAngles().x) < SmartDashboard.getNumber("limelight/custom/targetAlignedRange", 5);
+        double distance = Math.abs(getTargetAngles().x);
+        return distance > 0 && distance < SmartDashboard.getNumber("limelight/custom/targetAlignedRange", 5);
     }
 
     public double getLeds() {

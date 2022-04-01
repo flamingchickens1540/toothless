@@ -28,7 +28,7 @@ public class Vision extends SubsystemBase {
         limelight.setLeds(true);
 
         // Start by assuming the field units are meters (unconfirmed)
-        SmartDashboard.putNumber("vision/inchesToFieldRatio", 0.0254);
+        SmartDashboard.putNumber("vision/inchesToFieldRatio", 0.0185);
         SmartDashboard.putBoolean("vision/allowTargetUpdate", false);
 
         if (isSimulation) {
@@ -82,7 +82,7 @@ public class Vision extends SubsystemBase {
      * Updates the last pose to the current sensor readings.
      */
     private void updateLastTargetPose() {
-        lastDistance = (limelight.getCalculatedDistance() + 31.375) * SmartDashboard.getNumber("vision/inchesToFieldRatio", 0.0254);
+        lastDistance = (limelight.getCalculatedDistance() + 31.375) * SmartDashboard.getNumber("vision/inchesToFieldRatio", 0.0185);
         lastPose = drivetrain.getPose();
         lastRotation = navX.getAngleRadians();
 

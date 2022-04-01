@@ -23,9 +23,8 @@ public class PointToTarget extends CommandBase {
     private final AverageFilter averageFilter = new AverageFilter(10);
     private int medianFilterCount = 0;
     private boolean turning = false;
-    private double angleOffset = 0;
 
-    private class AverageFilter {
+    private static class AverageFilter {
         private final LinkedList<Double> buffer;
         int size;
 
@@ -52,6 +51,7 @@ public class PointToTarget extends CommandBase {
 
     // A little testing says kP=0.7 and kD=0.4 are fairly strong.
     private final MiniPID pid = new MiniPID(1, 0, 0);
+    private final MiniPID pidNavX = new MiniPID(0, 0, 0);
 
     public PointToTarget(Drivetrain drivetrain, Vision vision, Limelight limelight, NavX navX) {
         this.drivetrain = drivetrain;
@@ -64,12 +64,21 @@ public class PointToTarget extends CommandBase {
 
     @Override
     public void initialize() {
-        double p = SmartDashboard.getNumber("pointToTarget/kP", 0.006);
+        double p = SmartDashboard.getNumber("pointToTarget/kP", 0.008);
         double i = SmartDashboard.getNumber("pointToTarget/kI", 0);
-        double d = SmartDashboard.getNumber("pointToTarget/kD", 0.015);
-        limelight.setLeds(true);
+        double d = SmartDashboard.getNumber("pointToTarget/kD", 0.05);
+
+        double pX = SmartDashboard.getNumber("pointToTarget/navX_kP", 0.008);
+        double dX = SmartDashboard.getNumber("pointToTarget/navX_kD", 0.05);
+
+        pidNavX.setPID(pX, 0, dX);
+        pidNavX.setSetpoint(0);
+
         pid.setPID(p, i, d);
         pid.setSetpoint(0);
+
+        limelight.setLeds(true);
+        SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", true);
     }
 
     private double getHorizontalDistanceToTarget() {
@@ -195,16 +204,11 @@ public class PointToTarget extends CommandBase {
         if (!turning) {
             turning = true;
             double degreeSetpoint = navX.getAngle() + startAngleXOffset;
-            if (degreeSetpoint > 180) {
-                degreeSetpoint = degreeSetpoint - 360;
-            } else if (degreeSetpoint < -180) {
-                degreeSetpoint = degreeSetpoint + 360;
-            }
-            SmartDashboard.putNumber("pointToTarget/turnWithNavX/setpoint", degreeSetpoint);
-            pid.setSetpoint(degreeSetpoint);
+            SmartDashboard.putNumber("pointToTarget/setpoint_navX", degreeSetpoint);
+            pidNavX.setSetpoint(degreeSetpoint);
         }
 
-        double pidOutput = clampPID(pid.getOutput(navX.getAngle()));
+        double pidOutput = clampPID(pidNavX.getOutput(navX.getAngle()));
         drivetrain.setPercent(pidOutput, -pidOutput);
     }
 
@@ -214,8 +218,11 @@ public class PointToTarget extends CommandBase {
      */
     private void calculateAndTurnWithVision() {
         if (limelight.isTargetFound()) {
+            SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", true);
+            pid.setSetpoint(0);
             calculateWithCorners(this::turnWithLimelight);
         } else {
+            SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", false);
             turnWithNavX(vision.getNormalizedAngleToTargetDegrees());
         }
     }
@@ -243,10 +250,12 @@ public class PointToTarget extends CommandBase {
         double d = SmartDashboard.getNumber("pointToTarget/kD", 0.015);
         pid.setPID(p, i, d);
 
-        calculateWithCorners(this::turnWithLimelight);
+//        calculateWithCorners(this::turnWithLimelight);
+        calculateAndTurnWithVision();
     }
 
     public void end(boolean isInterrupted) {
+        turning = false;
         drivetrain.stopMotors();
         limelight.setLeds(false);
         medianFilterCount = 0;
