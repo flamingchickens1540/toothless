@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
     public ChickenTalonFX shooterMotorRear = new ChickenTalonFX(Constants.ShooterConstants.REAR);
 
     public Shooter() {
-        Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(new ChickenTalonFX[]{shooterMotorFront, shooterMotorRear});
+        Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(shooterMotorFront, shooterMotorRear);
         shooterMotorFront.setNeutralMode(NeutralMode.Coast);
         shooterMotorRear.setNeutralMode(NeutralMode.Coast);
         shooterMotorFront.setInverted(true);
