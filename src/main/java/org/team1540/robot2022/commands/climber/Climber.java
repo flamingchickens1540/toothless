@@ -1,7 +1,7 @@
 package org.team1540.robot2022.commands.climber;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -25,13 +25,41 @@ public class Climber extends SubsystemBase {
             ClimberConstants.Solenoids.SOLENOID_B
     );
 
-    public final DigitalInput sensorLeft = new DigitalInput(2);
-    public final DigitalInput sensorRight = new DigitalInput(3);
+    public final DigitalInput sensorLeft = new DigitalInput(3);
+    public final DigitalInput sensorRight = new DigitalInput(2);
     private boolean limitsEnabled = true;
+
+    private final AsynchronousInterrupt leftInterrupt = new AsynchronousInterrupt(sensorLeft, (rising, falling) -> {
+        // These rising/falling booleans are both reporting false, and I don't know why
+        if (!sensorLeft.get()) {
+            motorLeft.configReverseSoftLimitThreshold(motorLeft.getSelectedSensorPosition());
+            motorLeft.configReverseSoftLimitEnable(true);
+        } else {
+            motorLeft.configReverseSoftLimitEnable(false);
+        }
+    });
+
+    private final AsynchronousInterrupt rightInterrupt = new AsynchronousInterrupt(sensorRight, (rising, falling) -> {
+        boolean sensorVal = sensorRight.get();
+        if (!sensorVal) {
+            motorRight.configReverseSoftLimitThreshold(motorRight.getSelectedSensorPosition());
+            motorRight.configReverseSoftLimitEnable(true);
+        } else {
+            motorRight.configReverseSoftLimitEnable(false);
+        }
+    });
 
 
     public Climber() {
-        Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(new TalonFX[]{motorLeft, motorRight});
+
+        leftInterrupt.setInterruptEdges(true, true);
+        rightInterrupt.setInterruptEdges(true, true);
+        enableLimits();
+
+
+        motorLeft.configFactoryDefault();
+        motorRight.configFactoryDefault();
+        Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(motorLeft, motorRight);
         motorLeft.setNeutralMode(NeutralMode.Brake);
         motorRight.setNeutralMode(NeutralMode.Brake);
         motorLeft.setInverted(true);
@@ -49,9 +77,18 @@ public class Climber extends SubsystemBase {
     }
 
     public Command commandDisableLimits() {
-        return new InstantCommand(
-                () -> this.limitsEnabled = false
-        );
+        return new InstantCommand(() -> {
+            System.out.println("disabling");
+            leftInterrupt.disable();
+            rightInterrupt.disable();
+            motorLeft.configReverseSoftLimitEnable(false);
+            motorRight.configReverseSoftLimitEnable(false);
+        });
+    }
+
+    public void enableLimits() {
+        leftInterrupt.enable();
+        rightInterrupt.enable();
     }
 
 
@@ -107,19 +144,11 @@ public class Climber extends SubsystemBase {
     }
 
     public void setPercentLeft(double percent) {
-        if (inThreshold(sensorLeft, percent)) {
-            motorLeft.setPercent(percent);
-        } else {
-            motorLeft.setPercent(0);
-        }
+        motorLeft.setPercent(percent);
     }
 
     public void setPercentRight(double percent) {
-        if (inThreshold(sensorRight, percent)) {
-            motorRight.setPercent(percent);
-        } else {
-            motorRight.setPercent(0);
-        }
+        motorRight.setPercent(percent);
     }
 
     public double getLeftCurrent() {
