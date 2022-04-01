@@ -1,19 +1,23 @@
 package org.team1540.robot2022.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.*;
+import org.team1540.robot2022.utils.ChickenXboxController;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinkin;
 
-public class ClimbSequence extends SequentialCommandGroup {
+public class ClimbSequence extends ParallelCommandGroup {
     private static final double SWING_THRESHOLD_LOWER = 27;
     private static final double SWING_THRESHOLD_UPPER = 23;
     private Climber climber;
     private NavX navx;
+
+    private ChickenXboxController controller;
     private double lastRoll;
 
-    public ClimbSequence(Climber climber, NavX navx, RevBlinkin lights, boolean toTraversal) {
+    public ClimbSequence(Climber climber, NavX navx, RevBlinkin lights, ChickenXboxController controller, boolean toTraversal) {
         this.climber = climber;
         this.navx = navx;
+        this.controller = controller;
         addCommands(
                 // Mid Bar
                 runUntilSpike(0.5, 35), // Retract arms as far as they can go

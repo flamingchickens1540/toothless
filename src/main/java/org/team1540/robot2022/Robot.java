@@ -86,6 +86,8 @@ public class Robot extends TimedRobot {
         robotContainer.limelight.setLeds(false);
         robotContainer.topLEDs.setPattern(RevBlinkin.GameStage.DISABLE);
         robotContainer.bottomLEDs.setPattern(RevBlinkin.GameStage.DISABLE);
+        robotContainer.driverController.setRumble(0);
+        robotContainer.copilotController.setRumble(0);
     }
 
     @Override
