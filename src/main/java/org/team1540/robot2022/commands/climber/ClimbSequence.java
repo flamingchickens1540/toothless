@@ -19,40 +19,43 @@ public class ClimbSequence extends ParallelCommandGroup {
         this.navx = navx;
         this.controller = controller;
         addCommands(
-                // Mid Bar
-                runUntilSpike(0.5, 35), // Retract arms as far as they can go
-                new WaitCommand(0.2),
+                new InstantCommand(() -> controller.setRumble(0.1)),
+                sequence(
+                        // Mid Bar
+                        runUntilSpike(1, 35), // Retract arms as far as they can go
+                        new WaitCommand(0.2),
 
-                // High Bar
-                climber.commandSetPercent(-0.5), // Start extending arms (static hooks attached)
-                new WaitCommand(0.2),
-                new InstantCommand(() -> climber.setSolenoids(true)), // Retract arm pnuematics
+                        // High Bar
+                        climber.commandSetPercent(-1), // Start extending arms (static hooks attached)
+                        new WaitCommand(0.2),
+                        new InstantCommand(() -> climber.setSolenoids(true)), // Retract arm pnuematics
 
-                raiseUntilLimit(-0.8),                                // Raise arms to maximum height
+                        raiseUntilLimit(-1),                                // Raise arms to maximum height
 
-                lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW),
-                new WaitUntilCommand(this::isOptimalSwing),           // Wait for robot to be swinging in the right place
-                lights.commandSetPattern(RevBlinkin.ColorPattern.GREEN),
-                new InstantCommand(() -> climber.setSolenoids(false)),// Move arms to hit high bar
-                new WaitCommand(1),                                   // Wait for arms to finish moving TODO can we lower this?
-                runUntilSpike(0.5, 35),                                // Retract the arms as far as they can go
+                        lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW),
+                        new WaitUntilCommand(this::isOptimalSwing),           // Wait for robot to be swinging in the right place
+                        lights.commandSetPattern(RevBlinkin.ColorPattern.GREEN),
+                        new InstantCommand(() -> climber.setSolenoids(false)),// Move arms to hit high bar
+                        new WaitCommand(1),                                   // Wait for arms to finish moving TODO can we lower this?
+                        runUntilSpike(1, 35),                                // Retract the arms as far as they can go
 
-                // Traversal Bar
-                new ConditionalCommand(
-                        sequence(
-                                new WaitCommand(0.5),
-                                climber.commandSetPercent(-0.5), // Start extending arms (static hooks attached)
-                                new WaitCommand(0.2),
-                                new InstantCommand(() -> climber.setSolenoids(true)), // Retract arm pnuematics
+                        // Traversal Bar
+                        new ConditionalCommand(
+                                sequence(
+                                        new WaitCommand(0.5),
+                                        climber.commandSetPercent(-1), // Start extending arms (static hooks attached)
+                                        new WaitCommand(0.2),
+                                        new InstantCommand(() -> climber.setSolenoids(true)), // Retract arm pnuematics
 
-                                raiseUntilLimit(-0.8),                                // Raise arms to maximum height
-                                new WaitUntilCommand(this::isOptimalSwing),           // Wait for robot to be swinging in the right place
-                                new InstantCommand(() -> climber.setSolenoids(false)),// Move arms to hit traversal bar
-                                new WaitCommand(1),                                   // Wait for arms to finish moving TODO can we lower this?
-                                runUntilSpike(0.5, 35)                                // Retract the arms as far as they can go
-                        ),
-                        new PrintCommand(""),
-                        () -> toTraversal)
+                                        raiseUntilLimit(-1),                                // Raise arms to maximum height
+                                        new WaitUntilCommand(this::isOptimalSwing),           // Wait for robot to be swinging in the right place
+                                        new InstantCommand(() -> climber.setSolenoids(false)),// Move arms to hit traversal bar
+                                        new WaitCommand(1),                                   // Wait for arms to finish moving TODO can we lower this?
+                                        runUntilSpike(1, 35)                                // Retract the arms as far as they can go
+                                ),
+                                new PrintCommand(""),
+                                () -> toTraversal)
+                )
 
         );
         addRequirements(climber);
@@ -60,11 +63,13 @@ public class ClimbSequence extends ParallelCommandGroup {
 
     @Override
     public void end(boolean interrupted) {
+
         climber.stop();
+        controller.setRumble(0);
     }
 
     /**
-     * Returns if the robot is at an optimal swing for transfering bars.
+     * Returns if the robot is at an optimal swing for transferring bars.
      *
      * @return true if the robot is at an optimal angle and swinging the right direction
      */
@@ -96,12 +101,12 @@ public class ClimbSequence extends ParallelCommandGroup {
         return parallel(
                 sequence(
                         climber.commandSetPercentLeft(speed),
-                        new WaitUntilCommand(climber.motorLeft::getReverseSoftLimitReached),
+                        new WaitUntilCommand(() -> !climber.sensorLeft.get()),
                         climber.commandSetPercentLeft(0)
                 ),
                 sequence(
                         climber.commandSetPercentRight(speed),
-                        new WaitUntilCommand(climber.motorRight::getReverseSoftLimitReached),
+                        new WaitUntilCommand(() -> !climber.sensorRight.get()),
                         climber.commandSetPercentRight(0)
                 )
         );
