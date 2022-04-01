@@ -174,6 +174,10 @@ public class RobotContainer {
                         .alongWith(commandSetLights(RevBlinkin.GameStage.ENDGAME))
                         .andThen(new InstantCommand(climberUpDownCommand::schedule)));
 
+        // coop:button(RBumper, reschedule manual climbing, copilot)
+        new JoystickButton(copilotController, Button.kRightBumper.value)
+                .whenPressed(new InstantCommand(climberUpDownCommand::schedule));
+
         // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, limelight, bottomLEDs));
