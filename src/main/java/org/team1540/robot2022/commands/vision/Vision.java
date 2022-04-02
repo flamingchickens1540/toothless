@@ -7,8 +7,11 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
+import org.team1540.robot2022.utils.AverageFilter;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
+
+import java.util.ArrayList;
 
 public class Vision extends SubsystemBase {
     Drivetrain drivetrain;
@@ -18,6 +21,9 @@ public class Vision extends SubsystemBase {
     double lastDistance;
     double lastRotation;
     boolean isSimulation = false;
+
+    AverageFilter cornerAverageX = new AverageFilter(10);
+    AverageFilter cornerAverageY = new AverageFilter(10);
 
     public Vision(Drivetrain drivetrain, NavX navX, Limelight limelight) {
         this.drivetrain = drivetrain;
@@ -48,7 +54,14 @@ public class Vision extends SubsystemBase {
         if (lastPose != null) {
             SmartDashboard.putNumber("vision/estimatedAngle", getNormalizedAngleToTargetDegrees());
         }
+        if (limelight.isTargetFound()) {
+            calculateCornerAverages();
+        } else {
+            cornerAverageX.clear();
+            cornerAverageY.clear();
+        }
     }
+
 
     @Override
     public void simulationPeriodic() {
@@ -63,6 +76,67 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putNumber("vision/lastRotation", lastRotation);
         SmartDashboard.putNumber("vision/poseX", lastPose.getX());
         SmartDashboard.putNumber("vision/poseY", lastPose.getY());
+    }
+
+    /**
+     * Determines averages of all limelight corners by discarding statistical outliers beneath the average vertical value
+     * of all corners, then adding the average x and y values of those corners (normalized to degrees from the center)
+     * into averaging filters set to 10 periods.
+     */
+    private void calculateCornerAverages() {
+        double[] cornerCoordinates = limelight.getNetworkTable().getEntry("tcornxy").getDoubleArray(new double[]{});
+        ArrayList<Vector2d> cornerPoints = new ArrayList<>(cornerCoordinates.length / 2);
+        for (int i = 0; i < cornerCoordinates.length; i += 2) {
+            cornerPoints.add(new Vector2d(cornerCoordinates[i], cornerCoordinates[i + 1]));
+        }
+
+        double cornerYSum = 0;
+        for (Vector2d point : cornerPoints) {
+            cornerYSum += point.y;
+        }
+        double cornerYAvg = cornerYSum / cornerPoints.size();
+
+        for (int i = 0; i < cornerPoints.size(); i++) {
+            if (cornerPoints.get(i).y > cornerYAvg) {
+                cornerPoints.remove(i);
+                i--;
+            }
+        }
+
+        double correctedCornerXSum = 0;
+        double correctedCornerYSum = 0;
+        for (Vector2d point : cornerPoints) {
+            correctedCornerXSum += point.x;
+            correctedCornerYSum += point.y;
+        }
+        double correctedCornerXAvg = correctedCornerXSum / cornerPoints.size();
+        double correctedCornerYAvg = correctedCornerYSum / cornerPoints.size();
+
+        // Steps to calculate on-screen coordinate offsets as angles, as given in the Limelight docs.
+        double normalizedCornerXAvg = (2.0 / limelight.getResolution().x) * (correctedCornerXAvg - (limelight.getResolution().x / 2 - 0.5));
+        double normalizedCornerYAvg = (2.0 / limelight.getResolution().y) * (correctedCornerYAvg - (limelight.getResolution().y / 2 - 0.5));
+
+        double viewportCornerXAvg = Math.tan(limelight.getHorizontalFov() / 2) * normalizedCornerXAvg;
+        double viewportCornerYAvg = Math.tan(limelight.getVerticalFov() / 2) * normalizedCornerYAvg;
+
+        double degreeOffsetCornerXAvg = Math.toDegrees(Math.atan2(viewportCornerXAvg, 1));
+        double degreeOffsetCornerYAvg = Math.toDegrees(Math.atan2(viewportCornerYAvg, 1));
+
+        // SmartDashboard.putNumber("pointToTarget/corner/correctedCornerX", correctedCornerXAvg);
+        // SmartDashboard.putNumber("pointToTarget/corner/offsetNormalizedX", normalizedCornerXAvg);
+        // SmartDashboard.putNumber("pointToTarget/corner/offsetAvg", degreeOffsetCornerXAvg);
+
+        cornerAverageX.add(degreeOffsetCornerXAvg);
+        cornerAverageY.add(degreeOffsetCornerYAvg);
+    }
+
+    /**
+     * Gets the averages for the limelight's found corners, as calculated in {@link #calculateCornerAverages()}.
+     *
+     * @return {@link Vector2d} the average degree offset for x and y coordinates
+     */
+    public Vector2d getCornerAverages() {
+        return new Vector2d(cornerAverageX.getAverage(), cornerAverageY.getAverage());
     }
 
     /**
@@ -95,6 +169,7 @@ public class Vision extends SubsystemBase {
 
     /**
      * Wraps an angle in radians to be between [0, TWO_PI]
+     *
      * @param rotation Radian angle to convert
      * @return Converted angle in radians, [0, TWO_PI]
      */
@@ -108,6 +183,7 @@ public class Vision extends SubsystemBase {
 
     /**
      * Wraps an angle in radians to be between [-PI, PI]
+     *
      * @param radians Radian angle to convert
      * @return Converted angle in radians, [-PI, PI]
      */
@@ -120,6 +196,7 @@ public class Vision extends SubsystemBase {
 
     /**
      * Calculates target angle in degrees, normalized to yaw.
+     *
      * @return Estimated turn angle to target, in degrees [-180, 180]
      */
     public double getNormalizedAngleToTargetDegrees() {
@@ -128,6 +205,7 @@ public class Vision extends SubsystemBase {
 
     /**
      * Calculates target angle in radians, un-normalized to yaw.
+     *
      * @return Estimated turn angle to target, in radians [0, TWO_PI]
      */
     public double getAngleToTargetRadians() {
@@ -175,7 +253,7 @@ public class Vision extends SubsystemBase {
         Vector2d unitBF = new Vector2d(0, -1);
 
         unitBF.rotate(-(Math.toDegrees(wrapRotation(lastAngle + Math.toRadians(90)))));
-        
+
 //        SmartDashboard.putNumber("sim/3.1_lastAngle", Math.toDegrees(lastAngle));
 //        SmartDashboard.putNumber("sim/3_dirBF", Math.toDegrees(wrapRotation(lastAngle + Math.toRadians(90))));
         double magAC = BD.dot(unitBF);
@@ -200,7 +278,7 @@ public class Vision extends SubsystemBase {
         double angleToTurnTo = currentAngle + theta - zeroAngleFromFieldY;
 
         // testAngle helps to test what quadrant our robot moved to, to properly assign neg/pos turning values.
-        double testAngle = Math.atan2(BD.y, BD.x) + Math.PI/2;
+        double testAngle = Math.atan2(BD.y, BD.x) + Math.PI / 2;
 //        SmartDashboard.putNumber("sim/9_testAngle", Math.toDegrees(testAngle));
 
         if (testAngle + currentAngle < 0 || testAngle + currentAngle > Math.PI) {

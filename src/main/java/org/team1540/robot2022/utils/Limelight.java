@@ -79,7 +79,6 @@ public class Limelight {
      */
     public boolean isTargetFound() {
         double angle = Math.abs(getTargetAngles().x);
-//        System.out.println("Targeting angle: " + angle);
         return angle > 0.001;
     }
 
@@ -95,10 +94,6 @@ public class Limelight {
 
     public double getLeds() {
         return limelightTable.getEntry("ledMode").getDouble(1);
-    }
-
-    public boolean getLedsOn() {
-        return limelightTable.getEntry("ledMode").getDouble(1) == LEDMode.ON;
     }
 
     /**
@@ -122,11 +117,8 @@ public class Limelight {
         }
     }
 
-    public static final class LEDMode {
-        public static final int PIPELINE = 0;
-        public static final int OFF = 1;
-        public static final int BLINK = 2;
-        public static final int ON = 3;
+    public boolean getLedsOn() {
+        return limelightTable.getEntry("ledMode").getDouble(1) == LEDMode.ON;
     }
 
     public long getPipeline() {
@@ -148,5 +140,12 @@ public class Limelight {
             cornerList.add(new Vector2d(xCorners[i], yCorners[i]));
         }
         return cornerList;
+    }
+
+    public static final class LEDMode {
+        public static final int PIPELINE = 0;
+        public static final int OFF = 1;
+        public static final int BLINK = 2;
+        public static final int ON = 3;
     }
 }

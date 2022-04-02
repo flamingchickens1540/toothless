@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2022.commands.vision.Vision;
+import org.team1540.robot2022.utils.AverageFilter;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.MiniPID;
 import org.team1540.robot2022.utils.NavX;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.function.DoubleConsumer;
 
@@ -24,31 +24,6 @@ public class PointToTarget extends CommandBase {
     private final AverageFilter averageFilter = new AverageFilter(10);
     private int medianFilterCount = 0;
     private boolean turning = false;
-
-    private static class AverageFilter {
-        private final LinkedList<Double> buffer;
-        int size;
-
-        public AverageFilter(int size) {
-            this.buffer = new LinkedList<>();
-            this.size = size;
-        }
-
-        public void add(double item) {
-            buffer.add(item);
-            if (buffer.size() > size) {
-                buffer.remove(0);
-            }
-        }
-
-        public double getAverage() {
-            double avg = 0;
-            for (double num : buffer) {
-                avg += num;
-            }
-            return avg / buffer.size();
-        }
-    }
 
     // A little testing says kP=0.7 and kD=0.4 are fairly strong.
     private final MiniPID pid = new MiniPID(1, 0, 0);
@@ -136,42 +111,7 @@ public class PointToTarget extends CommandBase {
      * @param turnFunction a function that takes the output of our finalized angle
      */
     private void calculateWithCorners(DoubleConsumer turnFunction) {
-        double[] cornerCoordinates = limelight.getNetworkTable().getEntry("tcornxy").getDoubleArray(new double[]{});
-        ArrayList<Vector2d> cornerPoints = new ArrayList<>(cornerCoordinates.length / 2);
-        for (int i = 0; i < cornerCoordinates.length; i += 2) {
-            cornerPoints.add(new Vector2d(cornerCoordinates[i], cornerCoordinates[i + 1]));
-        }
-
-        double cornerYSum = 0;
-        for (Vector2d point : cornerPoints) {
-            cornerYSum += point.y;
-        }
-        double cornerYAvg = cornerYSum / cornerPoints.size();
-
-        for (int i = 0; i < cornerPoints.size(); i++) {
-            if (cornerPoints.get(i).y > cornerYAvg) {
-                cornerPoints.remove(i);
-                i--;
-            }
-        }
-
-        // TODO: This might be better as a median, depends on how good I get the pipeline to work.
-        double correctedCornerXSum = 0;
-        for (Vector2d point : cornerPoints) {
-            correctedCornerXSum += point.x;
-        }
-        double correctedCornerXAvg = correctedCornerXSum / cornerPoints.size();
-
-        // Steps to calculate on-screen coordinate offsets as angles, as given in the Limelight docs.
-        double normalizedCornerXAvg = (2.0 / limelight.getResolution().x) * (correctedCornerXAvg - (limelight.getResolution().x / 2 - 0.5));
-        double viewportCornerXAvg = Math.tan(limelight.getHorizontalFov() / 2) * normalizedCornerXAvg;
-        double degreeOffsetCornerXAvg = Math.toDegrees(Math.atan2(viewportCornerXAvg, 1));
-        SmartDashboard.putNumber("pointToTarget/corner/correctedCornerX", correctedCornerXAvg);
-        SmartDashboard.putNumber("pointToTarget/corner/offsetNormalizedX", normalizedCornerXAvg);
-        SmartDashboard.putNumber("pointToTarget/corner/offsetAvg", degreeOffsetCornerXAvg);
-
-        averageFilter.add(degreeOffsetCornerXAvg);
-        turnFunction.accept(averageFilter.getAverage());
+        turnFunction.accept(vision.getCornerAverages().x);
     }
 
     /**
