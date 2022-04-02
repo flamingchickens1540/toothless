@@ -1,0 +1,24 @@
+name: Remove outdated controls diagrams
+
+on: delete
+jobs:
+  delete:
+    if: github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: 'gh-pages'
+      - name: Delete diagrams
+        run: |
+          rm -rf "diagrams/${{ github.event.ref }}"
+
+      - name: Commmit changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -u diagrams/${{ github.event.ref }}/controls.pdf
+          git add -u diagrams/${{ github.event.ref }}/feather_client.pdf
+          git commit -m "refactor: remove diagrams for ${{ github.event.ref }}"
+          git push

@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2022.Constants;
 
 /**
- * Moves the climber down until the current spikes, then zeroes it
+ * Moves the climber down until the current spikes
  */
 public class ClimberZeroCommand extends SequentialCommandGroup {
     private final Climber climber;
@@ -30,9 +30,7 @@ public class ClimberZeroCommand extends SequentialCommandGroup {
                                 new WaitUntilCommand(() -> climber.getRightCurrent() > SmartDashboard.getNumber("climber/currentLimit", Constants.ClimberConstants.ZERO_SPIKE_CURRENT)),
                                 climber.commandSetPercentRight(0)
                         )
-                ),
-                climber.commandZeroEncoders(),
-                climber.commandUpdateLimits()
+                )
         );
     }
 

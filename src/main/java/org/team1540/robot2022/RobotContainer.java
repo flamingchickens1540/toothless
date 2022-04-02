@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.team1540.robot2022.commands.climber.ClimbSequence;
 import org.team1540.robot2022.commands.climber.Climber;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
@@ -56,7 +57,6 @@ public class RobotContainer {
     // Commands
     public final IndexerEjectCommand indexerEjectCommand = new IndexerEjectCommand(indexer, intake);
     public final IntakeSequence intakeSequence = new IntakeSequence(intake, indexer, shooter);
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
 
     // coop:button(LJoystick,Left climber up/down,copilot)
     // coop:button(RJoystick,Right climber up/down,copilot)
@@ -66,11 +66,11 @@ public class RobotContainer {
 
     // coop:button(LJoystick,Left tank,pilot)
     // coop:button(RJoystick,Right tank,pilot)
-    // coop:button(LTrigger,Forward,pilot)
-    // coop:button(RTrigger,Reverse,pilot)
+    // coop:button(LTrigger,Drive Forward,pilot)
+    // coop:button(RTrigger,Drive Backward,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
-    // Unsure what buttons to assign to this, currently uses triggers when called.
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
     public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
 
     private final boolean ENABLE_COMPRESSOR = true;
@@ -93,13 +93,13 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
 
-        // coop:button(LTrigger,Shoot HUB [hold],pilot)
-        // coop:button(RTrigger,Shoot FAR [hold],pilot)
-        new Trigger(() -> driverController.getLeftTriggerAxis() == 1)
-                .or(new Trigger(() -> driverController.getRightTriggerAxis() == 1))
+        // coop:button(LBumper,Shoot HUB [hold],pilot)
+        // coop:button(RBumper,Shoot FAR [hold],pilot)
+        new Trigger(driverController::getLeftBumper)
+                .or(new Trigger(driverController::getRightBumper))
                 .whileActiveOnce(new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            if (driverController.getLeftTriggerAxis() == 1) {
+                            if (driverController.getLeftBumper()) {
                                 shootSequence.setProfile(Shooter.ShooterProfile.HUB);
                             } else {
                                 shootSequence.setProfile(Shooter.ShooterProfile.FAR);
@@ -140,7 +140,7 @@ public class RobotContainer {
         new POVButton(copilotController, DPadAxis.DOWN)
                 .whenPressed(new InstantCommand(() -> climber.setSolenoids(true)));
 
-        
+
         // coop:button(DPadLeft,Lower intake [press],copilot)
         new POVButton(copilotController, DPadAxis.LEFT)
                 .whenPressed(intake.commandSetFold(false));
@@ -170,6 +170,12 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kStart.value)
                 .whenPressed(climber.commandDisableLimits());
 
+        // coop:button(LBumper, Run climb sequence,copilot)
+        new JoystickButton(copilotController, Button.kLeftBumper.value)
+                .whenHeld(new ClimbSequence(climber, navx, topLEDs, true)
+                        .alongWith(commandSetLights(RevBlinkin.GameStage.ENDGAME))
+                        .andThen(new InstantCommand(climberUpDownCommand::schedule)));
+
         // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, vision, limelight, bottomLEDs));
@@ -183,13 +189,28 @@ public class RobotContainer {
     }
 
     private void initModeTransitionBindings() {
-        var enabled = new Trigger(RobotState::isEnabled);
-        var disabled = new Trigger(DriverStation::isDisabled);
-        var autonomous = new Trigger(DriverStation::isAutonomousEnabled);
-        var teleop = new Trigger(DriverStation::isTeleopEnabled);
-        var fmsConnected = new Trigger(DriverStation::isFMSAttached);
+        Trigger enabled = new Trigger(RobotState::isEnabled);
+        Trigger disabled = new Trigger(DriverStation::isDisabled);
+        Trigger fmsConnected = new Trigger(DriverStation::isFMSAttached);
+
+        Trigger autonomous = new Trigger(DriverStation::isAutonomousEnabled);
+        Trigger teleop = new Trigger(DriverStation::isTeleopEnabled);
+        Trigger endgame = new Trigger(() -> Timer.getMatchTime() <= 30).and(teleop);
+        Trigger endgamePrepare = new Trigger(() -> Timer.getMatchTime() <= 35).and(teleop); // TODO set to however long climb sequence takes + drive time
+
+        Trigger indexerFull = new Trigger(indexer::isFull).and(teleop);
+
 
         fmsConnected.whenActive(bottomLEDs.commandSetPattern(RevBlinkin.ColorPattern.GREEN));
+
+        endgamePrepare.whenActive(() -> topLEDs.commandSetPattern(RevBlinkin.ColorPattern.VIOLET));
+
+        endgame.whenActive(commandSetLights(RevBlinkin.GameStage.ENDGAME));
+
+
+        // Turn lights gold when indexer is full
+        indexerFull.whenActive(topLEDs.commandSetPattern(RevBlinkin.ColorPattern.GOLD));
+        indexerFull.whenInactive(() -> topLEDs.setPattern(RevBlinkin.GameStage.TELEOP));
 
         // Enable break mode when enabled
         enabled.whenActive(() -> {
@@ -204,14 +225,13 @@ public class RobotContainer {
         disabled.whenActive(new WaitCommand(2)
                 .andThen(
                         new ConditionalCommand( // Check if the robot is still disabled to prevent enabling coast mode when the robot is enabled
-                                new InstantCommand(),
-                                new InstantCommand(() -> {
+                                new PrintCommand("Re-enabled, not coasting"),
+                                new ChickenInstantCommand(() -> {
                                     System.out.println("Setting coast mode");
                                     drivetrain.setNeutralMode(NeutralMode.Coast);
                                     intake.setNeutralMode(NeutralMode.Coast);
                                     indexer.setNeutralMode(NeutralMode.Coast);
-                                    climber.setNeutralMode(NeutralMode.Coast);
-                                }),
+                                }, true),
                                 RobotState::isEnabled)
                 )
         );
@@ -279,5 +299,13 @@ public class RobotContainer {
 
     public AutoSequence getAutonomousCommand() {
         return autoChooser.getSelected();
+    }
+
+    public Command commandSetLights(RevBlinkin.GameStage stage) {
+        return new InstantCommand(() -> {
+            topLEDs.setPattern(stage);
+            bottomLEDs.setPattern(stage);
+        }
+        );
     }
 }

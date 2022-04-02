@@ -70,6 +70,12 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putBoolean("pneumatics/pressureSwitch", robotContainer.ph.getPressureSwitch());
         SmartDashboard.putString("shooter/profile", robotContainer.shootSequence.profile + "");
+
+        SmartDashboard.putNumber("navx/pitch", robotContainer.navx.getPitch());
+        SmartDashboard.putNumber("navx/roll", robotContainer.navx.getRoll());
+
+        SmartDashboard.putBoolean("climber/sensor/left", robotContainer.climber.sensorLeft.get());
+        SmartDashboard.putBoolean("climber/sensor/right", robotContainer.climber.sensorRight.get());
     }
 
     /**
