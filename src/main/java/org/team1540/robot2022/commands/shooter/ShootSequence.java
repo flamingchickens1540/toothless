@@ -78,7 +78,7 @@ public class ShootSequence extends SequentialCommandGroup {
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
                 }),
 
-                new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
+                new ConditionalCommand( // Always lines up and shoots, given the new vision estimation
                         new PointToTarget(drivetrain, vision, limelight, navX).withTimeout(2),
                         new InstantCommand(),
                         () -> !this.profile.equals(ShooterProfile.HUB) && pointToTarget

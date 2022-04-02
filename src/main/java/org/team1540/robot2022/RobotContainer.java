@@ -237,8 +237,8 @@ public class RobotContainer {
         // PointToTarget values
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kD", 0.4);
-        ChickenSmartDashboard.putDefaultNumber("pointToTarget/navX_kP", 0);
-        ChickenSmartDashboard.putDefaultNumber("pointToTarget/navX_kD", 0);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/navX_kP", 0.8);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/navX_kD", 0.5);
         SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", false);
 
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/pidClamp", 0.8);
