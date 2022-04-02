@@ -1,19 +1,15 @@
 package org.team1540.robot2022.commands.shooter;
 
-import org.team1540.robot2022.commands.indexer.Indexer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.*;
+import org.team1540.robot2022.commands.indexer.Indexer;
 
 public class ShooterFeedSequence extends SequentialCommandGroup {
     public ShooterFeedSequence(Indexer indexer, Shooter shooter) {
         addRequirements(indexer);
         
         addCommands(
-                new WaitUntilCommand(shooter::isSpunUp),                                             // Wait for shooter to spin up
+                new WaitUntilCommand(shooter::isSpunUp).withTimeout(1),                                             // Wait for shooter to spin up
                 indexer.commandStop(),                                                               // Stop the indexer and put in standby
                 indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF),     // Run top indexer
                 new WaitUntilCommand(() -> !indexer.getTopSensor()),                                 // Wait until top ball exits the indexer

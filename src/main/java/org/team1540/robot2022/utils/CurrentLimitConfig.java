@@ -60,9 +60,10 @@ public class CurrentLimitConfig {
 
     /**
      * Apply this current limit to multiple TalonFX controllers
+     *
      * @param motors TalonFX controllers to apply the current limit to
      */
-    public void applyTo(TalonFX[] motors) {
+    public void applyTo(TalonFX... motors) {
         for (TalonFX motor : motors) {
             applyTo(motor);
         }

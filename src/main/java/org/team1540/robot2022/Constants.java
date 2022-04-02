@@ -56,7 +56,7 @@ public final class Constants {
             public static final int BOTTOM_MOTOR = 6;
             public static final int TOP_MOTOR = 7;
 
-            public static final CurrentLimitConfig CURRENT_LIMIT_CONFIG = new CurrentLimitConfig(20, 25, 1, 10, 15, 0.5);
+            public static final CurrentLimitConfig CURRENT_LIMIT_CONFIG = new CurrentLimitConfig(20, 25, 1, 10, 15, 0.5); //TODO: retune
         }
 
         public static final class BeamBreaks {

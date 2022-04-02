@@ -83,7 +83,6 @@ public class ShootSequence extends SequentialCommandGroup {
                         () -> limelight.isTargetFound() && !this.profile.equals(ShooterProfile.HUB) && pointToTarget
                 ),
                 new WaitCommand(0.25),
-                new WaitUntilCommand(shooter::isSpunUp),
                 FeatherClient.commandRecordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + ""),
                 new ShooterFeedSequence(indexer, shooter)
         );

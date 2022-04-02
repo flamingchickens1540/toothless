@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants.IndexerConstants;
 import org.team1540.robot2022.Constants.IndexerConstants.BeamBreaks;
 import org.team1540.robot2022.Constants.IndexerConstants.IndexerMotors;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Indexer extends SubsystemBase {
@@ -39,16 +40,24 @@ public class Indexer extends SubsystemBase {
     });
 
     public Indexer(NeutralMode brakeType) {
+        IndexerMotors.CURRENT_LIMIT_CONFIG.applyTo(topMotor, bottomMotor);
         topInterrupt.setInterruptEdges(true, true);
         bottomInterrupt.setInterruptEdges(true, true);
         topInterrupt.enable();
         bottomInterrupt.enable();
 
-        IndexerMotors.CURRENT_LIMIT_CONFIG.applyTo(motors);
+//        IndexerMotors.CURRENT_LIMIT_CONFIG.applyTo(motors);
         for (ChickenTalonFX motor : motors) {
+            motor.configFactoryDefault();
             motor.setNeutralMode(brakeType);
             motor.setInverted(true);
         }
+        ChickenSmartDashboard.putDefaultNumber("indexer/pid/kP", 0);
+        ChickenSmartDashboard.putDefaultNumber("indexer/pid/kI", 0);
+        ChickenSmartDashboard.putDefaultNumber("indexer/pid/kF", 0);
+        ChickenSmartDashboard.putDefaultNumber("indexer/pid/kD", 0);
+//        NetworkTableInstance.getDefault().getTable("SmartDashboard/indexer/pid").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
+//        updatePIDs();
     }
 
     @Override
@@ -232,5 +241,12 @@ public class Indexer extends SubsystemBase {
          * Does not modify the motor's state
          */
         UNCHANGED
+    }
+
+    private void updatePIDs() {
+        topMotor.config_kP(0, SmartDashboard.getNumber("indexer/pid/kP", 0));
+        topMotor.config_kI(0, SmartDashboard.getNumber("indexer/pid/kI", 0));
+        topMotor.config_kD(0, SmartDashboard.getNumber("indexer/pid/kD", 0));
+        topMotor.config_kF(0, SmartDashboard.getNumber("indexer/pid/kF", 0));
     }
 }
