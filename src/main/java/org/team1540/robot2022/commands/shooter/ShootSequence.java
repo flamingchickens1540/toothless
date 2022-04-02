@@ -81,7 +81,7 @@ public class ShootSequence extends SequentialCommandGroup {
                 new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
                         new PointToTarget(drivetrain, vision, limelight, navX).withTimeout(2),
                         new InstantCommand(),
-                        () -> limelight.isTargetFound() && !this.profile.equals(ShooterProfile.HUB) && pointToTarget
+                        () -> !this.profile.equals(ShooterProfile.HUB) && pointToTarget
                 ),
                 new WaitCommand(0.25),
                 new WaitUntilCommand(shooter::isSpunUp),

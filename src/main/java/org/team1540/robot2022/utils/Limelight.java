@@ -78,7 +78,9 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-        return getTargetAngles().x > 0.001;
+        double angle = Math.abs(getTargetAngles().x);
+//        System.out.println("Targeting angle: " + angle);
+        return angle > 0.001;
     }
 
     /**

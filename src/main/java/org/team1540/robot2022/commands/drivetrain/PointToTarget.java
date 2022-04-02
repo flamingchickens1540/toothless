@@ -1,6 +1,7 @@
 package org.team1540.robot2022.commands.drivetrain;
 
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -68,8 +69,8 @@ public class PointToTarget extends CommandBase {
         double i = SmartDashboard.getNumber("pointToTarget/kI", 0);
         double d = SmartDashboard.getNumber("pointToTarget/kD", 0.05);
 
-        double pX = SmartDashboard.getNumber("pointToTarget/navX_kP", 0.008);
-        double dX = SmartDashboard.getNumber("pointToTarget/navX_kD", 0.05);
+        double pX = SmartDashboard.getNumber("pointToTarget/navX_kP", 0);
+        double dX = SmartDashboard.getNumber("pointToTarget/navX_kD", 0);
 
         pidNavX.setPID(pX, 0, dX);
         pidNavX.setSetpoint(0);
@@ -198,18 +199,18 @@ public class PointToTarget extends CommandBase {
     /**
      * Executes turning to the target using the NavX as the primary sensor to determine whether we have turned enough.
      *
-     * @param startAngleXOffset the starting setpoint of where the NavX should attempt to turn to
+     * @param angleXOffset the starting setpoint of where the NavX should attempt to turn to
      */
-    private void turnWithNavX(double startAngleXOffset) {
-        if (!turning) {
-            turning = true;
-            double degreeSetpoint = navX.getAngle() + startAngleXOffset;
-            SmartDashboard.putNumber("pointToTarget/setpoint_navX", degreeSetpoint);
-            pidNavX.setSetpoint(degreeSetpoint);
-        }
+    private void turnWithNavX(double angleXOffset) {
+        double multiplier = angleXOffset > 0 ? 1 : -1;
 
-        double pidOutput = clampPID(pidNavX.getOutput(navX.getAngle()));
-        drivetrain.setPercent(pidOutput, -pidOutput);
+        double pidOut = pidNavX.getOutput(Math.abs(angleXOffset / 180.0));
+        double pidOutput = clampPID(pidOut);
+        pidOutput = clampPID(pidOutput);
+        double valueL = multiplier * -pidOutput;
+        double valueR = multiplier * pidOutput;
+
+        drivetrain.setPercent(valueL, valueR);
     }
 
     /**
@@ -219,10 +220,13 @@ public class PointToTarget extends CommandBase {
     private void calculateAndTurnWithVision() {
         if (limelight.isTargetFound()) {
             SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", true);
+            NetworkTableInstance.getDefault().flush();
             pid.setSetpoint(0);
             calculateWithCorners(this::turnWithLimelight);
         } else {
+            System.out.println("TURNING, NO LIMELIGHT TARGET FOUND");
             SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", false);
+            NetworkTableInstance.getDefault().flush();
             turnWithNavX(vision.getNormalizedAngleToTargetDegrees());
         }
     }
@@ -249,6 +253,10 @@ public class PointToTarget extends CommandBase {
         double i = SmartDashboard.getNumber("pointToTarget/kI", 0);
         double d = SmartDashboard.getNumber("pointToTarget/kD", 0.015);
         pid.setPID(p, i, d);
+
+        double pX = SmartDashboard.getNumber("pointToTarget/navX_kP", 0);
+        double dX = SmartDashboard.getNumber("pointToTarget/navX_kD", 0);
+        pidNavX.setPID(pX, 0, dX);
 
 //        calculateWithCorners(this::turnWithLimelight);
         calculateAndTurnWithVision();
