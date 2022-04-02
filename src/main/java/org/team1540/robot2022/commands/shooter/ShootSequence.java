@@ -44,7 +44,8 @@ public class ShootSequence extends SequentialCommandGroup {
                                 new InstantCommand(() -> limelight.setLeds(true)),
                                 new WaitCommand(0.2),
                                 new InstantCommand(() -> {
-                                    limelightDistance = limelight.getCalculatedDistance();
+                                    // TODO: TEST THIS!
+                                    limelightDistance = vision.getCornerCalculatedDistance();
                                     lidarDistance = lidar.getDistance();
                                 })
                         ),

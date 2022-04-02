@@ -60,6 +60,7 @@ public class Vision extends SubsystemBase {
             cornerAverageX.clear();
             cornerAverageY.clear();
         }
+        SmartDashboard.putNumber("vision/estimatedDistance", getCornerCalculatedDistance());
     }
 
 
@@ -140,6 +141,23 @@ public class Vision extends SubsystemBase {
     }
 
     /**
+     * Gets the current calculated distance of the limelight to the base of the hub.
+     *
+     * @return the distance in inches
+     */
+    public double getCalculatedDistance() {
+        double theta = Math.toRadians(limelight.getTargetAngles().y) + limelight.limelightAngle;
+        double actualHeight = limelight.targetHeight - limelight.limelightHeight;
+        return 39.37007874 * actualHeight / Math.tan(theta);
+    }
+
+    public double getCornerCalculatedDistance() {
+        double theta = Math.toRadians(getCornerAverages().y) + limelight.limelightAngle;
+        double actualHeight = limelight.targetHeight - limelight.limelightHeight;
+        return 39.37007874 * actualHeight / Math.tan(theta);
+    }
+
+    /**
      * Zeros the last known position to the three/two-ball auto position near the edge of the field.
      */
     public void zeroPosition() {
@@ -156,7 +174,7 @@ public class Vision extends SubsystemBase {
      * Updates the last pose to the current sensor readings.
      */
     private void updateLastTargetPose() {
-        lastDistance = (limelight.getCalculatedDistance() + 31.375) * SmartDashboard.getNumber("vision/inchesToFieldRatio", 0.0185);
+        lastDistance = (getCalculatedDistance() + 31.375) * SmartDashboard.getNumber("vision/inchesToFieldRatio", 0.0185);
         lastPose = drivetrain.getPose();
         lastRotation = navX.getAngleRadians();
 
