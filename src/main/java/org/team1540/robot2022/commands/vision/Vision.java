@@ -17,7 +17,7 @@ public class Vision extends SubsystemBase {
     Drivetrain drivetrain;
     NavX navX;
     Limelight limelight;
-    Pose2d lastPose;
+    Pose2d lastPose = new Pose2d();
     double lastDistance;
     double lastRotation;
     boolean isSimulation = false;
@@ -35,7 +35,7 @@ public class Vision extends SubsystemBase {
 
         // Start by assuming the field units are meters (unconfirmed)
         SmartDashboard.putNumber("vision/inchesToFieldRatio", 0.0185);
-        SmartDashboard.putBoolean("vision/allowTargetUpdate", false);
+        SmartDashboard.putBoolean("vision/allowTargetUpdate", true);
 
         if (isSimulation) {
             SmartDashboard.putNumber("vision/testingX", -4);
@@ -125,7 +125,8 @@ public class Vision extends SubsystemBase {
 
         // SmartDashboard.putNumber("pointToTarget/corner/correctedCornerX", correctedCornerXAvg);
         // SmartDashboard.putNumber("pointToTarget/corner/offsetNormalizedX", normalizedCornerXAvg);
-        // SmartDashboard.putNumber("pointToTarget/corner/offsetAvg", degreeOffsetCornerXAvg);
+        SmartDashboard.putNumber("pointToTarget/corner/offsetXAvg", degreeOffsetCornerXAvg);
+        SmartDashboard.putNumber("pointToTarget/corner/offsetYAvg", degreeOffsetCornerYAvg);
 
         cornerAverageX.add(degreeOffsetCornerXAvg);
         cornerAverageY.add(degreeOffsetCornerYAvg);

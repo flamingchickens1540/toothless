@@ -10,10 +10,7 @@ import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.shooter.Shooter.ShooterProfile;
 import org.team1540.robot2022.commands.vision.Vision;
-import org.team1540.robot2022.utils.FeatherClient;
-import org.team1540.robot2022.utils.LIDAR;
-import org.team1540.robot2022.utils.Limelight;
-import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.utils.*;
 
 public class ShootSequence extends SequentialCommandGroup {
     private final Shooter shooter;
@@ -78,15 +75,16 @@ public class ShootSequence extends SequentialCommandGroup {
                     hood.set(hoodState);
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
                 }),
-
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW),
                 new ConditionalCommand( // Always lines up and shoots, given the new vision estimation
                         new PointToTarget(drivetrain, vision, limelight, navX).withTimeout(2),
                         new InstantCommand(),
                         () -> !this.profile.equals(ShooterProfile.HUB) && pointToTarget
                 ),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.LIME),
                 new WaitCommand(0.25),
                 FeatherClient.commandRecordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + ""),
-                new ShooterFeedSequence(indexer, shooter)
+                new ShooterFeedSequence(indexer, shooter, drivetrain.lights)
         );
     }
 
