@@ -25,6 +25,7 @@ import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.intake.IntakeSequence;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.commands.vision.Vision;
 import org.team1540.robot2022.utils.*;
 
 public class RobotContainer {
@@ -43,6 +44,7 @@ public class RobotContainer {
     public final Indexer indexer = new Indexer(NeutralMode.Brake);
     public final Shooter shooter = new Shooter();
     public final Climber climber = new Climber();
+    public final Vision vision = new Vision(drivetrain, navx, limelight);
 
     // Controllers
     public final XboxController driverController = new XboxController(0);
@@ -68,7 +70,7 @@ public class RobotContainer {
     // coop:button(RTrigger,Drive Backward,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
     public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
 
     private final boolean ENABLE_COMPRESSOR = true;
@@ -176,14 +178,14 @@ public class RobotContainer {
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
-                .whenActive(new OdometryResetSequence(drivetrain, navx, limelight, bottomLEDs));
+                .whenActive(new OdometryResetSequence(drivetrain, navx, vision, limelight, bottomLEDs));
 
         FeatherClient.configureController(featherController);
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
         SmartDashboard.putData("shooter/enableTestProfile", new InstantCommand(() -> shootSequence.setProfile(Shooter.ShooterProfile.TESTING)));
-        SmartDashboard.putData("driveTrain/resetOdometry", OdometryResetSequence.getOdometryResetter(navx, drivetrain));
+        SmartDashboard.putData("driveTrain/resetOdometry", OdometryResetSequence.getOdometryResetter(navx, drivetrain, vision));
     }
 
     private void initModeTransitionBindings() {
@@ -236,12 +238,12 @@ public class RobotContainer {
     }
 
     private void initSmartDashboard() {
-        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, false));
-        autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, true));
-        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, true));
-        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx, false));
-        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx));
-        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, shooter, hood, limelight, lidar, navx));
+        autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, false));
+        autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, true));
+        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, true));
+        autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, false));
+        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx));
+        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx));
 
         SmartDashboard.putData("autoSelector", autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
@@ -255,6 +257,9 @@ public class RobotContainer {
         // PointToTarget values
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kP", 0.7);
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kD", 0.4);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/navX_kP", 0.8);
+        ChickenSmartDashboard.putDefaultNumber("pointToTarget/navX_kD", 0.5);
+        SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", false);
 
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/pidClamp", 0.8);
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/targetDeadzoneDegrees", 2);
