@@ -38,7 +38,7 @@ public class RobotContainer {
     public final LIDAR lidar = new LIDAR(I2C.Port.kMXP);
 
     // Subsystems
-    public final Drivetrain drivetrain = new Drivetrain(NeutralMode.Brake, navx);
+    public final Drivetrain drivetrain = new Drivetrain(NeutralMode.Brake, navx, topLEDs);
     public final Hood hood = new Hood();
     public final Intake intake = new Intake();
     public final Indexer indexer = new Indexer(NeutralMode.Brake);
@@ -243,7 +243,7 @@ public class RobotContainer {
         autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, true));
         autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, false));
         autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx));
-        autoChooser.addOption("4 Ball", new Auto4BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx));
+        autoChooser.addOption("5 Ball", new Auto5BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx));
 
         SmartDashboard.putData("autoSelector", autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());

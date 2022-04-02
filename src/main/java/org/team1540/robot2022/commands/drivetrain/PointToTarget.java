@@ -120,7 +120,7 @@ public class PointToTarget extends CommandBase {
      * @param angleXOffset the offset in degrees we still need to turn to reach the target
      */
     private void turnWithLimelight(double angleXOffset) {
-        if (Math.abs(angleXOffset) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
+        if (Math.abs(angleXOffset) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 5)) {
 
             double distanceToTarget = getHorizontalDistanceToTarget();
             double pidOutput = pid.getOutput(getError(angleXOffset));
@@ -133,6 +133,8 @@ public class PointToTarget extends CommandBase {
             double valueL = multiplier * -pidOutput;
             double valueR = multiplier * pidOutput;
             drivetrain.setPercent(valueL, valueR);
+        } else {
+            this.end(false);
         }
     }
 
@@ -198,8 +200,8 @@ public class PointToTarget extends CommandBase {
         double dX = SmartDashboard.getNumber("pointToTarget/navX_kD", 0);
         pidNavX.setPID(pX, 0, dX);
 
-//        calculateWithCorners(this::turnWithLimelight);
-        calculateAndTurnWithVision();
+        calculateWithCorners(this::turnWithLimelight);
+//        calculateAndTurnWithVision();
     }
 
     public void end(boolean isInterrupted) {
