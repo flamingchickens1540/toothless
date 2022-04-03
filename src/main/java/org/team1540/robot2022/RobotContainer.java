@@ -95,11 +95,14 @@ public class RobotContainer {
 
         // coop:button(LBumper,Shoot HUB [hold],pilot)
         // coop:button(RBumper,Shoot FAR [hold],pilot)
+        // coop:button(B,Shoot TESTING [press with bumper],pilot)
         new Trigger(driverController::getLeftBumper)
                 .or(new Trigger(driverController::getRightBumper))
                 .whileActiveOnce(new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            if (driverController.getLeftBumper()) {
+                            if (driverController.getBButton()) {
+                                shootSequence.setProfile(Shooter.ShooterProfile.TESTING);
+                            } else if (driverController.getLeftBumper()) {
                                 shootSequence.setProfile(Shooter.ShooterProfile.HUB);
                             } else {
                                 shootSequence.setProfile(Shooter.ShooterProfile.FAR);
