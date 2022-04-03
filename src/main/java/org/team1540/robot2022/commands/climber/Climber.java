@@ -59,7 +59,7 @@ public class Climber extends SubsystemBase {
 
         motorLeft.configFactoryDefault();
         motorRight.configFactoryDefault();
-        Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(motorLeft, motorRight);
+//        Constants.ShooterConstants.CURRENT_LIMIT_CONFIG.applyTo(motorLeft, motorRight);
         motorLeft.setNeutralMode(NeutralMode.Brake);
         motorRight.setNeutralMode(NeutralMode.Brake);
         motorLeft.setInverted(true);
