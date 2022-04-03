@@ -19,11 +19,15 @@ public class InterpolationTable {
     // Interpolation values for the hood up
     public static final double[][] hoodUp = {
             // {distance (inches), frontSpeed, backSpeed}
-            {101, 2200, 2500},
-            {113, 2300, 2400},
-            {127, 2300, 2500},
-            {138, 2400, 2600},
-            {146, 2400, 2700},
+            {60, 2000, 1900},
+            {78, 2000, 2000},
+            {92, 2100, 2100},
+            {104, 2200, 2200},
+            {128, 2000, 2800},
+            {139, 2000, 3100},
+            {151, 2000, 3300},
+            {162, 2000, 4000},
+
     };
 
     private static InterpolationTable instance = null;
