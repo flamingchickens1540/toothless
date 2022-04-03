@@ -129,7 +129,7 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putNumber("pointToTarget/corner/offsetYAvg", degreeOffsetCornerYAvg);
 
         cornerAverageX.add(degreeOffsetCornerXAvg);
-        cornerAverageY.add(degreeOffsetCornerYAvg);
+        cornerAverageY.add(-degreeOffsetCornerYAvg);
     }
 
     /**
@@ -219,7 +219,8 @@ public class Vision extends SubsystemBase {
      * @return Estimated turn angle to target, in degrees [-180, 180]
      */
     public double getNormalizedAngleToTargetDegrees() {
-        return Math.toDegrees(wrapRotationToYaw(getAngleToTargetRadians()));
+//        return Math.toDegrees(wrapRotationToYaw(getAngleToTargetRadians()));
+        return -90.0;
     }
 
     /**

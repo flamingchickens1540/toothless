@@ -14,7 +14,7 @@ public class Limelight {
     private static final Vector2d CAM_RESOLUTION = new Vector2d(320, 240);
     private final NetworkTable limelightTable;
     public final double limelightHeight = 0.71; // 28in to m
-    public final double limelightAngle = Math.toRadians(39);
+    public final double limelightAngle = Math.toRadians(40);
     public final double targetHeight = 2.64; // 8'8" to m
 
     /**
