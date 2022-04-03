@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our autonomous chooser on the dashboard.
         this.robotContainer = new RobotContainer();
-        
+
         robotContainer.limelight.setLeds(false);
         robotContainer.bottomLEDs.setPattern(RevBlinkin.ColorPattern.YELLOW);
     }
@@ -67,6 +67,7 @@ public class Robot extends TimedRobot {
 
         // Update the limelight's custom SmartDashboard values
         robotContainer.limelight.updateSmartDashboardValues();
+        robotContainer.lidar.updateSmartDashboardValues();
 
         SmartDashboard.putBoolean("pneumatics/pressureSwitch", robotContainer.ph.getPressureSwitch());
         SmartDashboard.putString("shooter/profile", robotContainer.shootSequence.profile + "");
@@ -105,7 +106,6 @@ public class Robot extends TimedRobot {
         robotContainer.bottomLEDs.setPattern(RevBlinkin.GameStage.AUTONOMOUS);
 
         new ClimberZeroCommand(robotContainer.climber).schedule();
-        FeatherClient.initialize();
     }
 
     /**

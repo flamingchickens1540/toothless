@@ -49,7 +49,6 @@ public class RobotContainer {
     // Controllers
     public final ChickenXboxController driverController = new ChickenXboxController(0);
     public final ChickenXboxController copilotController = new ChickenXboxController(1);
-    public final ChickenXboxController featherController = new ChickenXboxController(3);
 
     // Buttons
     public final DigitalInput zeroOdometry = new DigitalInput(0);
@@ -83,6 +82,7 @@ public class RobotContainer {
         initModeTransitionBindings();
         DriverStation.silenceJoystickConnectionWarning(true);
 
+        FeatherClient.initialize();
         if (ENABLE_COMPRESSOR) {
             ph.enableCompressorDigital();
         } else {
@@ -183,8 +183,6 @@ public class RobotContainer {
         // Robot hardware button
         new Trigger(zeroOdometry::get)
                 .whenActive(new OdometryResetSequence(drivetrain, navx, vision, limelight, bottomLEDs));
-
-        FeatherClient.configureController(featherController);
 
         // SmartDashboard
         SmartDashboard.putData("ph/disableCompressor", new InstantCommand(ph::disableCompressor));
@@ -309,7 +307,6 @@ public class RobotContainer {
         return new InstantCommand(() -> {
             topLEDs.setPattern(stage);
             bottomLEDs.setPattern(stage);
-        }
-        );
+        });
     }
 }
