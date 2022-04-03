@@ -6,10 +6,7 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2022.commands.vision.Vision;
-import org.team1540.robot2022.utils.AverageFilter;
-import org.team1540.robot2022.utils.Limelight;
-import org.team1540.robot2022.utils.MiniPID;
-import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.utils.*;
 
 import java.util.LinkedList;
 import java.util.function.DoubleConsumer;
@@ -19,6 +16,7 @@ public class PointToTarget extends CommandBase {
     private final Vision vision;
     private final Limelight limelight;
     private final NavX navX;
+    private final ChickenXboxController controller;
     private final LinkedList<Vector2d> pastPoses = new LinkedList<>();
     private final MedianFilter medianFilter = new MedianFilter(10);
     private final AverageFilter averageFilter = new AverageFilter(10);
@@ -30,11 +28,12 @@ public class PointToTarget extends CommandBase {
     private final MiniPID pidNavX = new MiniPID(0, 0, 0);
     private boolean isFinished = false;
 
-    public PointToTarget(Drivetrain drivetrain, Vision vision, Limelight limelight, NavX navX) {
+    public PointToTarget(Drivetrain drivetrain, Vision vision, Limelight limelight, NavX navX, ChickenXboxController controller) {
         this.drivetrain = drivetrain;
         this.vision = vision;
         this.limelight = limelight;
         this.navX = navX;
+        this.controller = controller;
 
         addRequirements(drivetrain);
     }
@@ -170,6 +169,9 @@ public class PointToTarget extends CommandBase {
             calculateWithCorners(this::turnWithLimelight);
         } else {
             System.out.println("TURNING, NO LIMELIGHT TARGET FOUND");
+            if (controller != null) {
+                controller.setRumble(0.1);
+            }
             SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", false);
             NetworkTableInstance.getDefault().flush();
             turnWithNavX(vision.getNormalizedAngleToTargetDegrees());
@@ -218,5 +220,6 @@ public class PointToTarget extends CommandBase {
 //        limelight.setLeds(false);
         medianFilterCount = 0;
         isFinished = false;
+        controller.setRumble(0);
     }
 }

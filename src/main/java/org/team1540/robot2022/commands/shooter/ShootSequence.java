@@ -26,7 +26,7 @@ public class ShootSequence extends SequentialCommandGroup {
     private double rearVelocity;
     private boolean hoodState; // New state to set the hood to
 
-    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Vision vision, Limelight limelight, LIDAR lidar, NavX navX, Shooter.ShooterProfile m_profile, boolean pointToTarget, boolean has2Balls) {
+    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Vision vision, Limelight limelight, LIDAR lidar, NavX navX, Shooter.ShooterProfile m_profile, boolean pointToTarget, boolean has2Balls, ChickenXboxController controller) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
@@ -40,6 +40,11 @@ public class ShootSequence extends SequentialCommandGroup {
                         sequence(
                                 new InstantCommand(() -> limelight.setLeds(true)),
                                 new WaitCommand(0.2),
+                                new ConditionalCommand( // Always lines up and shoots, given the new vision estimation
+                                        new PointToTarget(drivetrain, vision, limelight, navX, controller),//.withTimeout(1),
+                                        new InstantCommand(),
+                                        () -> pointToTarget
+                                ),
                                 new InstantCommand(() -> {
                                     // TODO: TEST THIS!
                                     limelightDistance = vision.getCornerCalculatedDistance();
@@ -76,11 +81,7 @@ public class ShootSequence extends SequentialCommandGroup {
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
                 }),
                 drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW),
-                new ConditionalCommand( // Always lines up and shoots, given the new vision estimation
-                        new PointToTarget(drivetrain, vision, limelight, navX),//.withTimeout(1),
-                        new InstantCommand(),
-                        () -> !this.profile.equals(ShooterProfile.HUB) && pointToTarget
-                ),
+
                 drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET),
                 new InstantCommand(() -> FeatherClient.recordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + "")),
                 new ShooterFeedSequence(indexer, shooter, drivetrain.lights, has2Balls)
