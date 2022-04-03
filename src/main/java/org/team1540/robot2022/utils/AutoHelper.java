@@ -32,7 +32,6 @@ public class AutoHelper {
      * @return The SequentialCommandGroup
      */
     public static ParallelDeadlineGroup runPath(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, AutoPath path) {
-        System.out.println(path);
         return new ParallelDeadlineGroup(
                 getRamseteCommand(drivetrain, path),             // Path follow to collect first bal
                 new IntakeSequence(intake, indexer, shooter)
@@ -49,7 +48,6 @@ public class AutoHelper {
      * @return The SequentialCommandGroup
      */
     public static ParallelDeadlineGroup runPathWithSpinup(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, AutoPath path) {
-        System.out.println(path);
         return new ParallelDeadlineGroup(
                 getRamseteCommand(drivetrain, path),             // Path follow to collect first bal
                 new IntakeSequence(intake, indexer),
