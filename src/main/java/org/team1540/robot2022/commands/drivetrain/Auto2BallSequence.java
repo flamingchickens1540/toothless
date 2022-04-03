@@ -5,13 +5,14 @@ import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.shooter.ShootSequence;
 import org.team1540.robot2022.commands.shooter.Shooter;
+import org.team1540.robot2022.commands.vision.Vision;
 import org.team1540.robot2022.utils.*;
 import org.team1540.robot2022.utils.AutoHelper.AutoPath;
 
 
 public class Auto2BallSequence extends AutoSequence {
 
-    public Auto2BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Shooter shooter, Hood hood, Limelight limelight, LIDAR lidar, NavX navx, boolean isPosA) {
+    public Auto2BallSequence(Drivetrain drivetrain, Intake intake, Indexer indexer, Vision vision, Shooter shooter, Hood hood, Limelight limelight, LIDAR lidar, NavX navx, boolean isPosA) {
         AutoPath path = isPosA ? AutoPath.auto2Ball1A : AutoPath.auto2Ball1B;
         addPaths(path);
 
@@ -23,11 +24,12 @@ public class Auto2BallSequence extends AutoSequence {
                         drivetrain,
                         hood,
                         intake,
+                        vision,
                         limelight,
                         lidar,
                         navx,
                         Shooter.ShooterProfile.FAR,
-                        !isPosA)
+                        !isPosA, true)
         );
     }
 }

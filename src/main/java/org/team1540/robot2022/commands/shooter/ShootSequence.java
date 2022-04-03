@@ -9,10 +9,8 @@ import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
 import org.team1540.robot2022.commands.shooter.Shooter.ShooterProfile;
-import org.team1540.robot2022.utils.FeatherClient;
-import org.team1540.robot2022.utils.LIDAR;
-import org.team1540.robot2022.utils.Limelight;
-import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.commands.vision.Vision;
+import org.team1540.robot2022.utils.*;
 
 public class ShootSequence extends SequentialCommandGroup {
     private final Shooter shooter;
@@ -28,7 +26,7 @@ public class ShootSequence extends SequentialCommandGroup {
     private double rearVelocity;
     private boolean hoodState; // New state to set the hood to
 
-    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Limelight limelight, LIDAR lidar, NavX navX, Shooter.ShooterProfile m_profile, boolean pointToTarget) {
+    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Vision vision, Limelight limelight, LIDAR lidar, NavX navX, Shooter.ShooterProfile m_profile, boolean pointToTarget, boolean has2Balls) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
@@ -43,7 +41,8 @@ public class ShootSequence extends SequentialCommandGroup {
                                 new InstantCommand(() -> limelight.setLeds(true)),
                                 new WaitCommand(0.2),
                                 new InstantCommand(() -> {
-                                    limelightDistance = limelight.getCalculatedDistance();
+                                    // TODO: TEST THIS!
+                                    limelightDistance = vision.getCornerCalculatedDistance();
                                     lidarDistance = lidar.getDistance();
                                 })
                         ),
@@ -76,16 +75,15 @@ public class ShootSequence extends SequentialCommandGroup {
                     hood.set(hoodState);
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
                 }),
-
-                new ConditionalCommand( // Shoot if target isn't found, otherwise lineup and shoot
-                        new PointToTarget(drivetrain, limelight, navX).withTimeout(2),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW),
+                new ConditionalCommand( // Always lines up and shoots, given the new vision estimation
+                        new PointToTarget(drivetrain, vision, limelight, navX),//.withTimeout(1),
                         new InstantCommand(),
-                        () -> limelight.isTargetFound() && !this.profile.equals(ShooterProfile.HUB) && pointToTarget
+                        () -> !this.profile.equals(ShooterProfile.HUB) && pointToTarget
                 ),
-                new WaitCommand(0.25),
-                new WaitUntilCommand(shooter::isSpunUp),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET),
                 FeatherClient.commandRecordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + ""),
-                new ShooterFeedSequence(indexer, shooter)
+                new ShooterFeedSequence(indexer, shooter, drivetrain.lights, has2Balls)
         );
     }
 

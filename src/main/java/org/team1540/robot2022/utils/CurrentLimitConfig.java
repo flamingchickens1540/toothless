@@ -48,23 +48,17 @@ public class CurrentLimitConfig {
         motor.enableVoltageCompensation(true);
     }
 
-    /**
-     * Apply this current limit to a TalonFX controller
-     * @param motor TalonFX controller to apply the current limit to
-     */
-    public void applyTo(TalonFX motor) {
-        reset(motor);
-        motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, this.statorLimit, this.statorThreshCurrent, this.statorThreshTime));
-        motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, this.supplyLimit, this.supplyThreshCurrent, this.supplyThreshTime));
-    }
 
     /**
-     * Apply this current limit to multiple TalonFX controllers
+     * Apply this current limit to one or more TalonFX controllers
+     *
      * @param motors TalonFX controllers to apply the current limit to
      */
-    public void applyTo(TalonFX[] motors) {
+    public void applyTo(TalonFX... motors) {
         for (TalonFX motor : motors) {
-            applyTo(motor);
+            reset(motor);
+            motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, this.statorLimit, this.statorThreshCurrent, this.statorThreshTime));
+            motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, this.supplyLimit, this.supplyThreshCurrent, this.supplyThreshTime));
         }
     }
 }

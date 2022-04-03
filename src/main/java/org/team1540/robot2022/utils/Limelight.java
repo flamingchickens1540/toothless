@@ -13,9 +13,9 @@ public class Limelight {
     private static final double VERTICAL_FOV = Math.toRadians(49.7);
     private static final Vector2d CAM_RESOLUTION = new Vector2d(320, 240);
     private final NetworkTable limelightTable;
-    private final double limelightHeight = 0.71; // 28in to m
-    private final double limelightAngle = Math.toRadians(39);
-    private final double targetHeight = 2.64; // 8'8" to m
+    public final double limelightHeight = 0.71; // 28in to m
+    public final double limelightAngle = Math.toRadians(40);
+    public final double targetHeight = 2.64; // 8'8" to m
 
     /**
      * Constructs a new limelight interface with the default hostname.
@@ -25,7 +25,8 @@ public class Limelight {
     public Limelight(String name) {
         limelightTable = NetworkTableInstance.getDefault().getTable(name);
         SmartDashboard.putNumber("limelight/custom/calculatedDistance", 0);
-        setLeds(false);
+        SmartDashboard.putNumber("limelight/custom/targetAlignedRange", 5);
+        setLeds(true);
     }
 
     public NetworkTable getNetworkTable() {
@@ -44,19 +45,7 @@ public class Limelight {
         return CAM_RESOLUTION;
     }
 
-    /**
-     * Gets the current calculated distance of the limelight to the base of the hub.
-     *
-     * @return the distance in meters
-     */
-    public double getCalculatedDistance() {
-        double theta = Math.toRadians(getTargetAngles().y) + limelightAngle;
-        double actualHeight = targetHeight - limelightHeight;
-        return 39.37007874 * actualHeight / Math.tan(theta);
-    }
-
     public void updateSmartDashboardValues() {
-        SmartDashboard.putNumber("limelight/custom/calculatedDistance", getCalculatedDistance());
         SmartDashboard.putBoolean("limelight/custom/targetFound", isTargetFound());
     }
 
@@ -77,15 +66,22 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-        return getTargetAngles().x != 0;
+        double angle = Math.abs(getTargetAngles().x);
+        return angle > 0.001;
+    }
+
+    /**
+     * Tells whether the limelight target is aligned to within 1 degree.
+     *
+     * @return the state of target alignment
+     */
+    public boolean isTargetAligned() {
+        double distance = Math.abs(getTargetAngles().x);
+        return distance > 0 && distance < SmartDashboard.getNumber("limelight/custom/targetAlignedRange", 5);
     }
 
     public double getLeds() {
         return limelightTable.getEntry("ledMode").getDouble(1);
-    }
-
-    public boolean getLedsOn() {
-        return limelightTable.getEntry("ledMode").getDouble(1) == LEDMode.ON;
     }
 
     /**
@@ -109,11 +105,8 @@ public class Limelight {
         }
     }
 
-    public static final class LEDMode {
-        public static final int PIPELINE = 0;
-        public static final int OFF = 1;
-        public static final int BLINK = 2;
-        public static final int ON = 3;
+    public boolean getLedsOn() {
+        return limelightTable.getEntry("ledMode").getDouble(1) == LEDMode.ON;
     }
 
     public long getPipeline() {
@@ -135,5 +128,12 @@ public class Limelight {
             cornerList.add(new Vector2d(xCorners[i], yCorners[i]));
         }
         return cornerList;
+    }
+
+    public static final class LEDMode {
+        public static final int PIPELINE = 0;
+        public static final int OFF = 1;
+        public static final int BLINK = 2;
+        public static final int ON = 3;
     }
 }

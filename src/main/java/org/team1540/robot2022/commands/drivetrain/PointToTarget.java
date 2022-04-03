@@ -1,44 +1,62 @@
 package org.team1540.robot2022.commands.drivetrain;
 
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import org.team1540.robot2022.commands.vision.Vision;
+import org.team1540.robot2022.utils.AverageFilter;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.MiniPID;
 import org.team1540.robot2022.utils.NavX;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.function.DoubleConsumer;
 
 public class PointToTarget extends CommandBase {
     private final Drivetrain drivetrain;
+    private final Vision vision;
     private final Limelight limelight;
     private final NavX navX;
     private final LinkedList<Vector2d> pastPoses = new LinkedList<>();
     private final MedianFilter medianFilter = new MedianFilter(10);
+    private final AverageFilter averageFilter = new AverageFilter(10);
     private int medianFilterCount = 0;
     private boolean turning = false;
 
     // A little testing says kP=0.7 and kD=0.4 are fairly strong.
     private final MiniPID pid = new MiniPID(1, 0, 0);
+    private final MiniPID pidNavX = new MiniPID(0, 0, 0);
+    private boolean isFinished = false;
 
-    public PointToTarget(Drivetrain drivetrain, Limelight limelight, NavX navX) {
+    public PointToTarget(Drivetrain drivetrain, Vision vision, Limelight limelight, NavX navX) {
         this.drivetrain = drivetrain;
+        this.vision = vision;
         this.limelight = limelight;
         this.navX = navX;
+
         addRequirements(drivetrain);
     }
 
     @Override
     public void initialize() {
-        double p = SmartDashboard.getNumber("pointToTarget/kP", 0.006);
+        double p = SmartDashboard.getNumber("pointToTarget/kP", 0.008);
         double i = SmartDashboard.getNumber("pointToTarget/kI", 0);
-        double d = SmartDashboard.getNumber("pointToTarget/kD", 0.015);
-        limelight.setLeds(true);
+        double d = SmartDashboard.getNumber("pointToTarget/kD", 0.05);
+
+        double pX = SmartDashboard.getNumber("pointToTarget/navX_kP", 0);
+        double dX = SmartDashboard.getNumber("pointToTarget/navX_kD", 0);
+
+        pidNavX.setPID(pX, 0, dX);
+        pidNavX.setSetpoint(0);
+
         pid.setPID(p, i, d);
         pid.setSetpoint(0);
+
+        limelight.setLeds(true);
+        SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", true);
+        System.out.println("PTT Initialized");
     }
 
     private double getHorizontalDistanceToTarget() {
@@ -95,40 +113,7 @@ public class PointToTarget extends CommandBase {
      * @param turnFunction a function that takes the output of our finalized angle
      */
     private void calculateWithCorners(DoubleConsumer turnFunction) {
-        double[] cornerCoordinates = limelight.getNetworkTable().getEntry("tcornxy").getDoubleArray(new double[]{});
-        ArrayList<Vector2d> cornerPoints = new ArrayList<>(cornerCoordinates.length / 2);
-        for (int i = 0; i < cornerCoordinates.length; i += 2) {
-            cornerPoints.add(new Vector2d(cornerCoordinates[i], cornerCoordinates[i + 1]));
-        }
-
-        double cornerYSum = 0;
-        for (Vector2d point : cornerPoints) {
-            cornerYSum += point.y;
-        }
-        double cornerYAvg = cornerYSum / cornerPoints.size();
-
-        for (int i = 0; i < cornerPoints.size(); i++) {
-            if (cornerPoints.get(i).y > cornerYAvg) {
-                cornerPoints.remove(i);
-                i--;
-            }
-        }
-
-        // TODO: This might be better as a median, depends on how good I get the pipeline to work.
-        double correctedCornerXSum = 0;
-        for (Vector2d point : cornerPoints) {
-            correctedCornerXSum += point.x;
-        }
-        double correctedCornerXAvg = correctedCornerXSum / cornerPoints.size();
-
-        // Steps to calculate on-screen coordinate offsets as angles, as given in the Limelight docs.
-        double normalizedCornerXAvg = (2.0 / limelight.getResolution().x) * (correctedCornerXAvg - (limelight.getResolution().x / 2 - 0.5));
-        double viewportCornerXAvg = Math.tan(limelight.getHorizontalFov() / 2) * normalizedCornerXAvg;
-        double degreeOffsetCornerXAvg = Math.toDegrees(Math.atan2(viewportCornerXAvg, 1));
-        SmartDashboard.putNumber("pointToTarget/corner/correctedCornerX", correctedCornerXAvg);
-        SmartDashboard.putNumber("pointToTarget/corner/offsetNormalizedX", normalizedCornerXAvg);
-        SmartDashboard.putNumber("pointToTarget/corner/offsetAvg", degreeOffsetCornerXAvg);
-        turnFunction.accept(degreeOffsetCornerXAvg);
+        turnFunction.accept(vision.getCornerAverages().x);
     }
 
     /**
@@ -137,7 +122,7 @@ public class PointToTarget extends CommandBase {
      * @param angleXOffset the offset in degrees we still need to turn to reach the target
      */
     private void turnWithLimelight(double angleXOffset) {
-        if (Math.abs(angleXOffset) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 2)) {
+        if (Math.abs(angleXOffset) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 5)) {
 
             double distanceToTarget = getHorizontalDistanceToTarget();
             double pidOutput = pid.getOutput(getError(angleXOffset));
@@ -150,23 +135,45 @@ public class PointToTarget extends CommandBase {
             double valueL = multiplier * -pidOutput;
             double valueR = multiplier * pidOutput;
             drivetrain.setPercent(valueL, valueR);
+        } else {
+            System.out.println("Ending TWL");
+            this.isFinished = true;
         }
     }
 
     /**
      * Executes turning to the target using the NavX as the primary sensor to determine whether we have turned enough.
      *
-     * @param startAngleXOffset the starting setpoint of where the NavX should attempt to turn to
+     * @param angleXOffset the starting setpoint of where the NavX should attempt to turn to
      */
-    private void turnWithNavX(double startAngleXOffset) {
-        if (!turning) {
-            turning = true;
-            double degreeSetpoint = navX.getAngle() + startAngleXOffset;
-            pid.setSetpoint(degreeSetpoint);
-        }
+    private void turnWithNavX(double angleXOffset) {
+        double multiplier = angleXOffset > 0 ? 1 : -1;
 
-        double pidOutput = clampPID(pid.getOutput(navX.getAngle()));
-        drivetrain.setPercent(pidOutput, -pidOutput);
+        double pidOut = pidNavX.getOutput(Math.abs(angleXOffset / 180.0));
+        double pidOutput = clampPID(pidOut);
+        pidOutput = clampPID(pidOutput);
+        double valueL = multiplier * -pidOutput;
+        double valueR = multiplier * pidOutput;
+
+        drivetrain.setPercent(valueL, valueR);
+    }
+
+    /**
+     * Executes turning to the target using {@link #turnWithLimelight} if the target is found,
+     * otherwise using {@link #turnWithNavX} if we need to use the Vision-estimated angle.
+     */
+    private void calculateAndTurnWithVision() {
+        if (limelight.isTargetFound()) {
+            SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", true);
+            NetworkTableInstance.getDefault().flush();
+            pid.setSetpoint(0);
+            calculateWithCorners(this::turnWithLimelight);
+        } else {
+            System.out.println("TURNING, NO LIMELIGHT TARGET FOUND");
+            SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", false);
+            NetworkTableInstance.getDefault().flush();
+            turnWithNavX(vision.getNormalizedAngleToTargetDegrees());
+        }
     }
 
     /**
@@ -187,12 +194,29 @@ public class PointToTarget extends CommandBase {
     }
 
     public void execute() {
-        calculateWithCorners(this::turnWithLimelight);
+        double p = SmartDashboard.getNumber("pointToTarget/kP", 0.006);
+        double i = SmartDashboard.getNumber("pointToTarget/kI", 0);
+        double d = SmartDashboard.getNumber("pointToTarget/kD", 0.015);
+        pid.setPID(p, i, d);
+
+        double pX = SmartDashboard.getNumber("pointToTarget/navX_kP", 0);
+        double dX = SmartDashboard.getNumber("pointToTarget/navX_kD", 0);
+        pidNavX.setPID(pX, 0, dX);
+
+//        calculateWithCorners(this::turnWithLimelight);
+        calculateAndTurnWithVision();
     }
 
+    public boolean isFinished() {
+        return this.isFinished;
+    }
+
+    @Override
     public void end(boolean isInterrupted) {
+        turning = false;
         drivetrain.stopMotors();
-        limelight.setLeds(false);
+//        limelight.setLeds(false);
         medianFilterCount = 0;
+        isFinished = false;
     }
 }

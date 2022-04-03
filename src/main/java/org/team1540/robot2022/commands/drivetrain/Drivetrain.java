@@ -21,6 +21,7 @@ import org.team1540.robot2022.Constants.DriveConstants.Motors;
 import org.team1540.robot2022.utils.AutoHelper.AutoPath;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 import org.team1540.robot2022.utils.NavX;
+import org.team1540.robot2022.utils.RevBlinkin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,8 +42,10 @@ public class Drivetrain extends SubsystemBase {
     public final DashboardField fieldWidget = new DashboardField();
 
     public static final double motorToMPS = 26.0349916751;
+    public RevBlinkin lights;
 
-    public Drivetrain(NeutralMode brakeType, NavX navx) {
+    public Drivetrain(NeutralMode brakeType, NavX navx, RevBlinkin lights) {
+        this.lights = lights;
         driveOdometry = new DifferentialDriveOdometry(navx.getRotation2d());
         this.navx = navx;
 

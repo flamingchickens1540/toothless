@@ -1,40 +1,44 @@
 package org.team1540.robot2022.commands.shooter;
 
+import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2022.commands.indexer.Indexer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import org.team1540.robot2022.utils.RevBlinkin;
 
 public class ShooterFeedSequence extends SequentialCommandGroup {
-    public ShooterFeedSequence(Indexer indexer, Shooter shooter) {
+    public ShooterFeedSequence(Indexer indexer, Shooter shooter, RevBlinkin lights, boolean has2Balls) {
         addRequirements(indexer);
-        
-        addCommands(
-                new WaitUntilCommand(shooter::isSpunUp),                                             // Wait for shooter to spin up
-                indexer.commandStop(),                                                               // Stop the indexer and put in standby
-                indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF),     // Run top indexer
-                new WaitUntilCommand(() -> !indexer.getTopSensor()),                                 // Wait until top ball exits the indexer
-                new WaitCommand(SmartDashboard.getNumber("shooter/tuning/waitAfterFirstBall", 0.5)), // Wait for top ball to leave and shooter to recover TODO: Can we reduce this?
-                indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),              // Stop the indexer
 
+        addCommands(
+                new WaitUntilCommand(shooter::isSpunUp).withTimeout(1),                                             // Wait for shooter to spin up
+                lights.commandSetPattern(RevBlinkin.ColorPattern.ORANGE),
+                indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF),     // Run top indexer
+                new WaitCommand(1),
+                new PrintCommand("topRPM " + indexer.topMotor.getSelectedSensorVelocity()),
+                new WaitUntilCommand(() -> !indexer.getTopSensor()),                                 // Wait until top ball exits the indexer
+                lights.commandSetPattern(RevBlinkin.ColorPattern.GREEN),
                 // Shoot second ball
                 new ConditionalCommand( // Only spend time shooting second ball if a second ball is staged
                         sequence(
-                                new WaitCommand(0.5),                                                           // TODO: Can we get rid of this?                                                      
-                                indexer.commandSet(Indexer.IndexerState.FORWARD, Indexer.IndexerState.FORWARD), // Move bottom ball up
-                                new WaitUntilCommand(indexer::getTopSensor),                                    // Wait until ball is in top staging location
-                                indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),         // Stop when ball is up high TODO: Standby here?
-
-                                new WaitUntilCommand(shooter::isSpunUp),                                                  // Wait until flywheel is spun up again
-                                indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL), // Run both indexer wheels to shoot bottom ball
-                                new WaitUntilCommand(() -> !indexer.getTopSensor()),      // Wait until ball leaves top of indexer
-                                new WaitCommand(0.5)                                      // Wait for bottom ball to be fully shot before stopping flywheels TODO: Can we reduce this?
+                                indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD), // Move bottom ball up
+                                new ConditionalCommand(
+                                        sequence(
+                                                lights.commandSetPattern(RevBlinkin.ColorPattern.BLUE_GREEN),
+                                                new WaitUntilCommand(indexer::getTopSensor),                                    // Wait until ball is in top staging location
+                                                indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),         // Stop when ball is up high TODO: Standby here?
+                                                new WaitUntilCommand(shooter::isSpunUp).withTimeout(0.5),
+                                                indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD_FULL), // Run both indexer wheels to shoot bottom ball
+                                                new WaitCommand(1),
+                                                new WaitUntilCommand(() -> !indexer.getTopSensor() && !indexer.getBottomSensor())      // Wait until ball leaves top of indexer
+                                        ),
+                                        new PrintCommand("hub shot, not waiting"),
+                                        () -> true
+                                )
                         ),
-                        new InstantCommand(),
-                        indexer::getBottomSensor
+                        parallel(
+                                indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),              // Stop the indexer
+                                new PrintCommand("one ball, not shooting second")
+                        ),
+                        () -> indexer.getBottomSensor() || has2Balls
                 )
         );
     }
