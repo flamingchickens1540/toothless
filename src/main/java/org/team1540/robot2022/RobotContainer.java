@@ -70,7 +70,7 @@ public class RobotContainer {
     // coop:button(RTrigger,Drive Backward,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true);
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true, false);
     public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
 
     private final boolean ENABLE_COMPRESSOR = true;
@@ -213,7 +213,7 @@ public class RobotContainer {
 
 
         // Turn lights gold when indexer is full
-        indexerFull.whenActive(driverController.commandSetRumble(1));
+        indexerFull.whenActive(driverController.commandSetRumble(0.1).andThen(new WaitCommand(0.75)).andThen(driverController.commandSetRumble(0)));
         indexerFull.whenInactive(driverController.commandSetRumble(0));
 
         // Enable break mode when enabled
