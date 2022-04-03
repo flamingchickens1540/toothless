@@ -18,6 +18,7 @@ public class LIDAR {
     public LIDAR(Port port) {
         m_port = (byte) port.value;
         I2CJNI.i2CInitialize(m_port);
+        startMeasuring();
     }
 
     public synchronized void startMeasuring() {
@@ -38,7 +39,7 @@ public class LIDAR {
         m_buffer.put(0, (byte) 0x8f); // Special combination for readShort which combines high and low byte registers
         I2CJNI.i2CWrite(m_port, k_deviceAddress, m_buffer, (byte) 1);
         I2CJNI.i2CRead(m_port, k_deviceAddress, m_buffer, (byte) 2);
-        return m_buffer.getShort(0) / 2.54 + 6; // 2.54 to convert to inches and +6 tuning offset
+        return m_buffer.getShort(0) / 2.54 - 6; // 2.54 to convert to inches and +6 tuning offset
     }
 
     private int writeRegister(int address, int value) {
