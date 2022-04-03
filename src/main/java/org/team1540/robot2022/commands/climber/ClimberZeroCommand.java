@@ -1,6 +1,7 @@
 package org.team1540.robot2022.commands.climber;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2022.Constants;
@@ -15,7 +16,6 @@ public class ClimberZeroCommand extends SequentialCommandGroup {
         this.climber = climber;
         addRequirements(climber);
         addCommands(
-                climber.commandDisableLimits(),
                 parallel(
                         // Zero left climber
                         sequence(
@@ -30,7 +30,8 @@ public class ClimberZeroCommand extends SequentialCommandGroup {
                                 new WaitUntilCommand(() -> climber.getRightCurrent() > SmartDashboard.getNumber("climber/currentLimit", Constants.ClimberConstants.ZERO_SPIKE_CURRENT)),
                                 climber.commandSetPercentRight(0)
                         )
-                )
+                ),
+                new InstantCommand(climber::enableLimits)
         );
     }
 

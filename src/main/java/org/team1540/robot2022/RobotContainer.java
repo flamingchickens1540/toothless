@@ -47,9 +47,9 @@ public class RobotContainer {
     public final Vision vision = new Vision(drivetrain, navx, limelight);
 
     // Controllers
-    public final XboxController driverController = new XboxController(0);
-    public final XboxController copilotController = new XboxController(1);
-    public final XboxController featherController = new XboxController(3);
+    public final ChickenXboxController driverController = new ChickenXboxController(0);
+    public final ChickenXboxController copilotController = new ChickenXboxController(1);
+    public final ChickenXboxController featherController = new ChickenXboxController(3);
 
     // Buttons
     public final DigitalInput zeroOdometry = new DigitalInput(0);
@@ -172,9 +172,13 @@ public class RobotContainer {
 
         // coop:button(LBumper, Run climb sequence,copilot)
         new JoystickButton(copilotController, Button.kLeftBumper.value)
-                .whenHeld(new ClimbSequence(climber, navx, topLEDs, true)
+                .whenHeld(new ClimbSequence(climber, navx, topLEDs, copilotController, true)
                         .alongWith(commandSetLights(RevBlinkin.GameStage.ENDGAME))
                         .andThen(new InstantCommand(climberUpDownCommand::schedule)));
+
+        // coop:button(RBumper, reschedule manual climbing, copilot)
+        new JoystickButton(copilotController, Button.kRightBumper.value)
+                .whenPressed(new InstantCommand(climberUpDownCommand::schedule));
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
@@ -209,8 +213,8 @@ public class RobotContainer {
 
 
         // Turn lights gold when indexer is full
-        indexerFull.whenActive(topLEDs.commandSetPattern(RevBlinkin.ColorPattern.GOLD));
-        indexerFull.whenInactive(() -> topLEDs.setPattern(RevBlinkin.GameStage.TELEOP));
+        indexerFull.whenActive(driverController.commandSetRumble(1));
+        indexerFull.whenInactive(driverController.commandSetRumble(0));
 
         // Enable break mode when enabled
         enabled.whenActive(() -> {
