@@ -82,7 +82,7 @@ public class ShootSequence extends SequentialCommandGroup {
                         () -> !this.profile.equals(ShooterProfile.HUB) && pointToTarget
                 ),
                 drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET),
-                FeatherClient.commandRecordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + ""),
+                new InstantCommand(() -> FeatherClient.recordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + "")),
                 new ShooterFeedSequence(indexer, shooter, drivetrain.lights, has2Balls)
         );
     }
