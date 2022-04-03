@@ -17,18 +17,19 @@ public class Auto5BallSequence extends AutoSequence {
         addPaths(AutoPath.auto2Ball1A, AutoPath.auto5Ball2, AutoPath.auto5Ball3, AutoPath.auto5Ball4);
         addCommands(
                 AutoHelper.runPathWithSpinup(drivetrain, intake, indexer, shooter, hood, AutoPath.auto2Ball1A), // Follow path to collect ball 2
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, true),
-
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.RED),
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, false, true),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET),
                 AutoHelper.runPathWithSpinup(drivetrain, intake, indexer, shooter, hood, AutoPath.auto5Ball2), // Follow path to collect balls 3 and 4// If (2 balls are indexed) then shoot, else keep going. In case human player ball isn't present
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, true),
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, false, false),
 
                 AutoHelper.runPath(drivetrain, intake, indexer, shooter, AutoPath.auto5Ball3), // Follow path to collect ball 5
                 deadline(
-                        new WaitUntilCommand(indexer::isFull).withTimeout(5),
+                        new WaitUntilCommand(indexer::isFull).withTimeout(1),
                         new IntakeSequence(intake, indexer)
                 ),
                 AutoHelper.runPathWithSpinup(drivetrain, intake, indexer, shooter, hood, AutoPath.auto5Ball4), // Follow path to collect ball 5
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, true)
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, true, true)
         );
     }
 }

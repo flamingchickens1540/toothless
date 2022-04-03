@@ -26,7 +26,7 @@ public class ShootSequence extends SequentialCommandGroup {
     private double rearVelocity;
     private boolean hoodState; // New state to set the hood to
 
-    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Vision vision, Limelight limelight, LIDAR lidar, NavX navX, Shooter.ShooterProfile m_profile, boolean pointToTarget) {
+    public ShootSequence(Shooter shooter, Indexer indexer, Drivetrain drivetrain, Hood hood, Intake intake, Vision vision, Limelight limelight, LIDAR lidar, NavX navX, Shooter.ShooterProfile m_profile, boolean pointToTarget, boolean has2Balls) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.limelight = limelight;
@@ -77,14 +77,13 @@ public class ShootSequence extends SequentialCommandGroup {
                 }),
                 drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW),
                 new ConditionalCommand( // Always lines up and shoots, given the new vision estimation
-                        new PointToTarget(drivetrain, vision, limelight, navX).withTimeout(2),
+                        new PointToTarget(drivetrain, vision, limelight, navX),//.withTimeout(1),
                         new InstantCommand(),
                         () -> !this.profile.equals(ShooterProfile.HUB) && pointToTarget
                 ),
-                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.LIME),
-                new WaitCommand(0.25),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET),
                 FeatherClient.commandRecordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + ""),
-                new ShooterFeedSequence(indexer, shooter, drivetrain.lights)
+                new ShooterFeedSequence(indexer, shooter, drivetrain.lights, has2Balls)
         );
     }
 

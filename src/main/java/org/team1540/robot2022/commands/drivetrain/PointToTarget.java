@@ -28,6 +28,7 @@ public class PointToTarget extends CommandBase {
     // A little testing says kP=0.7 and kD=0.4 are fairly strong.
     private final MiniPID pid = new MiniPID(1, 0, 0);
     private final MiniPID pidNavX = new MiniPID(0, 0, 0);
+    private boolean isFinished = false;
 
     public PointToTarget(Drivetrain drivetrain, Vision vision, Limelight limelight, NavX navX) {
         this.drivetrain = drivetrain;
@@ -55,6 +56,7 @@ public class PointToTarget extends CommandBase {
 
         limelight.setLeds(true);
         SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", true);
+        System.out.println("PTT Initialized");
     }
 
     private double getHorizontalDistanceToTarget() {
@@ -134,7 +136,8 @@ public class PointToTarget extends CommandBase {
             double valueR = multiplier * pidOutput;
             drivetrain.setPercent(valueL, valueR);
         } else {
-            this.end(false);
+            System.out.println("Ending TWL");
+            this.isFinished = true;
         }
     }
 
@@ -200,14 +203,20 @@ public class PointToTarget extends CommandBase {
         double dX = SmartDashboard.getNumber("pointToTarget/navX_kD", 0);
         pidNavX.setPID(pX, 0, dX);
 
-        calculateWithCorners(this::turnWithLimelight);
-//        calculateAndTurnWithVision();
+//        calculateWithCorners(this::turnWithLimelight);
+        calculateAndTurnWithVision();
     }
 
+    public boolean isFinished() {
+        return this.isFinished;
+    }
+
+    @Override
     public void end(boolean isInterrupted) {
         turning = false;
         drivetrain.stopMotors();
-        limelight.setLeds(false);
+//        limelight.setLeds(false);
         medianFilterCount = 0;
+        isFinished = false;
     }
 }

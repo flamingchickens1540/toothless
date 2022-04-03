@@ -29,7 +29,7 @@ public class Auto2BallSequence extends AutoSequence {
                         lidar,
                         navx,
                         Shooter.ShooterProfile.FAR,
-                        !isPosA)
+                        !isPosA, true)
         );
     }
 }
