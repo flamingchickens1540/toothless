@@ -3,6 +3,7 @@ package org.team1540.robot2022.utils;
 import edu.wpi.first.hal.I2CJNI;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.nio.ByteBuffer;
 
@@ -45,5 +46,10 @@ public class LIDAR {
         m_buffer.put(1, (byte) value);
 
         return I2CJNI.i2CWrite(m_port, k_deviceAddress, m_buffer, (byte) 2);
+    }
+
+    public void updateSmartDashboardValues() {
+        SmartDashboard.putNumber("lidar/distance", getDistance());
+        SmartDashboard.putNumber("lidar/rawDistance", getRawDistance());
     }
 }
