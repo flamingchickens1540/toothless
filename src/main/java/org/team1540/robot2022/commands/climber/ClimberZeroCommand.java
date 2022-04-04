@@ -2,6 +2,7 @@ package org.team1540.robot2022.commands.climber;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2022.Constants;
@@ -21,22 +22,26 @@ public class ClimberZeroCommand extends SequentialCommandGroup {
                         sequence(
                                 climber.commandSetPercentLeft(Constants.ClimberConstants.ZERO_DOWN_SPEED),
                                 new WaitUntilCommand(() -> climber.getLeftCurrent() > SmartDashboard.getNumber("climber/currentLimit", Constants.ClimberConstants.ZERO_SPIKE_CURRENT)),
-                                climber.commandSetPercentLeft(0)
+                                climber.commandSetPercentLeft(0),
+                                new PrintCommand("left climber done")
                         ),
 
                         // Zero right climber
                         sequence(
                                 climber.commandSetPercentRight(Constants.ClimberConstants.ZERO_DOWN_SPEED),
                                 new WaitUntilCommand(() -> climber.getRightCurrent() > SmartDashboard.getNumber("climber/currentLimit", Constants.ClimberConstants.ZERO_SPIKE_CURRENT)),
-                                climber.commandSetPercentRight(0)
+                                climber.commandSetPercentRight(0),
+                                new PrintCommand("right climber done")
                         )
                 ),
-                new InstantCommand(climber::enableLimits)
+                new InstantCommand(climber::enableLimits),
+                new PrintCommand("climber done")
         );
     }
 
     @Override
     public void end(boolean isInterrupted) {
+        super.end(isInterrupted);
         climber.stop();
     }
 }
