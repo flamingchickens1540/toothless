@@ -24,8 +24,8 @@ public class Limelight {
      */
     public Limelight(String name) {
         limelightTable = NetworkTableInstance.getDefault().getTable(name);
-        SmartDashboard.putNumber("limelight/custom/calculatedDistance", 0);
-        SmartDashboard.putNumber("limelight/custom/targetAlignedRange", 5);
+        ChickenSmartDashboard.putDebugNumber("limelight/custom/calculatedDistance", 0);
+        ChickenSmartDashboard.putDebugNumber("limelight/custom/targetAlignedRange", 5);
         setLeds(true);
     }
 
@@ -46,7 +46,7 @@ public class Limelight {
     }
 
     public void updateSmartDashboardValues() {
-        SmartDashboard.putBoolean("limelight/custom/targetFound", isTargetFound());
+        ChickenSmartDashboard.putDebugBoolean("limelight/custom/targetFound", isTargetFound());
     }
 
     /**

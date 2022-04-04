@@ -62,9 +62,9 @@ public class Indexer extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("indexer/top", this.getTopSensor());
-        SmartDashboard.putBoolean("indexer/bottom", this.getBottomSensor());
-        SmartDashboard.putBoolean("indexer/full", this.isFull());
+        ChickenSmartDashboard.putDebugBoolean("indexer/top", this.getTopSensor());
+        ChickenSmartDashboard.putDebugBoolean("indexer/bottom", this.getBottomSensor());
+        ChickenSmartDashboard.putDebugBoolean("indexer/full", this.isFull());
     }
 
     /**

@@ -4,6 +4,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.MathUtils;
 
 public class FFTankDriveCommand extends CommandBase {
@@ -33,31 +34,31 @@ public class FFTankDriveCommand extends CommandBase {
     public void execute() {
         double triggers = MathUtils.deadzone(controller.getLeftTriggerAxis(), 0.05) - MathUtils.deadzone(controller.getRightTriggerAxis(), 0.05);
 //        double triggers = 0;
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/triggers", triggers);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/triggers", triggers);
 
         deadzone = SmartDashboard.getNumber("drivetrain/tankDrive/deadzone", 0.15);
         double leftThrottle = scaleStickToVelocity(MathUtils.deadzone(controller.getLeftY(), deadzone) + triggers);
         double rightThrottle = scaleStickToVelocity(MathUtils.deadzone(controller.getRightY(), deadzone) + triggers);
 
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/leftStick", controller.getLeftY());
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/rightStick", controller.getRightY());
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/leftThrottle", leftThrottle);
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/rightThrottle", rightThrottle);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/leftStick", controller.getLeftY());
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/rightStick", controller.getRightY());
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/leftThrottle", leftThrottle);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/rightThrottle", rightThrottle);
         double combined = Math.abs(leftThrottle) + Math.abs(rightThrottle);
 
 
         double ratioL = leftThrottle / combined;
         double ratioR = rightThrottle / combined;
 
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/combined", combined);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/combined", combined);
         double total = slewRateLimiter.calculate(combined / 2) * 2.0;
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/total", total);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/total", total);
 
         double leftCalculated = ratioL * total;
         double rightCalculated = ratioR * total;
 
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/calc/left", leftCalculated);
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/calc/right", rightCalculated);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/calc/left", leftCalculated);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/calc/right", rightCalculated);
 
         drivetrain.setFFVelocity(rightCalculated, leftCalculated);
 

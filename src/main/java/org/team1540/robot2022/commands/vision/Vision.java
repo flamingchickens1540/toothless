@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.commands.drivetrain.Drivetrain;
 import org.team1540.robot2022.utils.AverageFilter;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.Limelight;
 import org.team1540.robot2022.utils.NavX;
 
@@ -33,26 +34,26 @@ public class Vision extends SubsystemBase {
         // Force LEDs always on.
         limelight.setLeds(true);
 
-        // Start by assuming the field units are meters (unconfirmed)
-        SmartDashboard.putNumber("vision/inchesToFieldRatio", 0.0185);
-        SmartDashboard.putBoolean("vision/allowTargetUpdate", true);
+        // Start by assuming the field units are meters (unconfirmed)`
+        ChickenSmartDashboard.putDebugNumber("vision/inchesToFieldRatio", 0.0185);
+        ChickenSmartDashboard.putDebugBoolean("vision/allowTargetUpdate", true);
 
         if (isSimulation) {
-            SmartDashboard.putNumber("vision/testingX", -4);
-            SmartDashboard.putNumber("vision/testingY", -4);
+            ChickenSmartDashboard.putDebugNumber("vision/testingX", -4);
+            ChickenSmartDashboard.putDebugNumber("vision/testingY", -4);
         }
     }
 
     @Override
     public void periodic() {
         boolean isLimelightAligned = limelight.isTargetAligned();
-        SmartDashboard.putBoolean("vision/limelightAligned", isLimelightAligned);
+        ChickenSmartDashboard.putDebugBoolean("vision/limelightAligned", isLimelightAligned);
         if (SmartDashboard.getBoolean("vision/allowTargetUpdate", false) && isLimelightAligned && !isSimulation) {
             // lastDistance is the limelight's found distance + distance to center of the hub then made into "field units"
             updateLastTargetPose();
         }
         if (lastPose != null) {
-            SmartDashboard.putNumber("vision/estimatedAngle", getNormalizedAngleToTargetDegrees());
+            ChickenSmartDashboard.putDebugNumber("vision/estimatedAngle", getNormalizedAngleToTargetDegrees());
         }
         if (limelight.isTargetFound()) {
             calculateCornerAverages();
@@ -60,7 +61,7 @@ public class Vision extends SubsystemBase {
             cornerAverageX.clear();
             cornerAverageY.clear();
         }
-        SmartDashboard.putNumber("vision/estimatedDistance", getCornerCalculatedDistance());
+        ChickenSmartDashboard.putDebugNumber("vision/estimatedDistance", getCornerCalculatedDistance());
     }
 
 
@@ -71,12 +72,12 @@ public class Vision extends SubsystemBase {
             lastPose = new Pose2d(new Translation2d(8.695, 5.314), new Rotation2d());
             lastRotation = navX.getAngleRadians();
 
-            SmartDashboard.putNumber("vision/testingX", 7.9);
-            SmartDashboard.putNumber("vision/testingY", 4.6);
+            ChickenSmartDashboard.putDebugNumber("vision/testingX", 7.9);
+            ChickenSmartDashboard.putDebugNumber("vision/testingY", 4.6);
         }
-        SmartDashboard.putNumber("vision/lastRotation", lastRotation);
-        SmartDashboard.putNumber("vision/poseX", lastPose.getX());
-        SmartDashboard.putNumber("vision/poseY", lastPose.getY());
+        ChickenSmartDashboard.putDebugNumber("vision/lastRotation", lastRotation);
+        ChickenSmartDashboard.putDebugNumber("vision/poseX", lastPose.getX());
+        ChickenSmartDashboard.putDebugNumber("vision/poseY", lastPose.getY());
     }
 
     /**
@@ -125,8 +126,8 @@ public class Vision extends SubsystemBase {
 
         // SmartDashboard.putNumber("pointToTarget/corner/correctedCornerX", correctedCornerXAvg);
         // SmartDashboard.putNumber("pointToTarget/corner/offsetNormalizedX", normalizedCornerXAvg);
-        SmartDashboard.putNumber("pointToTarget/corner/offsetXAvg", degreeOffsetCornerXAvg);
-        SmartDashboard.putNumber("pointToTarget/corner/offsetYAvg", degreeOffsetCornerYAvg);
+        ChickenSmartDashboard.putDebugNumber("pointToTarget/corner/offsetXAvg", degreeOffsetCornerXAvg);
+        ChickenSmartDashboard.putDebugNumber("pointToTarget/corner/offsetYAvg", degreeOffsetCornerYAvg);
 
         cornerAverageX.add(degreeOffsetCornerXAvg);
         cornerAverageY.add(-degreeOffsetCornerYAvg);
@@ -165,10 +166,10 @@ public class Vision extends SubsystemBase {
         lastDistance = 1.21973;
         lastPose = drivetrain.getPose();
         lastRotation = navX.getAngleRadians();
-        SmartDashboard.putNumber("vision/lastPoseX", lastPose.getX());
-        SmartDashboard.putNumber("vision/lastPoseY", lastPose.getY());
-        SmartDashboard.putNumber("vision/lastRotation", lastRotation);
-        SmartDashboard.putNumber("vision/lastDistance", lastDistance);
+        ChickenSmartDashboard.putDebugNumber("vision/lastPoseX", lastPose.getX());
+        ChickenSmartDashboard.putDebugNumber("vision/lastPoseY", lastPose.getY());
+        ChickenSmartDashboard.putDebugNumber("vision/lastRotation", lastRotation);
+        ChickenSmartDashboard.putDebugNumber("vision/lastDistance", lastDistance);
     }
 
     /**
@@ -180,10 +181,10 @@ public class Vision extends SubsystemBase {
         lastRotation = navX.getAngleRadians();
 
         // Push to SmartDashboard
-        SmartDashboard.putNumber("vision/lastPoseX", lastPose.getX());
-        SmartDashboard.putNumber("vision/lastPoseY", lastPose.getY());
-        SmartDashboard.putNumber("vision/lastRotation", lastRotation);
-        SmartDashboard.putNumber("vision/lastDistance", lastDistance);
+        ChickenSmartDashboard.putDebugNumber("vision/lastPoseX", lastPose.getX());
+        ChickenSmartDashboard.putDebugNumber("vision/lastPoseY", lastPose.getY());
+        ChickenSmartDashboard.putDebugNumber("vision/lastRotation", lastRotation);
+        ChickenSmartDashboard.putDebugNumber("vision/lastDistance", lastDistance);
     }
 
     /**
@@ -237,8 +238,8 @@ public class Vision extends SubsystemBase {
         // Get the current pose.
         Translation2d currentPose = drivetrain.getPose().getTranslation();
 
-        SmartDashboard.putNumber("vision/currentPoseX", currentPose.getX());
-        SmartDashboard.putNumber("vision/currentPoseY", currentPose.getY());
+        ChickenSmartDashboard.putDebugNumber("vision/currentPoseX", currentPose.getX());
+        ChickenSmartDashboard.putDebugNumber("vision/currentPoseY", currentPose.getY());
 
         // This should be removed
         if (isSimulation) {
@@ -256,9 +257,9 @@ public class Vision extends SubsystemBase {
         // Gets the vector between our last pose and our new pose.
         Translation2d translation = currentPose.minus(lastPose.getTranslation());
 
-        SmartDashboard.putNumber("vision/translationX", translation.getX());
-        SmartDashboard.putNumber("vision/translationY", translation.getY());
-        SmartDashboard.putNumber("vision/translationR", translation.getNorm());
+        ChickenSmartDashboard.putDebugNumber("vision/translationX", translation.getX());
+        ChickenSmartDashboard.putDebugNumber("vision/translationY", translation.getY());
+        ChickenSmartDashboard.putDebugNumber("vision/translationR", translation.getNorm());
 
         Vector2d BD = new Vector2d(translation.getX(), translation.getY());
 

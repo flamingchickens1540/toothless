@@ -3,7 +3,6 @@ package org.team1540.robot2022.utils;
 import edu.wpi.first.hal.I2CJNI;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.nio.ByteBuffer;
 
@@ -50,7 +49,7 @@ public class LIDAR {
     }
 
     public void updateSmartDashboardValues() {
-        SmartDashboard.putNumber("lidar/distance", getDistance());
-        SmartDashboard.putNumber("lidar/rawDistance", getRawDistance());
+        ChickenSmartDashboard.putDebugNumber("lidar/distance", getDistance());
+        ChickenSmartDashboard.putDebugNumber("lidar/rawDistance", getRawDistance());
     }
 }

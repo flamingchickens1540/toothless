@@ -54,7 +54,7 @@ public class PointToTarget extends CommandBase {
         pid.setSetpoint(0);
 
         limelight.setLeds(true);
-        SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", true);
+        ChickenSmartDashboard.putDebugBoolean("pointToTarget/turningWithLimelight", true);
         System.out.println("PTT Initialized");
     }
 
@@ -127,8 +127,8 @@ public class PointToTarget extends CommandBase {
             double pidOutput = pid.getOutput(getError(angleXOffset));
             double multiplier = angleXOffset > 0 ? 1 : -1;
 
-            SmartDashboard.putNumber("pointToTarget/pidOutput", pidOutput);
-            SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", distanceToTarget);
+            ChickenSmartDashboard.putDebugNumber("pointToTarget/pidOutput", pidOutput);
+            ChickenSmartDashboard.putDebugNumber("pointToTarget/degreeDistanceToTarget", distanceToTarget);
 
             pidOutput = clampPID(pidOutput);
             double valueL = multiplier * -pidOutput;
@@ -163,7 +163,7 @@ public class PointToTarget extends CommandBase {
      */
     private void calculateAndTurnWithVision() {
         if (limelight.isTargetFound()) {
-            SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", true);
+            ChickenSmartDashboard.putDebugBoolean("pointToTarget/turningWithLimelight", true);
             NetworkTableInstance.getDefault().flush();
             pid.setSetpoint(0);
             calculateWithCorners(this::turnWithLimelight);
@@ -172,7 +172,7 @@ public class PointToTarget extends CommandBase {
             if (controller != null) {
                 controller.setRumble(0.1);
             }
-            SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", false);
+            ChickenSmartDashboard.putDebugBoolean("pointToTarget/turningWithLimelight", false);
             NetworkTableInstance.getDefault().flush();
             turnWithNavX(vision.getNormalizedAngleToTargetDegrees());
         }
@@ -186,11 +186,11 @@ public class PointToTarget extends CommandBase {
      */
     private double clampPID(double pidOutput) {
         if (pidOutput > SmartDashboard.getNumber("pointToTarget/pidClamp", 0.8)) {
-            SmartDashboard.putBoolean("pointToTarget/isClamping", true);
+            ChickenSmartDashboard.putDebugBoolean("pointToTarget/isClamping", true);
             this.end(false);
             return 0;
         } else {
-            SmartDashboard.putBoolean("pointToTarget/isClamping", false);
+            ChickenSmartDashboard.putDebugBoolean("pointToTarget/isClamping", false);
             return pidOutput;
         }
     }

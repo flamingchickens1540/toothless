@@ -2,7 +2,6 @@ package org.team1540.robot2022.utils;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -56,7 +55,7 @@ public class RevBlinkin extends Spark {
      */
     public void setPattern(GameStage stage) {
         ColorPattern pattern = stage.get(isTop);
-        SmartDashboard.putString("lights/pattern" + (isTop ? "Top" : "Bottom"), pattern + "");
+        ChickenSmartDashboard.putDebugString("lights/pattern" + (isTop ? "Top" : "Bottom"), pattern + "");
         this.setPattern(pattern);
     }
 
