@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.MathUtils;
 
 public class TankDriveCommand extends CommandBase {
@@ -71,24 +72,24 @@ public class TankDriveCommand extends CommandBase {
 
         double valueR = applyJoystickModifiers(controller.getLeftY());
         double valueL = applyJoystickModifiers(controller.getRightY());
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/valueL", valueL);
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/valueR", valueR);
-        
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/valueL", valueL);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/valueR", valueR);
+
         double combined = Math.abs(valueR) + Math.abs(valueL);
 
         double ratioL = valueL / combined;
         double ratioR = valueR / combined;
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/ratioL", ratioL);
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/ratioR", ratioR);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/ratioL", ratioL);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/ratioR", ratioR);
 
         double total = applyLimiter(combined / 2) * 2.0;
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/total", total);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/total", total);
 
         double leftCalculated = ratioL * total;
         double rightCalculated = ratioR * total;
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/calcL", leftCalculated);
-        SmartDashboard.putNumber("drivetrain/tankDrive/debug/calcR", rightCalculated);
-        
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/calcL", leftCalculated);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/calcR", rightCalculated);
+
         drivetrain.setPercent(leftCalculated, rightCalculated);
     }
 }

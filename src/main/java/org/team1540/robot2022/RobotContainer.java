@@ -264,15 +264,15 @@ public class RobotContainer {
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/kD", 0.4);
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/navX_kP", 0.8);
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/navX_kD", 0.5);
-        SmartDashboard.putBoolean("pointToTarget/turningWithLimelight", false);
+        ChickenSmartDashboard.putDebugBoolean("pointToTarget/turningWithLimelight", false);
 
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/pidClamp", 0.8);
         ChickenSmartDashboard.putDefaultNumber("pointToTarget/targetDeadzoneDegrees", 2);
 
-        SmartDashboard.putNumber("pointToTarget/pidOutput", 0);
-        SmartDashboard.putNumber("pointToTarget/degreeDistanceToTarget", 0);
+        ChickenSmartDashboard.putDebugNumber("pointToTarget/pidOutput", 0);
+        ChickenSmartDashboard.putDebugNumber("pointToTarget/degreeDistanceToTarget", 0);
 
-        SmartDashboard.putBoolean("pointToTarget/isClamping", false);
+        ChickenSmartDashboard.putDebugBoolean("pointToTarget/isClamping", false);
 
         // Drivetrain values
         ChickenSmartDashboard.putDefaultNumber("ramsetePID/kP", 0.5);
@@ -283,18 +283,11 @@ public class RobotContainer {
         // Climber values
         ChickenSmartDashboard.putDefaultNumber("climber/PID/kP", 0.3);
 
-        SmartDashboard.putNumber("shooter/tuning/frontRPM", -1000);
-        SmartDashboard.putNumber("shooter/tuning/rearRPM", -1000);
+        ChickenSmartDashboard.putDefaultNumber("shooter/tuning/frontRPM", -1000);
+        ChickenSmartDashboard.putDefaultNumber("shooter/tuning/rearRPM", -1000);
 
         // Shoot when we're within this RPM from the target velocity (sum of both flywheel errors, plus or minus)
-        SmartDashboard.putNumber("shooter/tuning/targetError", 30);
-
-        ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/front", InterpolationTable.hubFront);
-        ChickenSmartDashboard.putDefaultNumber("shooter/presets/hub/rear", InterpolationTable.hubRear);
-        ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/front", InterpolationTable.tarmacFront);
-        ChickenSmartDashboard.putDefaultNumber("shooter/presets/tarmac/rear", InterpolationTable.tarmacRear);
-        ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/front", InterpolationTable.lowGoalFront);
-        ChickenSmartDashboard.putDefaultNumber("shooter/presets/lowgoal/rear", InterpolationTable.lowGoalRear);
+        ChickenSmartDashboard.putDefaultNumber("shooter/tuning/targetError", 30);
 
         // Highlight selected auto path
         getAutonomousCommand().highlightPaths(drivetrain);

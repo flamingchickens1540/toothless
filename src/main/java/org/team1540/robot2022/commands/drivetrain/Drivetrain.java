@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
 import org.team1540.robot2022.Constants.DriveConstants.Motors;
 import org.team1540.robot2022.utils.AutoHelper.AutoPath;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 import org.team1540.robot2022.utils.NavX;
 import org.team1540.robot2022.utils.RevBlinkin;
@@ -73,10 +74,10 @@ public class Drivetrain extends SubsystemBase {
                 driveLFront.getDistanceMeters(),
                 driveRFront.getDistanceMeters());
 
-        SmartDashboard.putNumber("drivetrain/leftEncoderMeters", driveLFront.getDistanceMeters());
-        SmartDashboard.putNumber("drivetrain/rightEncoderMeters", driveRFront.getDistanceMeters());
-        SmartDashboard.putNumber("drivetrain/PID/errorL", driveLFront.getClosedLoopError());
-        SmartDashboard.putNumber("drivetrain/PID/errorR", driveRFront.getClosedLoopError());
+        ChickenSmartDashboard.putDebugNumber("drivetrain/leftEncoderMeters", driveLFront.getDistanceMeters());
+        ChickenSmartDashboard.putDebugNumber("drivetrain/rightEncoderMeters", driveRFront.getDistanceMeters());
+        ChickenSmartDashboard.putDebugNumber("drivetrain/PID/errorL", driveLFront.getClosedLoopError());
+        ChickenSmartDashboard.putDebugNumber("drivetrain/PID/errorR", driveRFront.getClosedLoopError());
         fieldWidget.field.setRobotPose(driveOdometry.getPoseMeters());
     }
 
@@ -190,13 +191,13 @@ public class Drivetrain extends SubsystemBase {
      * @param rightVelocity right motor velocity RPM setpoint
      */
     public void setFFVelocity(double leftVelocity, double rightVelocity) {
-        SmartDashboard.putNumber("drivetrain/feedforward/leftVelocity", leftVelocity);
-        SmartDashboard.putNumber("drivetrain/feedforward/rightVelocity", rightVelocity);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/feedforward/leftVelocity", leftVelocity);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/feedforward/rightVelocity", rightVelocity);
 
         double leftVolts = feedForward.calculate(leftVelocity);
         double rightVolts = feedForward.calculate(rightVelocity);
-        SmartDashboard.putNumber("drivetrain/feedforward/leftVolts", leftVelocity);
-        SmartDashboard.putNumber("drivetrain/feedforward/rightVolts", rightVolts);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/feedforward/leftVolts", leftVelocity);
+        ChickenSmartDashboard.putDebugNumber("drivetrain/feedforward/rightVolts", rightVolts);
         setVolts(leftVolts, rightVolts);
     }
 

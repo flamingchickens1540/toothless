@@ -5,12 +5,12 @@ import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
 import org.team1540.robot2022.Constants.ClimberConstants;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.ChickenTalonFX;
 
 public class Climber extends SubsystemBase {
@@ -67,18 +67,18 @@ public class Climber extends SubsystemBase {
     }
 
     public void periodic() {
-        SmartDashboard.putNumber("climber/encoders/left", motorLeft.getSelectedSensorPosition());
-        SmartDashboard.putNumber("climber/encoders/right", motorRight.getSelectedSensorPosition());
+        ChickenSmartDashboard.putDebugNumber("climber/encoders/left", motorLeft.getSelectedSensorPosition());
+        ChickenSmartDashboard.putDebugNumber("climber/encoders/right", motorRight.getSelectedSensorPosition());
 
-        SmartDashboard.putNumber("climber/current/left", motorLeft.getStatorCurrent());
-        SmartDashboard.putNumber("climber/current/right", motorRight.getStatorCurrent());
+        ChickenSmartDashboard.putDebugNumber("climber/current/left", motorLeft.getStatorCurrent());
+        ChickenSmartDashboard.putDebugNumber("climber/current/right", motorRight.getStatorCurrent());
 
 
     }
 
     public Command commandDisableLimits() {
         return new InstantCommand(() -> {
-            System.out.println("disabling");
+            System.out.println("disabling climber limits");
             leftInterrupt.disable();
             rightInterrupt.disable();
             motorLeft.configReverseSoftLimitEnable(false);

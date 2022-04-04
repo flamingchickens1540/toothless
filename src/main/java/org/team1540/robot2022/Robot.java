@@ -6,12 +6,12 @@ package org.team1540.robot2022;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
 import org.team1540.robot2022.commands.util.ResetCommand;
+import org.team1540.robot2022.utils.ChickenSmartDashboard;
 import org.team1540.robot2022.utils.RevBlinkin;
 
 /**
@@ -70,14 +70,14 @@ public class Robot extends TimedRobot {
         robotContainer.limelight.updateSmartDashboardValues();
         robotContainer.lidar.updateSmartDashboardValues();
 
-        SmartDashboard.putBoolean("pneumatics/pressureSwitch", robotContainer.ph.getPressureSwitch());
-        SmartDashboard.putString("shooter/profile", robotContainer.shootSequence.profile + "");
+        ChickenSmartDashboard.putDebugBoolean("pneumatics/pressureSwitch", robotContainer.ph.getPressureSwitch());
+        ChickenSmartDashboard.putDebugString("shooter/profile", robotContainer.shootSequence.profile + "");
 
-        SmartDashboard.putNumber("navx/pitch", robotContainer.navx.getPitch());
-        SmartDashboard.putNumber("navx/roll", robotContainer.navx.getRoll());
+        ChickenSmartDashboard.putDebugNumber("navx/pitch", robotContainer.navx.getPitch());
+        ChickenSmartDashboard.putDebugNumber("navx/roll", robotContainer.navx.getRoll());
 
-        SmartDashboard.putBoolean("climber/sensor/left", robotContainer.climber.sensorLeft.get());
-        SmartDashboard.putBoolean("climber/sensor/right", robotContainer.climber.sensorRight.get());
+        ChickenSmartDashboard.putDebugBoolean("climber/sensor/left", robotContainer.climber.sensorLeft.get());
+        ChickenSmartDashboard.putDebugBoolean("climber/sensor/right", robotContainer.climber.sensorRight.get());
     }
 
     /**

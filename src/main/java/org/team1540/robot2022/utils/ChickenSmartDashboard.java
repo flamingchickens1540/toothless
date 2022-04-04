@@ -42,6 +42,19 @@ public final class ChickenSmartDashboard {
     }
 
     /**
+     * Puts a number in the table if the robot is not connected to an FMS.
+     *
+     * @param key   the key to be assigned to
+     * @param value the value that will be assigned
+     * @see SmartDashboard#putNumber
+     */
+    public static void putDebugNumber(String key, double value) {
+        if (!DriverStation.isFMSAttached()) {
+            SmartDashboard.putNumber(key, value);
+        }
+    }
+
+    /**
      * Puts a boolean in the table if the robot is not connected to an FMS.
      *
      * @param key   the key to be assigned to
