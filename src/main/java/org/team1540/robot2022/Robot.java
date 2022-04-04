@@ -5,12 +5,13 @@
 package org.team1540.robot2022;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
-import org.team1540.robot2022.utils.FeatherClient;
+import org.team1540.robot2022.commands.util.ResetCommand;
 import org.team1540.robot2022.utils.RevBlinkin;
 
 /**
@@ -89,6 +90,8 @@ public class Robot extends TimedRobot {
         robotContainer.bottomLEDs.setPattern(RevBlinkin.GameStage.DISABLE);
         robotContainer.driverController.setRumble(0);
         robotContainer.copilotController.setRumble(0);
+
+        System.out.println("Disabled");
     }
 
     @Override
@@ -137,6 +140,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
+        System.out.println("Test enabled");
+        LiveWindow.setEnabled(false);
+        new ResetCommand(robotContainer.climber, robotContainer.hood, robotContainer.intake, robotContainer.ph).schedule();
     }
 
     /**
@@ -145,4 +151,6 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {
     }
+
+
 }

@@ -39,7 +39,7 @@ public final class Constants {
     public static final class IntakeConstants {
         public static final int SOLENOID = 3;
         public static final int FALCON = 5;
-        public static final CurrentLimitConfig CURRENT_LIMIT_CONFIG = new CurrentLimitConfig(20, 25, 1, 10, 15, 0.5);
+        public static final CurrentLimitConfig CURRENT_LIMIT_CONFIG = new CurrentLimitConfig(40, 25, 1, 40, 15, 0.5);
 
         public static final double SPEED = 0.75;
     }

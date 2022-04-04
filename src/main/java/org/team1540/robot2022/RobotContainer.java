@@ -69,7 +69,7 @@ public class RobotContainer {
     // coop:button(RTrigger,Drive Backward,pilot)
     public final FFTankDriveCommand ffTankDriveCommand = new FFTankDriveCommand(drivetrain, driverController);
 
-    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true, false);
+    public final ShootSequence shootSequence = new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.HUB, true, false, driverController);
     public final TestAllMotorsCommand testAllMotorsCommand = new TestAllMotorsCommand(drivetrain, intake, indexer, shooter, driverController);
 
     private final boolean ENABLE_COMPRESSOR = true;
@@ -95,11 +95,14 @@ public class RobotContainer {
 
         // coop:button(LBumper,Shoot HUB [hold],pilot)
         // coop:button(RBumper,Shoot FAR [hold],pilot)
+        // coop:button(B,Shoot TESTING [press with bumper],pilot)
         new Trigger(driverController::getLeftBumper)
                 .or(new Trigger(driverController::getRightBumper))
                 .whileActiveOnce(new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            if (driverController.getLeftBumper()) {
+                            if (driverController.getBButton()) {
+                                shootSequence.setProfile(Shooter.ShooterProfile.TESTING);
+                            } else if (driverController.getLeftBumper()) {
                                 shootSequence.setProfile(Shooter.ShooterProfile.HUB);
                             } else {
                                 shootSequence.setProfile(Shooter.ShooterProfile.FAR);

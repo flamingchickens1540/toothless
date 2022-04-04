@@ -43,7 +43,7 @@ public class Auto1BallSequence extends AutoSequence {
                         lidar,
                         navx,
                         profile,
-                        false, false)
+                        false, false, null)
         );
     }
 }
