@@ -34,9 +34,10 @@ public class RevBlinkin extends Spark {
      * @param pattern The pattern to use
      * @throws NullPointerException If pattern is null.
      */
-    public void setPattern(ColorPattern pattern) {
-        this.pattern = pattern;
-        super.set(pattern.setpoint);
+    public void setPattern(ColorPattern pattern, boolean debug) {
+        if (!debug || !DriverStation.isFMSAttached()) {
+            super.set(pattern.setpoint);
+        }
     }
 
     /**
@@ -56,7 +57,7 @@ public class RevBlinkin extends Spark {
     public void setPattern(GameStage stage) {
         ColorPattern pattern = stage.get(isTop);
         ChickenSmartDashboard.putDebugString("lights/pattern" + (isTop ? "Top" : "Bottom"), pattern + "");
-        this.setPattern(pattern);
+        this.setPattern(pattern, false);
     }
 
 
@@ -284,8 +285,8 @@ public class RevBlinkin extends Spark {
         ColorPattern get();
     }
 
-    public Command commandSetPattern(ColorPattern pattern) {
-        return new ChickenInstantCommand(() -> this.setPattern(pattern), true);
+    public Command commandSetPattern(ColorPattern pattern, boolean debug) {
+        return new ChickenInstantCommand(() -> this.setPattern(pattern, debug), true);
     }
 
     public ColorPattern getPattern() {

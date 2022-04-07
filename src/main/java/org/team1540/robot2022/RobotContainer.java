@@ -176,8 +176,12 @@ public class RobotContainer {
         // coop:button(LBumper, Run climb sequence,copilot)
         new JoystickButton(copilotController, Button.kLeftBumper.value)
                 .whenHeld(new ClimbSequence(climber, navx, topLEDs, copilotController, true)
-                        .alongWith(commandSetLights(RevBlinkin.GameStage.ENDGAME))
-                        .andThen(new InstantCommand(climberUpDownCommand::schedule)));
+                        .alongWith(commandSetLights(RevBlinkin.GameStage.ENDGAME)))
+                .whenReleased(new InstantCommand(() -> {
+                    if (!climberUpDownCommand.isScheduled()) {
+                        climberUpDownCommand.schedule();
+                    }
+                }));
 
         // coop:button(RBumper, reschedule manual climbing, copilot)
         new JoystickButton(copilotController, Button.kRightBumper.value)
@@ -201,14 +205,14 @@ public class RobotContainer {
         Trigger autonomous = new Trigger(DriverStation::isAutonomousEnabled);
         Trigger teleop = new Trigger(DriverStation::isTeleopEnabled);
         Trigger endgame = new Trigger(() -> Timer.getMatchTime() <= 30).and(teleop);
-        Trigger endgamePrepare = new Trigger(() -> Timer.getMatchTime() <= 35).and(teleop); // TODO set to however long climb sequence takes + drive time
+//        Trigger endgamePrepare = new Trigger(() -> Timer.getMatchTime() <= 35).and(teleop); // TODO set to however long climb sequence takes + drive time
 
         Trigger indexerFull = new Trigger(indexer::isFull).and(teleop);
 
 
-        fmsConnected.whenActive(bottomLEDs.commandSetPattern(RevBlinkin.ColorPattern.GREEN));
+        fmsConnected.whenActive(bottomLEDs.commandSetPattern(RevBlinkin.ColorPattern.GREEN, false));
 
-        endgamePrepare.whenActive(() -> topLEDs.commandSetPattern(RevBlinkin.ColorPattern.VIOLET));
+//        endgamePrepare.whenActive(() -> topLEDs.commandSetPattern(RevBlinkin.ColorPattern.VIOLET, false));
 
         endgame.whenActive(commandSetLights(RevBlinkin.GameStage.ENDGAME));
 
@@ -245,9 +249,9 @@ public class RobotContainer {
     private void initSmartDashboard() {
         autoChooser.addOption("1 Ball", new Auto1BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, false));
         autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, true));
-        autoChooser.setDefaultOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, true));
+        autoChooser.addOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, true));
         autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, false));
-        autoChooser.addOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx));
+        autoChooser.setDefaultOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx));
         autoChooser.addOption("5 Ball", new Auto5BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx));
 
         SmartDashboard.putData("autoSelector", autoChooser);

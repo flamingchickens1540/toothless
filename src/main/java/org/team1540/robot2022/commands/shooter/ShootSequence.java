@@ -80,9 +80,9 @@ public class ShootSequence extends SequentialCommandGroup {
                     hood.set(hoodState);
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
                 }),
-                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW, true),
 
-                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET, true),
                 new InstantCommand(() -> FeatherClient.recordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + "")),
                 new ShooterFeedSequence(indexer, shooter, drivetrain.lights, has2Balls)
         );

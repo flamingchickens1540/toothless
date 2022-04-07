@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
         this.robotContainer = new RobotContainer();
 
         robotContainer.limelight.setLeds(false);
-        robotContainer.bottomLEDs.setPattern(RevBlinkin.ColorPattern.YELLOW);
+        robotContainer.bottomLEDs.setPattern(RevBlinkin.ColorPattern.YELLOW, false);
     }
 
     /**
