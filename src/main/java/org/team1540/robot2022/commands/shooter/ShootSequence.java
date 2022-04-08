@@ -35,13 +35,14 @@ public class ShootSequence extends SequentialCommandGroup {
 
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
+                new InstantCommand(() -> indexer.setStandby(false)),
                 new PrintCommand("Starting shoot sequence with profile " + this.profile),
                 new ConditionalCommand(
                         sequence(
                                 new InstantCommand(() -> limelight.setLeds(true)),
                                 new WaitCommand(0.2),
                                 new ConditionalCommand( // Always lines up and shoots, given the new vision estimation
-                                        new PointToTarget(drivetrain, vision, limelight, navX, controller),//.withTimeout(1),
+                                        new PointToTarget(drivetrain, vision, limelight, navX, controller).withTimeout(1),
                                         new InstantCommand(),
                                         () -> pointToTarget
                                 ),

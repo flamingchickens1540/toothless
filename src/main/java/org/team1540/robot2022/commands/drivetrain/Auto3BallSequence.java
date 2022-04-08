@@ -14,10 +14,10 @@ public class Auto3BallSequence extends AutoSequence {
         addPaths(AutoPath.auto2Ball1A, AutoPath.auto3Ball2);
         addCommands(
                 AutoHelper.runPathWithSpinup(drivetrain, intake, indexer, shooter, hood, AutoPath.auto2Ball1A), // Follow path to collect first ball
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, false, true, null),
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, true, true, null),
 
                 AutoHelper.runPathWithSpinup(drivetrain, intake, indexer, shooter, hood, AutoPath.auto3Ball2), // Follow path to collect second ball
-                new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, false, false, null)
+                new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, true, false, null)
         );
     }
 }

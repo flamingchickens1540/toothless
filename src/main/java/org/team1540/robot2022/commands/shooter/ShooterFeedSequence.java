@@ -11,9 +11,8 @@ public class ShooterFeedSequence extends SequentialCommandGroup {
         addCommands(
                 new WaitUntilCommand(shooter::isSpunUp).withTimeout(1),                                             // Wait for shooter to spin up
                 lights.commandSetPattern(RevBlinkin.ColorPattern.ORANGE, true),
+                new InstantCommand(() -> indexer.setStandby(true)),
                 indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF),     // Run top indexer
-                new WaitCommand(1),
-                new PrintCommand("topRPM " + indexer.topMotor.getSelectedSensorVelocity()),
                 new WaitUntilCommand(() -> !indexer.getTopSensor()),                                 // Wait until top ball exits the indexer
                 lights.commandSetPattern(RevBlinkin.ColorPattern.GREEN, true),
                 // Shoot second ball

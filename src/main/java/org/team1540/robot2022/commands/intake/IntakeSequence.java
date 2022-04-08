@@ -86,6 +86,8 @@ public class IntakeSequence extends SequentialCommandGroup {
     @Override
     public void end(boolean isInterrupted) {
         intake.stop();
-        indexer.stop();
+        if (!isInterrupted) {
+            indexer.stop();
+        }
     }
 }

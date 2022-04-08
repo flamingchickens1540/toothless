@@ -156,10 +156,6 @@ public class RobotContainer {
         new JoystickButton(copilotController, Button.kA.value)
                 .cancelWhenPressed(indexerEjectCommand)
                 .whenPressed(intakeSequence);
-        // coop:button(RBumper,Outtake all through indexer [hold],copilot)
-        new JoystickButton(copilotController, Button.kRightBumper.value)
-                .cancelWhenPressed(intakeSequence)
-                .whileHeld(indexerEjectCommand);
         // coop:button(B,Stop intake and indexer [press],copilot)
         new JoystickButton(copilotController, Button.kB.value)
                 .cancelWhenPressed(indexerEjectCommand)
@@ -183,9 +179,10 @@ public class RobotContainer {
                     }
                 }));
 
-        // coop:button(RBumper, reschedule manual climbing, copilot)
+        // coop:button(RBumper, Run intake and indexer, copilot)
         new JoystickButton(copilotController, Button.kRightBumper.value)
-                .whenPressed(new InstantCommand(climberUpDownCommand::schedule));
+                .whenHeld(intakeSequence)
+                .whenReleased(intake.commandSetFold(true));
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)
@@ -256,7 +253,7 @@ public class RobotContainer {
 
         SmartDashboard.putData("autoSelector", autoChooser);
         SmartDashboard.putData(CommandScheduler.getInstance());
-
+        SmartDashboard.putData("zeroToStart", new ChickenInstantCommand(() -> drivetrain.resetOdometry(getAutonomousCommand().paths[0].trajectory.getInitialPose()), true));
         // Indexer values
         ChickenSmartDashboard.putDefaultNumber("intake/speed", 0.5);
         ChickenSmartDashboard.putDefaultNumber("indexer/waitDuration/top", 0.2);

@@ -108,6 +108,9 @@ public class Robot extends TimedRobot {
         robotContainer.topLEDs.setPattern(RevBlinkin.GameStage.AUTONOMOUS);
         robotContainer.bottomLEDs.setPattern(RevBlinkin.GameStage.AUTONOMOUS);
 
+        robotContainer.hood.set(true);
+        robotContainer.climber.setSolenoids(false);
+
         new ClimberZeroCommand(robotContainer.climber).schedule();
     }
 

@@ -160,6 +160,7 @@ public class AutoHelper {
         public static final AutoPath auto1Ball = new AutoPath("2ball.posA.path1.wpilib.json", 2200, 2500, true);
         public static final AutoPath auto2Ball1A = new AutoPath("2ball.posA.path1.wpilib.json", 2200, 2500, true);
         public static final AutoPath auto2Ball1B = new AutoPath("2ball.posB.path1.wpilib.json", 2200, 2500, true);
+        public static final AutoPath auto2Ball2BM = new AutoPath("2ball.posBM.path2.wpilib.json", 2200, 2500, true);
         public static final AutoPath auto3Ball2 = new AutoPath("3ball.posA.path2.wpilib.json", 2500, 2800, true);
         public static final AutoPath auto5Ball2 = new AutoPath("5ball.posA.path2.wpilib.json", 2600, 2900, true);
         public static final AutoPath auto5Ball3 = new AutoPath("5ball.posA.path3.wpilib.json", 2400, 2800, true);
