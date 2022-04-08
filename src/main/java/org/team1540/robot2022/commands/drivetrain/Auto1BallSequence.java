@@ -3,6 +3,7 @@ package org.team1540.robot2022.commands.drivetrain;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2022.commands.hood.Hood;
 import org.team1540.robot2022.commands.indexer.Indexer;
 import org.team1540.robot2022.commands.intake.Intake;
@@ -27,11 +28,19 @@ public class Auto1BallSequence extends AutoSequence {
 
                 shooter.commandSetVelocity(AutoPath.auto1Ball.frontSetpoint, AutoPath.auto1Ball.rearSetpoint),
                 hood.commandSet(AutoPath.auto1Ball.hoodState),
+                new InstantCommand(() -> indexer.setStandby(false)),
+                indexer.commandSet(Indexer.IndexerState.FORWARD, Indexer.IndexerState.FORWARD),
+                parallel(
+                        new ConditionalCommand(
+                                AutoHelper.getRamseteCommand(drivetrain, trajectory),  // Drive backwards
+                                new InstantCommand(),
+                                () -> shouldTaxi
+                        ),
+                        sequence(
+                                new WaitUntilCommand(indexer::getTopSensor),
+                                indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF)
+                        )
 
-                new ConditionalCommand(
-                        AutoHelper.getRamseteCommand(drivetrain, trajectory),  // Drive backwards
-                        new InstantCommand(),
-                        () -> shouldTaxi
                 ),
                 new ShootSequence(shooter,
                         indexer,
