@@ -7,7 +7,7 @@ import org.team1540.robot2022.utils.LinearInterpolator;
 public class InterpolationTable {
     // Hood down
     public static final double hubFront = 2100;
-    public static final double hubRear = 2200;
+    public static final double hubRear = 2000;
 
     public static final double lowGoalFront = 1000;
     public static final double lowGoalRear = 1000;
@@ -48,7 +48,7 @@ public class InterpolationTable {
 //        frontFlywheelInterpolator = new LinearInterpolator(frontData);
         // Exponential values from https://www.desmos.com/calculator/u2hiylp0ry
         frontFlywheelInterpolator = new LinearInterpolator(frontData);
-        rearFlywheelInterpolator = new ClampedExponentialInterpolator(1041.79, 1.000796, 2000, 4000);
+        rearFlywheelInterpolator = new ClampedExponentialInterpolator(1041.79, 1.00796, 2000, 4000);
     }
 
     public static InterpolationTable getInstance() {
