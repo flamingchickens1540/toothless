@@ -46,10 +46,9 @@ public class InterpolationTable {
         }
 
 //        frontFlywheelInterpolator = new LinearInterpolator(frontData);
-
         // Exponential values from https://www.desmos.com/calculator/u2hiylp0ry
-        frontFlywheelInterpolator = new ClampedExponentialInterpolator(1041.79, 1.000796, 2000, 4000);
-        rearFlywheelInterpolator = new LinearInterpolator(rearData);
+        frontFlywheelInterpolator = new LinearInterpolator(frontData);
+        rearFlywheelInterpolator = new ClampedExponentialInterpolator(1041.79, 1.000796, 2000, 4000);
     }
 
     public static InterpolationTable getInstance() {
