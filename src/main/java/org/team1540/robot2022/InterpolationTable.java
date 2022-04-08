@@ -1,5 +1,7 @@
 package org.team1540.robot2022;
 
+import org.team1540.robot2022.utils.ClampedExponentialInterpolator;
+import org.team1540.robot2022.utils.Interpolator;
 import org.team1540.robot2022.utils.LinearInterpolator;
 
 public class InterpolationTable {
@@ -27,11 +29,10 @@ public class InterpolationTable {
             {139, 2000, 3100},
             {151, 2000, 3300},
             {162, 2000, 4000},
-
     };
 
     private static InterpolationTable instance = null;
-    public LinearInterpolator frontFlywheelInterpolator, rearFlywheelInterpolator;
+    public Interpolator frontFlywheelInterpolator, rearFlywheelInterpolator;
 
     private InterpolationTable() {
         double[][] data = hoodUp;
@@ -44,7 +45,10 @@ public class InterpolationTable {
             rearData[i] = new double[]{row[0], row[2]};
         }
 
-        frontFlywheelInterpolator = new LinearInterpolator(frontData);
+//        frontFlywheelInterpolator = new LinearInterpolator(frontData);
+
+        // Exponential values from https://www.desmos.com/calculator/u2hiylp0ry
+        frontFlywheelInterpolator = new ClampedExponentialInterpolator(1041.79, 1.000796, 2000, 4000);
         rearFlywheelInterpolator = new LinearInterpolator(rearData);
     }
 
