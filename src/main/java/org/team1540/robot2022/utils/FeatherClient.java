@@ -66,7 +66,7 @@ public class FeatherClient {
             DriverStation.reportError("[feather] Unable to create shot log file: " + e, true);
         }
 
-        new UpdateMatchInfo().schedule();
+//        new UpdateMatchInfo().schedule();
     }
 
     /**
