@@ -100,7 +100,7 @@ public class RobotContainer {
                 .or(new Trigger(driverController::getRightBumper))
                 .whileActiveOnce(new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            if (driverController.getBButton()) {
+                            if (driverController.getBButton() && !DriverStation.isFMSAttached()) {
                                 shootSequence.setProfile(Shooter.ShooterProfile.TESTING);
                             } else if (driverController.getLeftBumper()) {
                                 shootSequence.setProfile(Shooter.ShooterProfile.HUB);
