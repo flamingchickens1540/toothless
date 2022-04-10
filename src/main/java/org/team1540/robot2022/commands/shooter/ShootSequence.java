@@ -53,11 +53,11 @@ public class ShootSequence extends SequentialCommandGroup {
                                 })
                         ),
                         new InstantCommand(),
-                        () -> !this.profile.equals(ShooterProfile.HUB)
+                        () -> !this.profile.equals(ShooterProfile.HUB) && !this.profile.equals(ShooterProfile.TESTING)
                 ),
                 new InstantCommand(() -> {
                     if (this.profile == ShooterProfile.TESTING) {
-                        hoodState = true;
+                        hoodState = hood.get();
                         frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
                         rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
                     } else if (this.profile == Shooter.ShooterProfile.FAR) {
