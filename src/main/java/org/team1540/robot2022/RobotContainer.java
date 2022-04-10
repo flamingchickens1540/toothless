@@ -248,6 +248,8 @@ public class RobotContainer {
         autoChooser.addOption("1 Ball (Taxi)", new Auto1BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, true));
         autoChooser.addOption("2 Ball A", new Auto2BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, true));
         autoChooser.addOption("2 Ball B", new Auto2BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, false));
+        autoChooser.addOption("2 Ball B (Mean)", new Auto2BallMeanSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, true));
+        autoChooser.addOption("2 Ball B (Defense)", new Auto2BallMeanSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx, false));
         autoChooser.setDefaultOption("3 Ball", new Auto3BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx));
         autoChooser.addOption("5 Ball", new Auto5BallSequence(drivetrain, intake, indexer, vision, shooter, hood, limelight, lidar, navx));
 
