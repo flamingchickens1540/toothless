@@ -38,7 +38,8 @@ public class ShooterFeedSequence extends SequentialCommandGroup {
                                 indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),              // Stop the indexer
                                 new PrintCommand("one ball, not shooting second")
                         ),
-                        () -> indexer.getBottomSensor() || has2Balls
+//                        () -> indexer.getBottomSensor() || has2Balls //TODO: Fix this
+                        () -> true
                 )
         );
     }
