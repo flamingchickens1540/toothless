@@ -6,8 +6,8 @@ import org.team1540.robot2022.utils.LinearInterpolator;
 
 public class InterpolationTable {
     // Hood down
-    public static final double hubFront = 2100;
-    public static final double hubRear = 2000;
+    public static final double hubFront = 1800;
+    public static final double hubRear = 1900;
 
     public static final double lowGoalFront = 1000;
     public static final double lowGoalRear = 1000;
