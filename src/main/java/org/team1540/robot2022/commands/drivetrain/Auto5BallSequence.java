@@ -17,9 +17,9 @@ public class Auto5BallSequence extends AutoSequence {
         addPaths(AutoPath.auto2Ball1A, AutoPath.auto5Ball2, AutoPath.auto5Ball3, AutoPath.auto5Ball4);
         addCommands(
                 AutoHelper.runPathWithSpinup(drivetrain, intake, indexer, shooter, hood, AutoPath.auto2Ball1A), // Follow path to collect ball 2
-                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.RED),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.RED, true),
                 new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, false, true, null),
-                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET, true),
                 AutoHelper.runPathWithSpinup(drivetrain, intake, indexer, shooter, hood, AutoPath.auto5Ball2), // Follow path to collect balls 3 and 4// If (2 balls are indexed) then shoot, else keep going. In case human player ball isn't present
                 new ShootSequence(shooter, indexer, drivetrain, hood, intake, vision, limelight, lidar, navx, Shooter.ShooterProfile.FAR, false, false, null),
 

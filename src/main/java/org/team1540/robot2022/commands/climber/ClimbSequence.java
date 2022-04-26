@@ -32,9 +32,9 @@ public class ClimbSequence extends ParallelCommandGroup {
 
                         raiseUntilLimit(-1),                                // Raise arms to maximum height
 
-                        lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW),
+                        lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW, true),
                         new WaitUntilCommand(this::isOptimalSwing),           // Wait for robot to be swinging in the right place
-                        lights.commandSetPattern(RevBlinkin.ColorPattern.GREEN),
+                        lights.commandSetPattern(RevBlinkin.ColorPattern.GREEN, true),
                         new InstantCommand(() -> climber.setSolenoids(false)),// Move arms to hit high bar
                         new WaitCommand(1),                                   // Wait for arms to finish moving TODO can we lower this?
                         runUntilSpike(1, 35),                                // Retract the arms as far as they can go

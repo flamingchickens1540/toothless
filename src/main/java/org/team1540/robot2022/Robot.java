@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
         this.robotContainer = new RobotContainer();
 
         robotContainer.limelight.setLeds(false);
-        robotContainer.bottomLEDs.setPattern(RevBlinkin.ColorPattern.YELLOW);
+        robotContainer.bottomLEDs.setPattern(RevBlinkin.ColorPattern.YELLOW, false);
     }
 
     /**
@@ -107,6 +107,9 @@ public class Robot extends TimedRobot {
         }
         robotContainer.topLEDs.setPattern(RevBlinkin.GameStage.AUTONOMOUS);
         robotContainer.bottomLEDs.setPattern(RevBlinkin.GameStage.AUTONOMOUS);
+
+        robotContainer.hood.set(true);
+        robotContainer.climber.setSolenoids(false);
 
         new ClimberZeroCommand(robotContainer.climber).schedule();
     }

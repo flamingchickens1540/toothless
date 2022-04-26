@@ -35,13 +35,14 @@ public class ShootSequence extends SequentialCommandGroup {
 
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
+                new InstantCommand(() -> indexer.setStandby(false)),
                 new PrintCommand("Starting shoot sequence with profile " + this.profile),
                 new ConditionalCommand(
                         sequence(
                                 new InstantCommand(() -> limelight.setLeds(true)),
                                 new WaitCommand(0.2),
                                 new ConditionalCommand( // Always lines up and shoots, given the new vision estimation
-                                        new PointToTarget(drivetrain, vision, limelight, navX, controller),//.withTimeout(1),
+                                        new PointToTarget(drivetrain, vision, limelight, navX, controller).withTimeout(1),
                                         new InstantCommand(),
                                         () -> pointToTarget
                                 ),
@@ -80,10 +81,10 @@ public class ShootSequence extends SequentialCommandGroup {
                     hood.set(hoodState);
                     shooter.setVelocityRPM(frontVelocity, rearVelocity);
                 }),
-                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.YELLOW, true),
 
-                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET),
-                new InstantCommand(() -> FeatherClient.recordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + "")),
+                drivetrain.lights.commandSetPattern(RevBlinkin.ColorPattern.VIOLET, true),
+//                new InstantCommand(() -> FeatherClient.recordShot(this.limelightDistance, this.lidarDistance, this.frontVelocity, this.rearVelocity, this.hoodState, this.profile + "")),
                 new ShooterFeedSequence(indexer, shooter, drivetrain.lights, has2Balls)
         );
     }

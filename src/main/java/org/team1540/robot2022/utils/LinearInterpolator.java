@@ -32,7 +32,7 @@ import java.util.Scanner;
  *</code>
  */
 
-public class LinearInterpolator {
+public class LinearInterpolator implements Interpolator {
 
     private double[][] table;
     private boolean initialized = false;
@@ -120,6 +120,7 @@ public class LinearInterpolator {
      * @param x, the value of x to get an interpolated y value for
      * @return the linear interpolated value y
      */
+    @Override
     public double getInterpolatedValue(double x) {
 
         if (!initialized) {

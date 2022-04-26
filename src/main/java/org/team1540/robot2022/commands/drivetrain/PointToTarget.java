@@ -121,6 +121,7 @@ public class PointToTarget extends CommandBase {
      * @param angleXOffset the offset in degrees we still need to turn to reach the target
      */
     private void turnWithLimelight(double angleXOffset) {
+        System.out.println(angleXOffset);
         if (Math.abs(angleXOffset) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 5)) {
 
             double distanceToTarget = getHorizontalDistanceToTarget();
@@ -220,6 +221,8 @@ public class PointToTarget extends CommandBase {
 //        limelight.setLeds(false);
         medianFilterCount = 0;
         isFinished = false;
-        controller.setRumble(0);
+        if (controller != null) {
+            controller.setRumble(0);
+        }
     }
 }

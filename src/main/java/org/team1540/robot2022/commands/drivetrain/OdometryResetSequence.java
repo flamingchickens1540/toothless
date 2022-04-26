@@ -18,8 +18,6 @@ public class OdometryResetSequence extends ParallelCommandGroup {
     public OdometryResetSequence(Drivetrain drivetrain, NavX navx, Vision vision, Limelight limelight, RevBlinkin lights) {
         RevBlinkin.ColorPattern initialPattern = lights.getPattern();
         addCommands(
-
-                lights.commandSetPattern(RevBlinkin.ColorPattern.ORANGE),
                 sequence(
                         new InstantCommand(() -> limelight.setLeds(Limelight.LEDMode.BLINK)),
                         new WaitCommand(0.5),

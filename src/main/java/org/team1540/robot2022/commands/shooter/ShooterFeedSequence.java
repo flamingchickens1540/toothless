@@ -10,19 +10,19 @@ public class ShooterFeedSequence extends SequentialCommandGroup {
 
         addCommands(
                 new WaitUntilCommand(shooter::isSpunUp).withTimeout(1),                                             // Wait for shooter to spin up
-                lights.commandSetPattern(RevBlinkin.ColorPattern.ORANGE),
-                indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF),     // Run top indexer
+                lights.commandSetPattern(RevBlinkin.ColorPattern.ORANGE, true),
                 new WaitCommand(1),
-                new PrintCommand("topRPM " + indexer.topMotor.getSelectedSensorVelocity()),
+                new InstantCommand(() -> indexer.setStandby(true)),
+                indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.OFF),     // Run top indexer
                 new WaitUntilCommand(() -> !indexer.getTopSensor()),                                 // Wait until top ball exits the indexer
-                lights.commandSetPattern(RevBlinkin.ColorPattern.GREEN),
+                lights.commandSetPattern(RevBlinkin.ColorPattern.GREEN, true),
                 // Shoot second ball
                 new ConditionalCommand( // Only spend time shooting second ball if a second ball is staged
                         sequence(
                                 indexer.commandSet(Indexer.IndexerState.FORWARD_FULL, Indexer.IndexerState.FORWARD), // Move bottom ball up
                                 new ConditionalCommand(
                                         sequence(
-                                                lights.commandSetPattern(RevBlinkin.ColorPattern.BLUE_GREEN),
+                                                lights.commandSetPattern(RevBlinkin.ColorPattern.BLUE_GREEN, true),
                                                 new WaitUntilCommand(indexer::getTopSensor),                                    // Wait until ball is in top staging location
                                                 indexer.commandSet(Indexer.IndexerState.OFF, Indexer.IndexerState.OFF),         // Stop when ball is up high TODO: Standby here?
                                                 new WaitUntilCommand(shooter::isSpunUp).withTimeout(0.5),
