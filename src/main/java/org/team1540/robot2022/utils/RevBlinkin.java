@@ -35,7 +35,7 @@ public class RevBlinkin extends Spark {
      * @throws NullPointerException If pattern is null.
      */
     public void setPattern(ColorPattern pattern, boolean debug) {
-        if (!debug || !DriverStation.isFMSAttached()) {
+        if (!debug || !DriverStation.isFMSAttached() && !DriverStation.isTest()) {
             super.set(pattern.setpoint);
         }
     }
@@ -68,7 +68,7 @@ public class RevBlinkin extends Spark {
         AUTONOMOUS(ColorPattern.FIRE_MEDIUM, PatternTheme.HEARTBEAT),
         TELEOP(ColorPattern.FIRE_MEDIUM, PatternTheme.RAINBOW),
         ENDGAME(ColorPattern.RAINBOW_PARTY, ColorPattern.RAINBOW_PARTY),
-        DISABLE(ColorPattern.TWINKLES_RAINBOW, ColorPattern.TWINKLES_RAINBOW);
+        DISABLE(ColorPattern.RAINBOW_PARTY, ColorPattern.RAINBOW_PARTY);
 
         private final BlinkinEffect top;
         private final BlinkinEffect bottom;

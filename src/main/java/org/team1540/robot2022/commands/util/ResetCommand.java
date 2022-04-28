@@ -1,10 +1,7 @@
 package org.team1540.robot2022.commands.util;
 
 import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2022.commands.climber.Climber;
 import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
 import org.team1540.robot2022.commands.hood.Hood;
@@ -32,7 +29,10 @@ public class ResetCommand extends SequentialCommandGroup {
                         new InstantCommand(() -> hood.set(false)),
                         new InstantCommand(() -> intake.setFold(true))
                 ),
-                new WaitUntilCommand(() -> !ph.getPressureSwitch()),
+                parallel(
+                        new WaitUntilCommand(() -> !ph.getPressureSwitch()),
+                        new WaitCommand(0.5)
+                ),
                 new PrintCommand("Done!!!!!!!")
         );
 

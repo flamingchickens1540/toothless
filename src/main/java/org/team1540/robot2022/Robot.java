@@ -10,8 +10,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.team1540.robot2022.commands.climber.ClimberUpDownCommand;
 import org.team1540.robot2022.commands.climber.ClimberZeroCommand;
-import org.team1540.robot2022.commands.util.ResetCommand;
+import org.team1540.robot2022.commands.drivetrain.ChildDriveCommand;
 import org.team1540.robot2022.utils.ChickenSmartDashboard;
+import org.team1540.robot2022.utils.CurrentLimitConfig;
 import org.team1540.robot2022.utils.RevBlinkin;
 
 /**
@@ -126,6 +127,7 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+        robotContainer.ph.enableCompressorDigital();
         robotContainer.topLEDs.setPattern(RevBlinkin.GameStage.TELEOP);
         robotContainer.bottomLEDs.setPattern(RevBlinkin.GameStage.TELEOP);
 
@@ -145,7 +147,10 @@ public class Robot extends TimedRobot {
     public void testInit() {
         System.out.println("Test enabled");
         LiveWindow.setEnabled(false);
-        new ResetCommand(robotContainer.climber, robotContainer.hood, robotContainer.intake, robotContainer.ph).schedule();
+        robotContainer.ph.disableCompressor();
+//        new ResetCommand(robotContainer.climber, robotContainer.hood, robotContainer.intake, robotContainer.ph).schedule();
+        robotContainer.drivetrain.setDefaultCommand(new ChildDriveCommand(robotContainer.drivetrain, robotContainer.childController));
+        robotContainer.drivetrain.setCurrentLimit(new CurrentLimitConfig(20, 25, 1, 40, 15, 0.5));
     }
 
     /**

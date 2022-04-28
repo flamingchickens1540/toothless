@@ -49,6 +49,8 @@ public class RobotContainer {
     // Controllers
     public final ChickenXboxController driverController = new ChickenXboxController(0);
     public final ChickenXboxController copilotController = new ChickenXboxController(1);
+    public final Joystick childController = new Joystick(2);
+    public final Joystick childCopilotController = new Joystick(3);
 
     // Buttons
     public final DigitalInput zeroOdometry = new DigitalInput(0);
@@ -98,6 +100,8 @@ public class RobotContainer {
         // coop:button(B,Shoot TESTING [press with bumper],pilot)
         new Trigger(driverController::getLeftBumper)
                 .or(new Trigger(driverController::getRightBumper))
+                .or(new JoystickButton(childController, 1).and(new Trigger(() -> !childCopilotController.isConnected())))
+                .or(new JoystickButton(childCopilotController, 1))
                 .whileActiveOnce(new SequentialCommandGroup(
                         new InstantCommand(() -> {
                             if (driverController.getBButton() && !DriverStation.isFMSAttached()) {
@@ -110,6 +114,7 @@ public class RobotContainer {
                         }),
                         shootSequence
                 ));
+
 
 
         // coop:button(DPadUp,Shoot from touching hub [press],pilot)
@@ -181,8 +186,10 @@ public class RobotContainer {
 
         // coop:button(RBumper, Run intake and indexer, copilot)
         new JoystickButton(copilotController, Button.kRightBumper.value)
-                .whenHeld(intakeSequence)
-                .whenReleased(intake.commandSetFold(true));
+                .or(new JoystickButton(childController, 2).and(new Trigger(() -> !childCopilotController.isConnected())))
+                .or(new JoystickButton(childCopilotController, 2))
+                .whileActiveOnce(intakeSequence)
+                .whenInactive(new ConditionalCommand(intake.commandSetFold(true), new PrintCommand("Test mode, not raising intake"), () -> !DriverStation.isTest()));
 
         // Robot hardware button
         new Trigger(zeroOdometry::get)

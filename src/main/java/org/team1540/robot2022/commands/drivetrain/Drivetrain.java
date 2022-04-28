@@ -19,10 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2022.Constants;
 import org.team1540.robot2022.Constants.DriveConstants.Motors;
 import org.team1540.robot2022.utils.AutoHelper.AutoPath;
-import org.team1540.robot2022.utils.ChickenSmartDashboard;
-import org.team1540.robot2022.utils.ChickenTalonFX;
-import org.team1540.robot2022.utils.NavX;
-import org.team1540.robot2022.utils.RevBlinkin;
+import org.team1540.robot2022.utils.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -218,6 +215,9 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+    public void setCurrentLimit(CurrentLimitConfig config) {
+        config.applyTo(driveMotors);
+    }
 
     public static class DashboardField {
         private final String defaultColor = "#FFFFFFFF";
