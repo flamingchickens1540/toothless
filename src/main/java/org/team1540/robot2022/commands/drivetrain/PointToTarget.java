@@ -1,6 +1,7 @@
 package org.team1540.robot2022.commands.drivetrain;
 
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,6 +24,8 @@ public class PointToTarget extends CommandBase {
     private int medianFilterCount = 0;
     private boolean turning = false;
 
+    NetworkTable mediapipeTable;
+
     // A little testing says kP=0.7 and kD=0.4 are fairly strong.
     private final MiniPID pid = new MiniPID(1, 0, 0);
     private final MiniPID pidNavX = new MiniPID(0, 0, 0);
@@ -34,6 +37,8 @@ public class PointToTarget extends CommandBase {
         this.limelight = limelight;
         this.navX = navX;
         this.controller = controller;
+
+        this.mediapipeTable = NetworkTableInstance.getDefault().getTable("mediapipe");
 
         addRequirements(drivetrain);
     }
@@ -103,6 +108,31 @@ public class PointToTarget extends CommandBase {
         }
 
         turnFunction.accept(medianFilter.calculate(llAngles.x));
+    }
+
+    private void calculateAndTurnWithMediapipePose() {
+
+        double offsetX = mediapipeTable.getEntry("noseX").getDouble(0);
+        System.out.println("Nose X Offset: " + offsetX);
+
+        if (Math.abs(offsetX) > SmartDashboard.getNumber("pointToTarget/mpNoseXDeadzone", 20)) {
+
+            double distanceToTarget = getMediapipeDistance();
+            double pidOutput = pid.getOutput(getError(offsetX));
+            double multiplier = offsetX > 0 ? 1 : -1;
+
+            ChickenSmartDashboard.putDebugNumber("pointToTarget/mpPidOutput", pidOutput);
+            ChickenSmartDashboard.putDebugNumber("pointToTarget/mpDistanceToTarget", distanceToTarget);
+
+            pidOutput = clampPID(pidOutput);
+            double valueL = multiplier * -pidOutput;
+            double valueR = multiplier * pidOutput;
+            drivetrain.setPercent(valueL, valueR);
+        }
+    }
+
+    private double getMediapipeDistance() {
+        return mediapipeTable.getEntry("headWidth").getDouble(0);
     }
 
     /**
@@ -207,7 +237,8 @@ public class PointToTarget extends CommandBase {
         pidNavX.setPID(pX, 0, dX);
 
 //        calculateWithCorners(this::turnWithLimelight);
-        calculateAndTurnWithVision();
+//        calculateAndTurnWithVision();
+        calculateAndTurnWithMediapipePose();
     }
 
     public boolean isFinished() {
