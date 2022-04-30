@@ -31,7 +31,7 @@ public class ShootSequence extends SequentialCommandGroup {
         this.indexer = indexer;
         this.limelight = limelight;
         this.profile = m_profile;
-        // this.profile = Shooter.ShooterProfile.FAR;
+        this.profile = ShooterProfile.TESTING;
 
         addRequirements(shooter, indexer, drivetrain);
         addCommands(
@@ -57,7 +57,7 @@ public class ShootSequence extends SequentialCommandGroup {
                 ),
                 new InstantCommand(() -> {
                     if (this.profile == ShooterProfile.TESTING) {
-                        hoodState = true;
+                        hoodState = false;
                         frontVelocity = SmartDashboard.getNumber("shooter/tuning/frontRPM", 0);
                         rearVelocity = SmartDashboard.getNumber("shooter/tuning/rearRPM", 0);
                     } else if (this.profile == Shooter.ShooterProfile.FAR) {

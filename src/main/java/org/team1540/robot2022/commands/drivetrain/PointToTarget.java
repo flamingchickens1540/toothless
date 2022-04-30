@@ -112,27 +112,34 @@ public class PointToTarget extends CommandBase {
 
     private void calculateAndTurnWithMediapipePose() {
 
-        double offsetX = mediapipeTable.getEntry("noseX").getDouble(0);
+        double offsetX = (double) mediapipeTable.getEntry("noseX").getNumber(0);
         System.out.println("Nose X Offset: " + offsetX);
 
-        if (Math.abs(offsetX) > SmartDashboard.getNumber("pointToTarget/mpNoseXDeadzone", 20)) {
+        double distance = getMediapipeDistance();
+//        System.out.println("Head Distance: " + distance);
 
-            double distanceToTarget = getMediapipeDistance();
-            double pidOutput = pid.getOutput(getError(offsetX));
+        if (Math.abs(offsetX) > SmartDashboard.getNumber("pointToTarget/mpNoseXDeadzone", 0.1)) {
+
+            double pidOutput = pid.getOutput(Math.abs(offsetX));
             double multiplier = offsetX > 0 ? 1 : -1;
 
             ChickenSmartDashboard.putDebugNumber("pointToTarget/mpPidOutput", pidOutput);
-            ChickenSmartDashboard.putDebugNumber("pointToTarget/mpDistanceToTarget", distanceToTarget);
+            ChickenSmartDashboard.putDebugNumber("pointToTarget/mpDistanceToTarget", distance);
 
             pidOutput = clampPID(pidOutput);
             double valueL = multiplier * -pidOutput;
             double valueR = multiplier * pidOutput;
             drivetrain.setPercent(valueL, valueR);
+        } else if (distance < SmartDashboard.getNumber("pointToTarget/mpDistanceDeadzone", 0.1)) {
+            pidNavX.setSetpoint(0.1);
+            double pidOutput = Math.abs(pidNavX.getOutput(distance));
+            pidOutput = clampPID(pidOutput);
+            drivetrain.setPercent(pidOutput, pidOutput);
         }
     }
 
     private double getMediapipeDistance() {
-        return mediapipeTable.getEntry("headWidth").getDouble(0);
+        return (double) mediapipeTable.getEntry("headWidth").getNumber(0);
     }
 
     /**
