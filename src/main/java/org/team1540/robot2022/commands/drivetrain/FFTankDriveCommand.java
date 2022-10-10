@@ -27,7 +27,7 @@ public class FFTankDriveCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        slewRateLimiter = new SlewRateLimiter(SmartDashboard.getNumber("drivetrain/tankDrive/maxAcceleration", 1));
+        slewRateLimiter = new SlewRateLimiter(SmartDashboard.getNumber("drivetrain/tankDrive/maxAcceleration", 2));
     }
 
     @Override

@@ -38,6 +38,7 @@ public class Vision extends SubsystemBase {
         ChickenSmartDashboard.putDebugNumber("vision/inchesToFieldRatio", 0.0185);
         ChickenSmartDashboard.putDebugBoolean("vision/allowTargetUpdate", true);
 
+
         if (isSimulation) {
             ChickenSmartDashboard.putDebugNumber("vision/testingX", -4);
             ChickenSmartDashboard.putDebugNumber("vision/testingY", -4);
@@ -47,6 +48,7 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
         boolean isLimelightAligned = limelight.isTargetAligned();
+        ChickenSmartDashboard.putDebugBoolean("vision/targetFound", limelight.isTargetFound());
         ChickenSmartDashboard.putDebugBoolean("vision/limelightAligned", isLimelightAligned);
         if (SmartDashboard.getBoolean("vision/allowTargetUpdate", false) && isLimelightAligned && !isSimulation) {
             // lastDistance is the limelight's found distance + distance to center of the hub then made into "field units"

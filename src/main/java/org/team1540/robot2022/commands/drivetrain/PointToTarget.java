@@ -20,6 +20,7 @@ public class PointToTarget extends CommandBase {
     private final LinkedList<Vector2d> pastPoses = new LinkedList<>();
     private final MedianFilter medianFilter = new MedianFilter(10);
     private final AverageFilter averageFilter = new AverageFilter(10);
+    private final AverageFilter averageError = new AverageFilter(3);
     private int medianFilterCount = 0;
     private boolean turning = false;
 
@@ -52,7 +53,7 @@ public class PointToTarget extends CommandBase {
 
         pid.setPID(p, i, d);
         pid.setSetpoint(0);
-
+        averageError.clear();
         limelight.setLeds(true);
         ChickenSmartDashboard.putDebugBoolean("pointToTarget/turningWithLimelight", true);
         System.out.println("PTT Initialized");
@@ -121,8 +122,10 @@ public class PointToTarget extends CommandBase {
      * @param angleXOffset the offset in degrees we still need to turn to reach the target
      */
     private void turnWithLimelight(double angleXOffset) {
-        System.out.println(angleXOffset);
-        if (Math.abs(angleXOffset) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 5)) {
+        System.out.println("TURNING WITH LIMELIGHT:" + angleXOffset);
+        averageError.add(angleXOffset);
+
+        if (Math.abs(averageError.getAverage()) > SmartDashboard.getNumber("pointToTarget/targetDeadzoneDegrees", 5)) {
 
             double distanceToTarget = getHorizontalDistanceToTarget();
             double pidOutput = pid.getOutput(getError(angleXOffset));
@@ -147,11 +150,11 @@ public class PointToTarget extends CommandBase {
      * @param angleXOffset the starting setpoint of where the NavX should attempt to turn to
      */
     private void turnWithNavX(double angleXOffset) {
+        System.out.println("Turning with NavX");
         double multiplier = angleXOffset > 0 ? 1 : -1;
 
         double pidOut = pidNavX.getOutput(Math.abs(angleXOffset / 180.0));
         double pidOutput = clampPID(pidOut);
-        pidOutput = clampPID(pidOutput);
         double valueL = multiplier * -pidOutput;
         double valueR = multiplier * pidOutput;
 
@@ -188,7 +191,7 @@ public class PointToTarget extends CommandBase {
     private double clampPID(double pidOutput) {
         if (pidOutput > SmartDashboard.getNumber("pointToTarget/pidClamp", 0.8)) {
             ChickenSmartDashboard.putDebugBoolean("pointToTarget/isClamping", true);
-            this.end(false);
+            this.cancel();
             return 0;
         } else {
             ChickenSmartDashboard.putDebugBoolean("pointToTarget/isClamping", false);

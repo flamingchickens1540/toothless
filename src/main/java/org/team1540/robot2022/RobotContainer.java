@@ -93,6 +93,9 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
 
+
+        new Trigger(driverController::getBButton)
+                .whileActiveOnce(new PointToTarget(drivetrain, vision, limelight, navx, driverController));
         // coop:button(LBumper,Shoot HUB [hold],pilot)
         // coop:button(RBumper,Shoot FAR [hold],pilot)
         // coop:button(B,Shoot TESTING [press with bumper],pilot)
