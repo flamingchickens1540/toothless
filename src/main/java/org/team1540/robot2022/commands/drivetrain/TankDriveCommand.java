@@ -70,8 +70,8 @@ public class TankDriveCommand extends CommandBase {
         // Reverse controls so it drives intake-first, remove negatives and swap left
         // and right to drive shooter first
 
-        double valueR = applyJoystickModifiers(controller.getLeftY());
-        double valueL = applyJoystickModifiers(controller.getRightY());
+        double valueR = Math.pow(applyJoystickModifiers(controller.getLeftY()), 2);
+        double valueL = Math.pow(applyJoystickModifiers(controller.getRightY()), 2);
         ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/valueL", valueL);
         ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/valueR", valueR);
 
@@ -90,6 +90,7 @@ public class TankDriveCommand extends CommandBase {
         ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/calcL", leftCalculated);
         ChickenSmartDashboard.putDebugNumber("drivetrain/tankDrive/debug/calcR", rightCalculated);
 
-        drivetrain.setPercent(leftCalculated, rightCalculated);
+//        drivetrain.setPercent(leftCalculated, rightCalculated);
+        drivetrain.setPercent(valueL, valueL);
     }
 }
